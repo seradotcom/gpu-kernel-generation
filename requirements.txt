@@ -1,0 +1,6 @@
+torch
+wandb
+google-genai
+requests
+python-dotenv
+pydantic

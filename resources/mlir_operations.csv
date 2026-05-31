@@ -1,0 +1,954 @@
+Archivo_Origen,Clase_C++,Dialecto,Operacion_JSON_op,Descripcion
+ArithOps.td,Arith_AddUIExtendedOp,arith,arith.addui_extended,Sin descripción
+ArithOps.td,Arith_SubUIExtendedOp,arith,arith.subui_extended,Sin descripción
+ArithOps.td,Arith_MulSIExtendedOp,arith,arith.mulsi_extended,Sin descripción
+ArithOps.td,Arith_MulUIExtendedOp,arith,arith.mului_extended,unsigned integer division operation
+ArithOps.td,Arith_ScalingExtFOp,arith,arith.scaling_extf,Upcasts input floats using provided scales values following
+ArithOps.td,Arith_TruncIOp,arith,arith.trunci,integer truncation operation
+ArithOps.td,Arith_TruncFOp,arith,arith.truncf,cast from floating-point to narrower floating-point
+ArithOps.td,Arith_ConvertFOp,arith,arith.convertf,cast between floating-point types of the same bitwidth
+ArithOps.td,Arith_ScalingTruncFOp,arith,arith.scaling_truncf,Downcasts input floating point values using provided scales
+ArithOps.td,SelectOp,arith,arith.select,select operation
+IRDLOps.td,IRDL_DialectOp,irdl,irdl.dialect,Define a new dialect
+IRDLOps.td,IRDL_TypeOp,irdl,irdl.type,Define a new type
+IRDLOps.td,IRDL_AttributeOp,irdl,irdl.attribute,Define a new attribute
+IRDLOps.td,IRDL_ParametersOp,irdl,irdl.parameters,Define the constraints on parameters of a type/attribute definition
+IRDLOps.td,IRDL_OperationOp,irdl,irdl.operation,Define a new operation
+IRDLOps.td,IRDL_OperandsOp,irdl,irdl.operands,Define the operands of an operation
+IRDLOps.td,IRDL_ResultsOp,irdl,irdl.results,Define the results of an operation
+IRDLOps.td,IRDL_AttributesOp,irdl,irdl.attributes,Define the attributes of an operation
+IRDLOps.td,IRDL_RegionOp,irdl,irdl.region,Define a region of an operation
+IRDLOps.td,IRDL_RegionsOp,irdl,irdl.regions,Define the regions of an operation
+IRDLOps.td,IRDL_CPredOp,irdl,irdl.c_pred,Constraints an attribute using a C++ predicate
+ComplexOps.td,BitcastOp,complex,complex.bitcast,computes bitcast between complex and equal arith types
+ComplexOps.td,ConstantOp,complex,complex.constant,complex number constant operation
+ComplexOps.td,CreateOp,complex,complex.create,complex number creation operation
+ComplexOps.td,EqualOp,complex,complex.eq,computes whether two complex values are equal
+ComplexOps.td,NotEqualOp,complex,complex.neq,computes whether two complex values are not equal
+ComplexOps.td,PowiOp,complex,complex.powi,complex number raised to signed integer power
+MemRefOps.td,AssumeAlignmentOp,memref,memref.assume_alignment,assumption that gives alignment information to the input memref
+MemRefOps.td,DistinctObjectsOp,memref,memref.distinct_objects,assumption that acesses to specific memrefs will never alias
+MemRefOps.td,MemRef_ReallocOp,memref,memref.realloc,memory reallocation operation
+MemRefOps.td,MemRef_AllocaScopeOp,memref,memref.alloca_scope,explicitly delimited scope for stack allocation
+MemRefOps.td,MemRef_AllocaScopeReturnOp,memref,memref.alloca_scope.return,terminator for alloca_scope operation
+MemRefOps.td,MemRef_CastOp,memref,memref.cast,memref cast operation
+MemRefOps.td,CopyOp,memref,memref.copy,Sin descripción
+MemRefOps.td,MemRef_DeallocOp,memref,memref.dealloc,memory deallocation operation
+MemRefOps.td,MemRef_DimOp,memref,memref.dim,dimension index operation
+MemRefOps.td,MemRef_DmaStartOp,memref,memref.dma_start,non-blocking DMA operation that starts a transfer
+MemRefOps.td,MemRef_DmaWaitOp,memref,memref.dma_wait,blocking DMA operation that waits for transfer completion
+MemRefOps.td,MemRef_ExtractAlignedPointerAsIndexOp,memref,memref.extract_aligned_pointer_as_index,Extracts a memref's underlying aligned pointer as an index
+MemRefOps.td,MemRef_ExtractStridedMetadataOp,memref,memref.extract_strided_metadata,Extracts a buffer base with offset and strides
+MemRefOps.td,GenericAtomicRMWOp,memref,memref.generic_atomic_rmw,atomic read-modify-write operation with a region
+MemRefOps.td,AtomicYieldOp,memref,memref.atomic_yield,yield operation for GenericAtomicRMWOp
+MemRefOps.td,MemRef_GetGlobalOp,memref,memref.get_global,get the memref pointing to a global variable
+MemRefOps.td,MemRef_GlobalOp,memref,memref.global,declare or define a global memref variable
+MemRefOps.td,LoadOp,memref,memref.load,load operation
+MemRefOps.td,MemRef_MemorySpaceCastOp,memref,memref.memory_space_cast,memref memory space cast operation
+MemRefOps.td,MemRef_PrefetchOp,memref,memref.prefetch,prefetch operation
+MemRefOps.td,MemRef_RankOp,memref,memref.rank,rank operation
+MemRefOps.td,MemRef_ReshapeOp,memref,memref.reshape,memref reshape operation
+MemRefOps.td,MemRef_StoreOp,memref,memref.store,store operation
+MemRefOps.td,MemRef_TransposeOp,memref,memref.transpose,`transpose` produces a new strided memref (metadata-only)
+MemRefOps.td,MemRef_ViewOp,memref,memref.view,memref view operation
+MemRefOps.td,AtomicRMWOp,memref,memref.atomic_rmw,atomic read-modify-write operation
+OpenMPOps.td,PrivateClauseOp,openmp,openmp.private,Provides declaration of [first]private logic.
+OpenMPOps.td,ParallelOp,openmp,openmp.parallel,parallel construct
+OpenMPOps.td,TerminatorOp,openmp,openmp.terminator,terminator for OpenMP regions
+OpenMPOps.td,TeamsOp,openmp,openmp.teams,teams construct
+OpenMPOps.td,SectionOp,openmp,openmp.section,section directive
+OpenMPOps.td,SectionsOp,openmp,openmp.sections,sections construct
+OpenMPOps.td,SingleOp,openmp,openmp.single,single directive
+OpenMPOps.td,ScopeOp,openmp,openmp.scope,scope directive
+OpenMPOps.td,NewCliOp,openmp,openmp.new_cli,Create a new Canonical Loop Info value.
+OpenMPOps.td,CanonicalLoopOp,openmptransform,openmptransform.canonical_loop,OpenMP Canonical Loop Operation
+OpenMPOps.td,UnrollHeuristicOp,openmptransform,openmptransform.unroll_heuristic,OpenMP heuristic unroll operation
+OpenMPOps.td,TileOp,openmptransformbase,openmptransformbase.tile,OpenMP tile operation
+OpenMPOps.td,FuseOp,openmptransformbase,openmptransformbase.fuse,OpenMP fuse operation
+OpenMPOps.td,WorkshareOp,openmp,openmp.workshare,workshare directive
+OpenMPOps.td,WorkshareLoopWrapperOp,openmp,openmp.workshare.loop_wrapper,contains loop nests to be parallelized by workshare
+OpenMPOps.td,LoopNestOp,openmp,openmp.loop_nest,rectangular loop nest
+OpenMPOps.td,LoopOp,openmp,openmp.loop,loop construct
+OpenMPOps.td,WsloopOp,openmp,openmp.wsloop,worksharing-loop construct
+OpenMPOps.td,SimdOp,openmp,openmp.simd,simd construct
+OpenMPOps.td,YieldOp,openmp,openmp.yield,loop yield and termination operation
+OpenMPOps.td,DistributeOp,openmp,openmp.distribute,distribute construct
+OpenMPOps.td,TaskOp,openmp,openmp.task,task construct
+OpenMPOps.td,TaskloopContextOp,openmp,openmp.taskloop.context,OutlinableOpenMPOpInterface wrapper for taskloop construct
+OpenMPOps.td,TaskloopWrapperOp,openmp,openmp.taskloop.wrapper,taskloop construct
+OpenMPOps.td,TaskgroupOp,openmp,openmp.taskgroup,taskgroup construct
+OpenMPOps.td,TaskyieldOp,openmp,openmp.taskyield,taskyield construct
+OpenMPOps.td,FlushOp,openmp,openmp.flush,flush construct
+OpenMPOps.td,MapBoundsOp,openmp,openmp.map.bounds,Represents normalized bounds information for map clauses.
+OpenMPOps.td,MapInfoOp,openmp,openmp.map.info,Sin descripción
+OpenMPOps.td,TargetDataOp,openmp,openmp.target_data,target data construct
+OpenMPOps.td,TargetEnterDataOp,openmp,openmp.target_enter_data,target enter data construct
+OpenMPOps.td,TargetExitDataOp,openmp,openmp.target_exit_data,target exit data construct
+OpenMPOps.td,TargetUpdateOp,openmp,openmp.target_update,target update construct
+OpenMPOps.td,TargetOp,openmp,openmp.target,target construct
+OpenMPOps.td,MasterOp,openmp,openmp.master,master construct
+OpenMPOps.td,CriticalDeclareOp,openmp,openmp.critical.declare,declares a named critical section.
+OpenMPOps.td,CriticalOp,openmp,openmp.critical,critical construct
+OpenMPOps.td,BarrierOp,openmp,openmp.barrier,barrier construct
+OpenMPOps.td,OrderedOp,openmp,openmp.ordered,ordered construct without region
+OpenMPOps.td,OrderedRegionOp,openmp,openmp.ordered.region,ordered construct with region
+OpenMPOps.td,TaskwaitOp,openmp,openmp.taskwait,taskwait construct
+OpenMPOps.td,AtomicReadOp,openmp,openmp.atomic.read,performs an atomic read
+OpenMPOps.td,AtomicWriteOp,openmp,openmp.atomic.write,performs an atomic write
+OpenMPOps.td,AtomicUpdateOp,openmp,openmp.atomic.update,performs an atomic update
+OpenMPOps.td,AtomicCaptureOp,openmp,openmp.atomic.capture,performs an atomic capture
+OpenMPOps.td,AtomicCompareOp,openmp,openmp.atomic.compare,performs an atomic compare
+OpenMPOps.td,ThreadprivateOp,openmp,openmp.threadprivate,threadprivate directive
+OpenMPOps.td,CancelOp,openmp,openmp.cancel,cancel directive
+OpenMPOps.td,CancellationPointOp,openmp,openmp.cancellation_point,cancellation point directive
+OpenMPOps.td,ScanOp,openmp,openmp.scan,scan directive
+OpenMPOps.td,DeclareMapperOp,openmp,openmp.declare_mapper,declare mapper directive
+OpenMPOps.td,DeclareMapperInfoOp,openmp,openmp.declare_mapper.info,declare mapper info
+OpenMPOps.td,DeclareReductionOp,openmp,openmp.declare_reduction,declares a reduction kind
+OpenMPOps.td,MaskedOp,openmp,openmp.masked,masked construct
+OpenMPOps.td,AllocateDirOp,openmp,openmp.allocate_dir,allocate directive
+OpenMPOps.td,AllocateFreeOp,openmp,openmp.allocate_free,free-op paired with allocate directive
+OpenMPOps.td,TargetAllocMemOp,openmp,openmp.target_allocmem,allocate storage on an openmp device for an object of a given type
+OpenMPOps.td,TargetFreeMemOp,openmp,openmp.target_freemem,free memory on an openmp device
+OpenMPOps.td,AllocSharedMemOp,openmp,openmp.alloc_shared_mem,allocate storage on shared memory for objects of a given type
+OpenMPOps.td,FreeSharedMemOp,openmp,openmp.free_shared_mem,free shared memory
+OpenMPOps.td,WorkdistributeOp,openmp,openmp.workdistribute,workdistribute directive
+OpenMPOps.td,DeclareSimdOp,openmp,openmp.declare_simd,declare simd directive
+OpenMPOps.td,AffinityEntryOp,openmp,openmp.affinity_entry,OpenMP affinity clause entry value
+OpenMPOps.td,IteratorOp,openmp,openmp.iterator,OpenMP iterator modifier
+OpenMPOps.td,GroupprivateOp,openmp,openmp.groupprivate,groupprivate directive
+MLProgramOps.td,MLProgram_FuncOp,mlprogram,mlprogram.func,Function containing a single `SSACFG` region
+MLProgramOps.td,MLProgram_GlobalOp,mlprogram,mlprogram.global,Module level declaration of a global variable
+MLProgramOps.td,MLProgram_GlobalLoadOp,mlprogram,mlprogram.global_load,Direct load of a mutable value from a global
+MLProgramOps.td,MLProgram_GlobalLoadConstOp,mlprogram,mlprogram.global_load_const,Direct load a constant value from a global
+MLProgramOps.td,MLProgram_GlobalLoadGraphOp,mlprogram,mlprogram.global_load_graph,Direct load of a mutable value from a global in Graph region
+MLProgramOps.td,MLProgram_GlobalStoreOp,mlprogram,mlprogram.global_store,Direct store of a value into a mutable global
+MLProgramOps.td,MLProgram_GlobalStoreGraphOp,mlprogram,mlprogram.global_store_graph,Direct store of a value into a mutable global
+MLProgramOps.td,MLProgram_SubgraphOp,mlprogram,mlprogram.subgraph,An function containing a single `Graph` region
+MLProgramOps.td,MLProgram_OutputOp,mlprogram,mlprogram.output,Outputs values from a subgraph function
+MLProgramOps.td,MLProgram_ReturnOp,mlprogram,mlprogram.return,Returns values from a `func` function
+MLProgramOps.td,MLProgram_TokenOp,mlprogram,mlprogram.token,Produces a new token value
+GPUOps.td,GPU_LaneIdOp,gpu,gpu.lane_id,Sin descripción
+GPUOps.td,GPU_SubgroupIdOp,gpu,gpu.subgroup_id,Sin descripción
+GPUOps.td,GPU_NumSubgroupsOp,gpu,gpu.num_subgroups,Sin descripción
+GPUOps.td,GPU_SubgroupSizeOp,gpu,gpu.subgroup_size,Sin descripción
+GPUOps.td,GPU_GPUFuncOp,gpu,gpu.func,Function executable on a GPU
+GPUOps.td,GPU_DynamicSharedMemoryOp,gpu,gpu.dynamic_shared_memory,Get the memref for dynamic shared memory
+GPUOps.td,GPU_LaunchFuncOp,gpu,gpu.launch_func,Launches a function as a GPU kernel
+GPUOps.td,GPU_LaunchOp,gpu,gpu.launch,GPU kernel launch operation
+GPUOps.td,GPU_PrintfOp,gpu,gpu.printf,"Device-side printf, as in CUDA or OpenCL, for debugging"
+GPUOps.td,GPU_ReturnOp,gpu,gpu.return,Terminator for GPU functions.
+GPUOps.td,GPU_TerminatorOp,gpu,gpu.terminator,Terminator for GPU launch regions.
+GPUOps.td,GPU_YieldOp,gpu,gpu.yield,GPU yield operation
+GPUOps.td,GPU_AllReduceOp,gpu,gpu.all_reduce,Reduce values among workgroup.
+GPUOps.td,GPU_SubgroupReduceOp,gpu,gpu.subgroup_reduce,Reduce values among subgroup.
+GPUOps.td,GPU_ShuffleOp,gpu,gpu.shuffle,Shuffles values within a subgroup.
+GPUOps.td,GPU_RotateOp,gpu,gpu.rotate,Rotate values within a subgroup.
+GPUOps.td,GPU_BarrierOp,gpu,gpu.barrier,Synchronizes work items within an execution scope.
+GPUOps.td,GPU_InitializeNamedBarrierOp,gpu,gpu.initialize_named_barrier,Initialize a named barrier with a member count.
+GPUOps.td,GPU_GPUModuleOp,gpu,gpu.module,A top level compilation unit containing code to be run on a GPU.
+GPUOps.td,GPU_BinaryOp,gpu,gpu.binary,An Op for storing serialized GPU binary objects.
+GPUOps.td,GPU_HostRegisterOp,gpu,gpu.host_register,Registers a memref for access from device.
+GPUOps.td,GPU_HostUnregisterOp,gpu,gpu.host_unregister,Unregisters a memref for access from device.
+GPUOps.td,GPU_WaitOp,gpu,gpu.wait,Wait for async gpu ops to complete.
+GPUOps.td,GPU_AllocOp,gpu,gpu.alloc,GPU memory allocation operation.
+GPUOps.td,GPU_DeallocOp,gpu,gpu.dealloc,GPU memory deallocation operation
+GPUOps.td,GPU_MemcpyOp,gpu,gpu.memcpy,GPU memcpy operation
+GPUOps.td,GPU_MemsetOp,gpu,gpu.memset,GPU memset operation
+GPUOps.td,GPU_SetDefaultDeviceOp,gpu,gpu.set_default_device,Set default GPU for operations after this by index
+GPUOps.td,GPU_SubgroupMmaLoadMatrixOp,gpu,gpu.subgroup_mma_load_matrix,GPU warp synchronous matrix load
+GPUOps.td,GPU_SubgroupMmaStoreMatrixOp,gpu,gpu.subgroup_mma_store_matrix,GPU warp synchronous matrix store
+GPUOps.td,GPU_SubgroupMmaComputeOp,gpu,gpu.subgroup_mma_compute,GPU warp synchronous matrix multiply accumulate
+GPUOps.td,GPU_SubgroupMmaConstantMatrixOp,gpu,gpu.subgroup_mma_constant_matrix,GPU warp synchronous constant matrix
+GPUOps.td,GPU_SubgroupMmaExtractThreadLocalOp,gpu,gpu.subgroup_mma_extract_thread_local,Extract a value from GPU warp by invocation and indices
+GPUOps.td,GPU_SubgroupMmaInsertThreadLocalOp,gpu,gpu.subgroup_mma_insert_thread_local,Insert a value into GPU warp by invocation and indices
+GPUOps.td,GPU_SubgroupMmaElementwiseOp,gpu,gpu.subgroup_mma_elementwise,GPU warp elementwise operation on a matrix
+GPUOps.td,GPU_CreateDnTensorOp,gpu,gpu.create_dn_tensor,Create dense tensor operation
+GPUOps.td,GPU_DestroyDnTensorOp,gpu,gpu.destroy_dn_tensor,Destroy dense tensor operation
+GPUOps.td,GPU_CreateCooOp,gpu,gpu.create_coo,Create sparse matrix in COO format operation
+GPUOps.td,GPU_CreateCooAoSOp,gpu,gpu.create_coo_aos,Create sparse matrix in COO format operation (AoS)
+GPUOps.td,GPU_CreateCsrOp,gpu,gpu.create_csr,Create sparse matrix in CSR format operation
+GPUOps.td,GPU_CreateCscOp,gpu,gpu.create_csc,Create sparse matrix in CSC format operation
+GPUOps.td,GPU_CreateBsrOp,gpu,gpu.create_bsr,Create sparse matrix in BSR format operation
+GPUOps.td,GPU_Create2To4SpMatOp,gpu,gpu.create_2to4_spmat,Create sparse matrix with 2:4 sparsity operation
+GPUOps.td,GPU_DestroySpMatOp,gpu,gpu.destroy_sp_mat,Destroy sparse matrix operation
+GPUOps.td,GPU_SpMVBufferSizeOp,gpu,gpu.spmv_buffer_size,Precompute buffersize for SpMV operation
+GPUOps.td,GPU_SpMVOp,gpu,gpu.spmv,SpMV operation
+GPUOps.td,GPU_SpMMBufferSizeOp,gpu,gpu.spmm_buffer_size,Precompute buffersize for SpMM operation
+GPUOps.td,GPU_SpMMOp,gpu,gpu.spmm,SpMM operation
+GPUOps.td,GPU_SDDMMBufferSizeOp,gpu,gpu.sddmm_buffer_size,Precompute buffersize for SDDMM operation
+GPUOps.td,GPU_SDDMMOp,gpu,gpu.sddmm,SDDMM operation
+GPUOps.td,GPU_SpGEMMCreateDescrOp,gpu,gpu.spgemm_create_descr,SpGEMM Create Descr operation
+GPUOps.td,GPU_SpGEMMDestroyDescrOp,gpu,gpu.spgemm_destroy_descr,SpGEMM Destroy Descr operation
+GPUOps.td,GPU_SpGEMMWorkEstimationOrComputeOp,gpu,gpu.spgemm_work_estimation_or_compute,SpGEMM work estimation operation
+GPUOps.td,GPU_SpGEMMCopyOp,gpu,gpu.spgemm_copy,SpGEMM copy operation
+GPUOps.td,GPU_SpMatGetSizeOp,gpu,gpu.spmat_get_size,SpMat get size operation
+GPUOps.td,GPU_SetCsrPointersOp,gpu,gpu.set_csr_pointers,SpGEMM get size operation
+GPUOps.td,GPU_WarpExecuteOnLane0Op,gpu,gpu.warp_execute_on_lane_0,Executes operations in the associated region on thread #0 of a
+GPUOps.td,GPU_SubgroupBroadcastOp,gpu,gpu.subgroup_broadcast,Broadcasts a value from the specific lane across subgroup
+GPUOps.td,GPU_BallotOp,gpu,gpu.ballot,Collects predicate values from all threads in a subgroup.
+X86.td,MaskCompressOp,avx512,avx512.mask.compress,Masked compress op
+X86.td,MaskRndScaleOp,avx512,avx512.mask.rndscale,Masked roundscale op
+X86.td,MaskScaleFOp,avx512,avx512.mask.scalef,ScaleF op
+X86.td,Vp2IntersectOp,avx512,avx512.vp2intersect,Vp2Intersect op
+X86.td,DotBF16Op,avx512,avx512.dot,Dot BF16 op
+X86.td,CvtPackedF32ToBF16Op,avx512,avx512.cvt.packed.f32_to_bf16,Convert packed F32 to packed BF16 Data.
+X86.td,AVX10DotInt8Op,avx10,avx10.dot.i8,AVX10 Dot Int8 op
+X86.td,RsqrtOp,avx,avx.rsqrt,Rsqrt
+X86.td,DotInt8Op,avx,avx.dot.i8,Dot Int8 op
+X86.td,BcstToPackedF32Op,avx,avx.bcst_to_f32.packed,AVX: Broadcasts BF16/F16 into packed F32 Data.
+X86.td,CvtPackedEvenIndexedToF32Op,avx,avx.cvt.packed.even.indexed_to_f32,AVX: Convert packed BF16/F16 even-indexed elements into packed F32 Data.
+X86.td,CvtPackedOddIndexedToF32Op,avx,avx.cvt.packed.odd.indexed_to_f32,AVX: Convert packed BF16/F16 odd-indexed elements into packed F32 Data.
+X86.td,TileZeroOp,amx,amx.tile_zero,tile zero operation
+X86.td,TileLoadOp,amx,amx.tile_load,tile load operation
+X86.td,TileStoreOp,amx,amx.tile_store,tile store operation
+X86.td,TileMulFOp,amx,amx.tile_mulf,tile multiplication operation (floating-point)
+X86.td,TileMulIOp,amx,amx.tile_muli,tile multiplication operation (integer)
+PtrOps.td,Ptr_ConstantOp,pointer,pointer.constant,Pointer constant operation
+PtrOps.td,Ptr_FromPtrOp,pointer,pointer.from_ptr,Casts a `!ptr.ptr` value to a ptr-like value.
+PtrOps.td,Ptr_GatherOp,pointer,pointer.gather,Gather operation
+PtrOps.td,Ptr_GetMetadataOp,pointer,pointer.get_metadata,SSA value representing pointer metadata.
+PtrOps.td,Ptr_LoadOp,pointer,pointer.load,Sin descripción
+PtrOps.td,Ptr_MaskedLoadOp,pointer,pointer.masked_load,Masked load operation
+PtrOps.td,Ptr_MaskedStoreOp,pointer,pointer.masked_store,Masked store operation
+PtrOps.td,Ptr_PtrAddOp,pointer,pointer.ptr_add,Pointer add operation
+PtrOps.td,Ptr_PtrDiffOp,pointer,pointer.ptr_diff,Pointer difference operation
+PtrOps.td,Ptr_ScatterOp,pointer,pointer.scatter,Scatter operation
+PtrOps.td,Ptr_StoreOp,pointer,pointer.store,Sin descripción
+PtrOps.td,Ptr_ToPtrOp,pointer,pointer.to_ptr,Casts a ptr-like value to a `!ptr.ptr` value.
+PtrOps.td,Ptr_TypeOffsetOp,pointer,pointer.type_offset,Type offset operation
+TosaOps.td,Tosa_MulOp,tosa,tosa.mul,Multiplication operator.
+TosaOps.td,Tosa_ReverseOp,tosa,tosa.reverse,Reverse operator.
+TosaOps.td,Tosa_CastOp,tosa,tosa.cast,Cast operation.
+TosaOps.td,Tosa_ConstOp,tosa,tosa.const,Constant operator.
+TosaOps.td,Tosa_IdentityOp,tosa,tosa.identity,Identity operator.
+TosaOps.td,Tosa_CustomOp,tosa,tosa.custom,Custom operator wrapper for Tosa
+TosaOps.td,Tosa_IfOp,tosa,tosa.cond_if,Conditional if operator.
+TosaOps.td,Tosa_WhileOp,tosa,tosa.while_loop,output = input; While (Cond(output)) {output = Body(output)}
+TosaOps.td,Tosa_VariableOp,tosa,tosa.variable,Defines a variable
+TosaOps.td,Tosa_VariableWriteOp,tosa,tosa.variable_write,write_buffer operator
+TosaOps.td,Tosa_VariableReadOp,tosa,tosa.variable_read,read_buffer operator
+TosaUtilOps.td,Tosa_ApplyScaleOp,tosa,tosa.apply_scale,Rescale scalar operator for Tosa tensor operators
+TosaUtilOps.td,Tosa_YieldOp,tosa,tosa.yield,yield operator
+FuncOps.td,CallOp,func,func.call,call operation
+FuncOps.td,CallIndirectOp,func,func.call_indirect,indirect call operation
+FuncOps.td,ConstantOp,func,func.constant,constant
+FuncOps.td,FuncOp,func,func.func,An operation with a name containing a single `SSACFG` region
+FuncOps.td,ReturnOp,func,func.return,Function return operation
+ShapeOps.td,Shape_AddOp,shape,shape.add,Addition of sizes and indices
+ShapeOps.td,Shape_BroadcastOp,shape,shape.broadcast,Returns the broadcasted output shape of two or more inputs
+ShapeOps.td,Shape_ConstShapeOp,shape,shape.const_shape,Creates a constant shape or extent tensor
+ShapeOps.td,Shape_ConstSizeOp,shape,shape.const_size,Creates a constant of type `shape.size`
+ShapeOps.td,Shape_DivOp,shape,shape.div,Division of sizes and indices
+ShapeOps.td,Shape_ShapeEqOp,shape,shape.shape_eq,Returns whether the input shapes or extent tensors are equal
+ShapeOps.td,Shape_FromExtentsOp,shape,shape.from_extents,Creates a shape from extents
+ShapeOps.td,Shape_FromExtentTensorOp,shape,shape.from_extent_tensor,Creates a shape from a tensor of extents
+ShapeOps.td,Shape_IsBroadcastableOp,shape,shape.is_broadcastable,Determines if 2+ shapes can be successfully broadcasted
+ShapeOps.td,Shape_RankOp,shape,shape.rank,Gets the rank of a shape
+ShapeOps.td,Shape_ToExtentTensorOp,shape,shape.to_extent_tensor,Creates a dimension tensor from a shape
+ShapeOps.td,Shape_DimOp,shape,shape.dim,Gets the specified extent from the shape of a shaped input
+ShapeOps.td,Shape_GetExtentOp,shape,shape.get_extent,Gets the specified extent from a shape or extent tensor
+ShapeOps.td,Shape_IndexToSizeOp,shape,shape.index_to_size,Converts a standard index to a shape size
+ShapeOps.td,Shape_MaxOp,shape,shape.max,Elementwise maximum
+ShapeOps.td,Shape_MeetOp,shape,shape.meet,Returns the least general shape or size of its operands
+ShapeOps.td,Shape_MinOp,shape,shape.min,Elementwise minimum
+ShapeOps.td,Shape_MulOp,shape,shape.mul,Multiplication of sizes and indices
+ShapeOps.td,Shape_NumElementsOp,shape,shape.num_elements,Returns the number of elements for a given shape
+ShapeOps.td,Shape_ReduceOp,shape,shape.reduce,Returns an expression reduced over a shape or extent tensor
+ShapeOps.td,Shape_ShapeOfOp,shape,shape.shape_of,Returns shape of a value or shaped type operand
+ShapeOps.td,Shape_ValueOfOp,shape,shape.value_of,Returns value of a !shape.value_shape operand
+ShapeOps.td,Shape_SizeToIndexOp,shape,shape.size_to_index,Casts between index types of the shape and standard dialect
+ShapeOps.td,Shape_ValueAsShapeOp,shape,shape.value_as_shape,Returns value as a shape
+ShapeOps.td,Shape_WithOp,shape,shape.with_shape,Returns ValueShape with given shape
+ShapeOps.td,Shape_YieldOp,shape,shape.yield,Returns the value to parent op
+ShapeOps.td,Shape_DebugPrintOp,shape,shape.debug_print,Prints the input shape or size
+ShapeOps.td,Shape_SplitAtOp,shape,shape.split_at,Splits a shape at a given index
+ShapeOps.td,Shape_ConcatOp,shape,shape.concat,Concatenates two shapes
+ShapeOps.td,Shape_AnyOp,shape,shape.any,Return any combination of the input shapes
+ShapeOps.td,Shape_AssumingAllOp,shape,shape.assuming_all,Return a logical AND of all witnesses
+ShapeOps.td,Shape_AssumingOp,shape,shape.assuming,Execute the region
+ShapeOps.td,Shape_AssumingYieldOp,shape,shape.assuming_yield,Yield operation
+ShapeOps.td,Shape_CstrBroadcastableOp,shape,shape.cstr_broadcastable,Determines if 2+ shapes can be successfully broadcasted
+ShapeOps.td,Shape_CstrEqOp,shape,shape.cstr_eq,Determines if all input shapes are equal
+ShapeOps.td,Shape_ConstWitnessOp,shape,shape.const_witness,An operation that returns a statically known witness value
+ShapeOps.td,Shape_CstrRequireOp,shape,shape.cstr_require,Represents a runtime assertion that an i1 is `true`
+ShapeOps.td,Shape_FunctionLibraryOp,shape,shape.function_library,Represents shape functions and corresponding ops
+ShapeOps.td,Shape_FuncOp,shape,shape.func,Shape function
+ShapeOps.td,Shape_ReturnOp,shape,shape.return,Shape function return operation
+AffineOps.td,AffineApplyOp,affine,affine.apply,affine apply operation
+AffineOps.td,AffineForOp,affine,affine.for,for operation
+AffineOps.td,AffineIfOp,affine,affine.if,if-then-else operation
+AffineOps.td,AffineParallelOp,affine,affine.parallel,multi-index parallel band operation
+AffineOps.td,AffinePrefetchOp,affine,affine.prefetch,affine prefetch operation
+AffineOps.td,AffineYieldOp,affine,affine.yield,Yield values to parent operation
+AffineOps.td,AffineDelinearizeIndexOp,affine,affine.delinearize_index,delinearize an index
+AffineOps.td,AffineLinearizeIndexOp,affine,affine.linearize_index,linearize an index
+AffineOps.td,AffineDmaStartOp,affine,affine.dma_start,affine dma start operation
+AffineOps.td,AffineDmaWaitOp,affine,affine.dma_wait,affine dma wait operation
+ArmSMEOps.td,GetTileOp,armsme,armsme.get_tile,Creates an undefined value of SME virtual tile type
+ArmSMEOps.td,ZeroOp,armsme,armsme.zero,Creates a zero-initialized value of SME virtual tile type
+ArmSMEOps.td,CopyTileOp,armsme,armsme.copy_tile,Copies an SME tile value
+ArmSMEOps.td,TileLoadOp,armsme,armsme.tile_load,Tile load operation
+ArmSMEOps.td,TileStoreOp,armsme,armsme.tile_store,Tile store operation
+ArmSMEOps.td,LoadTileSliceOp,armsme,armsme.load_tile_slice,Tile slice load and update operation
+ArmSMEOps.td,StoreTileSliceOp,armsme,armsme.store_tile_slice,Tile slice store operation
+ArmSMEOps.td,InsertTileSliceOp,armsme,armsme.insert_tile_slice,Insert 1-D scalable vector into slice of 2-D tile
+ArmSMEOps.td,ExtractTileSliceOp,armsme,armsme.extract_tile_slice,Extract 1-D scalable vector from slice of 2-D tile
+ArmSMEOps.td,OuterProductOp,armsme,armsme.outerproduct,Outer product with optional fused add/sub
+ArmSMEOps.td,StreamingVLOp,armsme,armsme.streaming_vl,Query the streaming vector length
+OpenACCCGOps.td,OpenACC_ReductionInitOp,openacc,openacc.reduction_init,Allocate and initialize a reduction variable from a recipe
+OpenACCCGOps.td,OpenACC_ReductionCombineRegionOp,openacc,openacc.reduction_combine_region,Combine a reduction private value with its original (recipe)
+OpenACCCGOps.td,OpenACC_ReductionCombineOp,openacc,openacc.reduction_combine,Combine a reduction partial sum with its original value
+OpenACCCGOps.td,OpenACC_KernelEnvironmentOp,openacc,openacc.kernel_environment,Decomposition of compute constructs to capture data mapping
+OpenACCCGOps.td,OpenACC_PrivatizeOp,openacc,openacc.privatize,Create a handle for privatized storage along parallel dimensions
+OpenACCCGOps.td,OpenACC_PrivateLocalOp,openacc,openacc.private_local,Materialize privatized storage for the current parallelism context
+OpenACCCGOps.td,OpenACC_ParWidthOp,openacc,openacc.par_width,Specify parallel width for a GPU dimension
+OpenACCCGOps.td,OpenACC_ComputeRegionOp,openacc,openacc.compute_region,Compute region for GPU execution
+OpenACCOps.td,OpenACC_DataBoundsOp,openacc,openacc.bounds,Represents normalized bounds information for acc data clause.
+OpenACCOps.td,OpenACC_GetLowerboundOp,openacc,openacc.get_lowerbound,Extract lowerbound from OpenACC data bounds.
+OpenACCOps.td,OpenACC_GetUpperboundOp,openacc,openacc.get_upperbound,Extract upperbound from OpenACC data bounds.
+OpenACCOps.td,OpenACC_GetStrideOp,openacc,openacc.get_stride,Extract stride from OpenACC data bounds.
+OpenACCOps.td,OpenACC_GetExtentOp,openacc,openacc.get_extent,Extract extent from OpenACC data bounds.
+OpenACCOps.td,OpenACC_PrivateRecipeOp,openacc,openacc.private.recipe,privatization recipe
+OpenACCOps.td,OpenACC_FirstprivateRecipeOp,openacc,openacc.firstprivate.recipe,privatization recipe
+OpenACCOps.td,OpenACC_ReductionRecipeOp,openacc,openacc.reduction.recipe,reduction recipe
+OpenACCOps.td,OpenACC_ParallelOp,openacc,openacc.parallel,parallel construct
+OpenACCOps.td,OpenACC_SerialOp,openacc,openacc.serial,serial construct
+OpenACCOps.td,OpenACC_KernelsOp,openacc,openacc.kernels,kernels construct
+OpenACCOps.td,OpenACC_DataOp,openacc,openacc.data,data construct
+OpenACCOps.td,OpenACC_TerminatorOp,openacc,openacc.terminator,Generic terminator for OpenACC regions
+OpenACCOps.td,OpenACC_EnterDataOp,openacc,openacc.enter_data,enter data operation
+OpenACCOps.td,OpenACC_ExitDataOp,openacc,openacc.exit_data,exit data operation
+OpenACCOps.td,OpenACC_HostDataOp,openacc,openacc.host_data,host_data construct
+OpenACCOps.td,OpenACC_LoopOp,openacc,openacc.loop,loop construct
+OpenACCOps.td,OpenACC_YieldOp,openacc,openacc.yield,Acc yield and termination operation
+OpenACCOps.td,AtomicReadOp,openacc,openacc.atomic.read,performs an atomic read
+OpenACCOps.td,AtomicWriteOp,openacc,openacc.atomic.write,performs an atomic write
+OpenACCOps.td,AtomicUpdateOp,openacc,openacc.atomic.update,performs an atomic update
+OpenACCOps.td,AtomicCaptureOp,openacc,openacc.atomic.capture,performs an atomic capture
+OpenACCOps.td,OpenACC_DeclareEnterOp,openacc,openacc.declare_enter,declare directive - entry to implicit data region
+OpenACCOps.td,OpenACC_DeclareExitOp,openacc,openacc.declare_exit,declare directive - exit from implicit data region
+OpenACCOps.td,OpenACC_GlobalConstructorOp,openacc,openacc.global_ctor,Used to hold construction operations associated with globals such as declare
+OpenACCOps.td,OpenACC_GlobalDestructorOp,openacc,openacc.global_dtor,Used to hold destruction operations associated with globals such as declare
+OpenACCOps.td,OpenACC_DeclareOp,openacc,openacc.declare,declare implicit region
+OpenACCOps.td,OpenACC_RoutineOp,openacc,openacc.routine,acc routine operation
+OpenACCOps.td,OpenACC_InitOp,openacc,openacc.init,init operation
+OpenACCOps.td,OpenACC_ShutdownOp,openacc,openacc.shutdown,shutdown operation
+OpenACCOps.td,OpenACC_SetOp,openacc,openacc.set,set operation
+OpenACCOps.td,OpenACC_UpdateOp,openacc,openacc.update,update operation
+OpenACCOps.td,OpenACC_WaitOp,openacc,openacc.wait,wait operation
+NVGPUOps.td,NVGPU_LdMatrixOp,nvgpu,nvgpu.ldmatrix,Sin descripción
+NVGPUOps.td,NVGPU_DeviceAsyncCopyOp,nvgpu,nvgpu.device_async_copy,device-side asynchronous copy
+NVGPUOps.td,NVGPU_DeviceAsyncCreateGroupOp,nvgpu,nvgpu.device_async_create_group,device side asynchronous create group operation
+NVGPUOps.td,NVGPU_DeviceAsyncWaitOp,nvgpu,nvgpu.device_async_wait,Wait for async gpu ops to complete.
+NVGPUOps.td,NVGPU_MBarrierCreateOp,nvgpu,nvgpu.mbarrier.create,Creates a `nvgpu.mbarrier` object.
+NVGPUOps.td,NVGPU_MBarrierGetOp,nvgpu,nvgpu.mbarrier.get,Return a pointer to an `nvgpu.mbarrier`.
+NVGPUOps.td,NVGPU_MBarrierInitOp,nvgpu,nvgpu.mbarrier.init,Initialize the `nvgpu.mbarrier`.
+NVGPUOps.td,NVGPU_MBarrierTestWaitOp,nvgpu,nvgpu.mbarrier.test.wait,Checks if the `nvgpu.mbarrier` has completed its current phase.
+NVGPUOps.td,NVGPU_MBarrierArriveOp,nvgpu,nvgpu.mbarrier.arrive,Performs arrive operation on the `nvgpu.mbarrier.arrive`.
+NVGPUOps.td,NVGPU_MBarrierArriveNoCompleteOp,nvgpu,nvgpu.mbarrier.arrive.nocomplete,Performs arrive operation on the `nvgpu.mbarrier.arrive.nocomplete` as non-blocking.
+NVGPUOps.td,NVGPU_MBarrierArriveExpectTxOp,nvgpu,nvgpu.mbarrier.arrive.expect_tx,Performs expect_tx operation on the `nvgpu.mbarrier.arrive`
+NVGPUOps.td,NVGPU_MBarrierTryWaitParityOp,nvgpu,nvgpu.mbarrier.try_wait.parity,Waits for the `nvgpu.mbarrier` to complete its current phase.
+NVGPUOps.td,NVGPU_TmaFenceOp,nvgpu,nvgpu.tma.fence.descriptor,Insert fence given `nvgpu.tensormap.descriptor`
+NVGPUOps.td,NVGPU_TmaPrefetchOp,nvgpu,nvgpu.tma.prefetch.descriptor,Prefetch given `nvgpu.tensormap.descriptor`
+NVGPUOps.td,NVGPU_TmaAsyncLoadOp,nvgpu,nvgpu.tma.async.load,TMA asynchronous load
+NVGPUOps.td,NVGPU_TmaAsyncStoreOp,nvgpu,nvgpu.tma.async.store,TMA asynchronous store
+NVGPUOps.td,NVGPU_TmaCreateDescriptorOp,nvgpu,nvgpu.tma.create.descriptor,TMA create descriptor
+NVGPUOps.td,NVGPU_WarpgroupGenerateDescriptorOp,nvgpu,nvgpu.warpgroup.generate.descriptor,Generate a warpgroup matrix descriptor
+NVGPUOps.td,NVGPU_WarpgroupMmaOp,nvgpu,nvgpu.warpgroup.mma,Sin descripción
+NVGPUOps.td,NVGPU_WarpgroupMmaStoreOp,nvgpu,nvgpu.warpgroup.mma.store,Sin descripción
+NVGPUOps.td,NVGPU_WarpgroupMmaInitAccumulatorOp,nvgpu,nvgpu.warpgroup.mma.init.accumulator,Initializes the accumulator matrix
+NVGPUOps.td,NVGPU_RcpOp,nvgpu,nvgpu.rcp,The reciprocal calculation for vector types
+QuantOps.td,quant_DequantizeCastOp,quant,quant.dcast,Dequantize cast operation
+QuantOps.td,quant_QuantizeCastOp,quant,quant.qcast,Quantize cast operation
+QuantOps.td,quant_StorageCastOp,quant,quant.scast,Storage cast operation
+SPIRVLogicalOps.td,SPIRV_AnyOp,spirv,spirv.Any,Result is true if any component of Vector is true.
+SPIRVLogicalOps.td,SPIRV_AllOp,spirv,spirv.All,Result is true if all components of Vector are true.
+SPIRVLogicalOps.td,SPIRV_SelectOp,spirv,spirv.Select,Sin descripción
+SPIRVMemoryOps.td,SPIRV_AccessChainOp,spirv,spirv.AccessChain,Create a pointer into a composite object.
+SPIRVMemoryOps.td,SPIRV_CopyMemoryOp,spirv,spirv.CopyMemory,Sin descripción
+SPIRVMemoryOps.td,SPIRV_InBoundsPtrAccessChainOp,spirv,spirv.InBoundsPtrAccessChain,Sin descripción
+SPIRVMemoryOps.td,SPIRV_LoadOp,spirv,spirv.Load,Load through a pointer.
+SPIRVMemoryOps.td,SPIRV_PtrAccessChainOp,spirv,spirv.PtrAccessChain,Sin descripción
+SPIRVMemoryOps.td,SPIRV_StoreOp,spirv,spirv.Store,Store through a pointer.
+SPIRVMemoryOps.td,SPIRV_VariableOp,spirv,spirv.Variable,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBallotOp,spirv,spirv.GroupNonUniformBallot,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBallotFindLSBOp,spirv,spirv.GroupNonUniformBallotFindLSB,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBallotFindMSBOp,spirv,spirv.GroupNonUniformBallotFindMSB,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBroadcastOp,spirv,spirv.GroupNonUniformBroadcast,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBroadcastFirstOp,spirv,spirv.GroupNonUniformBroadcastFirst,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformElectOp,spirv,spirv.GroupNonUniformElect,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformShuffleOp,spirv,spirv.GroupNonUniformShuffle,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformShuffleDownOp,spirv,spirv.GroupNonUniformShuffleDown,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformShuffleUpOp,spirv,spirv.GroupNonUniformShuffleUp,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformShuffleXorOp,spirv,spirv.GroupNonUniformShuffleXor,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformBallotBitCountOp,spirv,spirv.GroupNonUniformBallotBitCount,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformRotateKHROp,spirv,spirv.GroupNonUniformRotateKHR,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformAllOp,spirv,spirv.GroupNonUniformAll,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformAnyOp,spirv,spirv.GroupNonUniformAny,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformAllEqualOp,spirv,spirv.GroupNonUniformAllEqual,Sin descripción
+SPIRVNonUniformOps.td,SPIRV_GroupNonUniformQuadSwapOp,spirv,spirv.GroupNonUniformQuadSwap,Sin descripción
+SPIRVControlFlowOps.td,SPIRV_BranchOp,spirv,spirv.Branch,Unconditional branch to target block.
+SPIRVControlFlowOps.td,SPIRV_BranchConditionalOp,spirv,spirv.BranchConditional,Sin descripción
+SPIRVControlFlowOps.td,SPIRV_FunctionCallOp,spirv,spirv.FunctionCall,Call a function.
+SPIRVControlFlowOps.td,SPIRV_SwitchOp,spirv,spirv.Switch,Sin descripción
+SPIRVControlFlowOps.td,SPIRV_KillOp,spirv,spirv.Kill,Sin descripción
+SPIRVControlFlowOps.td,SPIRV_LoopOp,spirv,spirv.mlir.loop,Define a structured loop.
+SPIRVControlFlowOps.td,SPIRV_MergeOp,spirv,spirv.mlir.merge,A special terminator for merging a structured selection/loop.
+SPIRVControlFlowOps.td,SPIRV_ReturnOp,spirv,spirv.Return,Return with no value from a function with void return type.
+SPIRVControlFlowOps.td,SPIRV_UnreachableOp,spirv,spirv.Unreachable,Behavior is undefined if this instruction is executed.
+SPIRVControlFlowOps.td,SPIRV_ReturnValueOp,spirv,spirv.ReturnValue,Return a value from a function.
+SPIRVControlFlowOps.td,SPIRV_SelectionOp,spirv,spirv.mlir.selection,Define a structured selection.
+SPIRVBitOps.td,SPIRV_BitFieldInsertOp,spirv,spirv.BitFieldInsert,"Extract a bit field from an object, with sign extension."
+SPIRVPrimitiveOps.td,SPIRV_EmitVertexOp,spirv,spirv.EmitVertex,Sin descripción
+SPIRVPrimitiveOps.td,SPIRV_EndPrimitiveOp,spirv,spirv.EndPrimitive,Sin descripción
+SPIRVStructureOps.td,SPIRV_AddressOfOp,spirv,spirv.mlir.addressof,Get the address of a global variable.
+SPIRVStructureOps.td,SPIRV_ConstantOp,spirv,spirv.Constant,Sin descripción
+SPIRVStructureOps.td,SPIRV_EntryPointOp,spirv,spirv.EntryPoint,Sin descripción
+SPIRVStructureOps.td,SPIRV_ExecutionModeOp,spirv,spirv.ExecutionMode,Declare an execution mode for an entry point.
+SPIRVStructureOps.td,SPIRV_ExecutionModeIdOp,spirv,spirv.ExecutionModeId,Sin descripción
+SPIRVStructureOps.td,SPIRV_FuncOp,spirv,spirv.func,Declare or define a function
+SPIRVStructureOps.td,SPIRV_GlobalVariableOp,spirv,spirv.GlobalVariable,Sin descripción
+SPIRVStructureOps.td,SPIRV_ModuleOp,spirv,spirv.module,The top-level op that defines a SPIR-V module
+SPIRVStructureOps.td,SPIRV_ReferenceOfOp,spirv,spirv.mlir.referenceof,Reference a specialization constant.
+SPIRVStructureOps.td,SPIRV_SpecConstantOp,spirv,spirv.SpecConstant,Sin descripción
+SPIRVStructureOps.td,SPIRV_SpecConstantCompositeOp,spirv,spirv.SpecConstantComposite,Declare a new composite specialization constant.
+SPIRVStructureOps.td,SPIRV_SpecConstantOperationOp,spirv,spirv.SpecConstantOperation,Sin descripción
+SPIRVStructureOps.td,SPIRV_YieldOp,spirv,spirv.mlir.yield,Sin descripción
+SPIRVArithmeticOps.td,SPIRV_DotOp,spirv,spirv.Dot,Dot product of Vector 1 and Vector 2
+SPIRVArithmeticOps.td,SPIRV_VectorTimesScalarOp,spirv,spirv.VectorTimesScalar,Scale a floating-point vector.
+SPIRVMiscOps.td,SPIRV_UndefOp,spirv,spirv.Undef,Make an intermediate object whose value is undefined.
+SPIRVImageOps.td,SPIRV_SampledImageOp,spirv,spirv.SampledImage,"Create a sampled image, containing both a sampler and an image."
+SPIRVImageOps.td,SPIRV_ImageDrefGatherOp,spirv,spirv.ImageDrefGather,Gathers the requested depth-comparison from four texels.
+SPIRVImageOps.td,SPIRV_ImageQuerySizeOp,spirv,spirv.ImageQuerySize,"Query the dimensions of Image, with no level of detail."
+SPIRVImageOps.td,SPIRV_ImageReadOp,spirv,spirv.ImageRead,Read a texel from an image without a sampler.
+SPIRVImageOps.td,SPIRV_ImageWriteOp,spirv,spirv.ImageWrite,Write a texel to an image without a sampler.
+SPIRVImageOps.td,SPIRV_ImageOp,spirv,spirv.Image,Extract the image from a sampled image.
+SPIRVImageOps.td,SPIRV_ImageSampleExplicitLodOp,spirv,spirv.ImageSampleExplicitLod,Sample an image using an explicit level of detail.
+SPIRVImageOps.td,SPIRV_ImageSampleImplicitLodOp,spirv,spirv.ImageSampleImplicitLod,Sample an image with an implicit level of detail.
+SPIRVImageOps.td,SPIRV_ImageSampleProjDrefImplicitLodOp,spirv,spirv.ImageSampleProjDrefImplicitLod,Sin descripción
+SPIRVImageOps.td,SPIRV_ImageFetchOp,spirv,spirv.ImageFetch,Fetch a single texel from an image whose Sampled operand is 1.
+SPIRVMatrixOps.td,SPIRV_MatrixTimesMatrixOp,spirv,spirv.MatrixTimesMatrix,Linear-algebraic multiply of LeftMatrix X RightMatrix.
+SPIRVMatrixOps.td,SPIRV_OuterProductOp,spirv,spirv.OuterProduct,Linear-algebraic outer product of vector1 and vector2.
+SPIRVMatrixOps.td,SPIRV_MatrixTimesScalarOp,spirv,spirv.MatrixTimesScalar,Scale a floating-point matrix.
+SPIRVMatrixOps.td,SPIRV_MatrixTimesVectorOp,spirv,spirv.MatrixTimesVector,Linear-algebraic Matrix X Vector.
+SPIRVMatrixOps.td,SPIRV_TransposeOp,spirv,spirv.Transpose,Transpose a matrix.
+SPIRVMatrixOps.td,SPIRV_VectorTimesMatrixOp,spirv,spirv.VectorTimesMatrix,Linear-algebraic Vector X Matrix.
+SPIRVCastOps.td,SPIRV_BitcastOp,spirv,spirv.Bitcast,Bit pattern-preserving type conversion.
+SPIRVCastOps.td,SPIRV_ConvertPtrToUOp,spirv,spirv.ConvertPtrToU,Sin descripción
+SPIRVCastOps.td,SPIRV_ConvertUToPtrOp,spirv,spirv.ConvertUToPtr,Sin descripción
+SPIRVCastOps.td,SPIRV_PtrCastToGenericOp,spirv,spirv.PtrCastToGeneric,Convert a pointer’s Storage Class to Generic.
+SPIRVCastOps.td,SPIRV_GenericCastToPtrOp,spirv,spirv.GenericCastToPtr,Convert a pointer’s Storage Class to a non-Generic class.
+SPIRVCastOps.td,SPIRV_GenericCastToPtrExplicitOp,spirv,spirv.GenericCastToPtrExplicit,Sin descripción
+SPIRVBarrierOps.td,SPIRV_ControlBarrierOp,spirv,spirv.ControlBarrier,Sin descripción
+SPIRVBarrierOps.td,SPIRV_MemoryBarrierOp,spirv,spirv.MemoryBarrier,Control the order that memory accesses are observed.
+SPIRVBarrierOps.td,SPIRV_NamedBarrierInitializeOp,spirv,spirv.NamedBarrierInitialize,Initialize a named barrier with a subgroup count.
+SPIRVBarrierOps.td,SPIRV_MemoryNamedBarrierOp,spirv,spirv.MemoryNamedBarrier,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupBroadcastOp,spirv,spirv.GroupBroadcast,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupFAddOp,spirv,spirv.GroupFAdd,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupFMaxOp,spirv,spirv.GroupFMax,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupFMinOp,spirv,spirv.GroupFMin,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupIAddOp,spirv,spirv.GroupIAdd,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupSMaxOp,spirv,spirv.GroupSMax,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupSMinOp,spirv,spirv.GroupSMin,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupUMaxOp,spirv,spirv.GroupUMax,Sin descripción
+SPIRVGroupOps.td,SPIRV_GroupUMinOp,spirv,spirv.GroupUMin,See extension SPV_INTEL_subgroups
+SPIRVAtomicOps.td,SPIRV_AtomicCompareExchangeOp,spirv,spirv.AtomicCompareExchange,Sin descripción
+SPIRVAtomicOps.td,SPIRV_AtomicCompareExchangeWeakOp,spirv,spirv.AtomicCompareExchangeWeak,Deprecated (use OpAtomicCompareExchange).
+SPIRVAtomicOps.td,SPIRV_AtomicLoadOp,spirv,spirv.AtomicLoad,Atomically load through Pointer using the given Semantics.
+SPIRVAtomicOps.td,SPIRV_AtomicStoreOp,spirv,spirv.AtomicStore,Atomically store through Pointer using the given Semantics.
+SPIRVAtomicOps.td,SPIRV_AtomicExchangeOp,spirv,spirv.AtomicExchange,TBD
+SPIRVCompositeOps.td,SPIRV_CompositeConstructOp,spirv,spirv.CompositeConstruct,Sin descripción
+SPIRVCompositeOps.td,SPIRV_CompositeExtractOp,spirv,spirv.CompositeExtract,Extract a part of a composite object.
+SPIRVCompositeOps.td,SPIRV_CompositeInsertOp,spirv,spirv.CompositeInsert,Sin descripción
+SPIRVCompositeOps.td,SPIRV_VectorExtractDynamicOp,spirv,spirv.VectorExtractDynamic,Sin descripción
+SPIRVCompositeOps.td,SPIRV_VectorInsertDynamicOp,spirv,spirv.VectorInsertDynamic,Sin descripción
+SPIRVCompositeOps.td,SPIRV_VectorShuffleOp,spirv,spirv.VectorShuffle,Sin descripción
+LinalgStructuredOps.td,GenericOp,linalgstructuredbase,linalgstructuredbase.generic,Sin descripción
+LinalgStructuredOps.td,MapOp,linalgstructuredbase,linalgstructuredbase.map,Elementwise operations
+LinalgStructuredOps.td,ReduceOp,linalgstructuredbase,linalgstructuredbase.reduce,Reduce operator
+LinalgStructuredOps.td,TransposeOp,linalgstructuredbase,linalgstructuredbase.transpose,Transpose operator
+LinalgStructuredOps.td,BroadcastOp,linalgstructuredbase,linalgstructuredbase.broadcast,Static broadcast operator
+LinalgStructuredOps.td,ElementwiseOp,linalgstructuredbase,linalgstructuredbase.elementwise,Sin descripción
+LinalgStructuredOps.td,MatmulOp,linalgstructuredbase,linalgstructuredbase.matmul,Sin descripción
+LinalgStructuredOps.td,ContractOp,linalgstructuredbase,linalgstructuredbase.contract,Sin descripción
+LinalgStructuredOps.td,BatchMatmulOp,linalgstructuredbase,linalgstructuredbase.batch_matmul,Sin descripción
+LinalgStructuredOps.td,BatchReduceMatmulOp,linalgstructuredbase,linalgstructuredbase.batch_reduce_matmul,Sin descripción
+LinalgOps.td,Linalg_YieldOp,linalg,linalg.yield,Linalg yield operation
+LinalgOps.td,Linalg_IndexOp,linalg,linalg.index,linalg index operation
+LinalgOps.td,Linalg_SoftmaxOp,linalg,linalg.softmax,Softmax operator
+LinalgOps.td,Linalg_WinogradFilterTransformOp,linalg,linalg.winograd_filter_transform,Winograd filter transform operator
+LinalgOps.td,Linalg_WinogradInputTransformOp,linalg,linalg.winograd_input_transform,Winograd input transform operator
+LinalgOps.td,Linalg_WinogradOutputTransformOp,linalg,linalg.winograd_output_transform,Winograd output transform operator
+SCFOps.td,ConditionOp,scf,scf.condition,loop continuation condition
+SCFOps.td,ExecuteRegionOp,scf,scf.execute_region,operation that executes its region exactly once
+SCFOps.td,ForOp,scf,scf.for,for operation
+SCFOps.td,ForallOp,scf,scf.forall,evaluate a block multiple times in parallel
+SCFOps.td,InParallelOp,scf,scf.forall.in_parallel,terminates a `forall` block
+SCFOps.td,IfOp,scf,scf.if,if-then-else operation
+SCFOps.td,ParallelOp,scf,scf.parallel,parallel for operation
+SCFOps.td,ReduceOp,scf,scf.reduce,reduce operation for scf.parallel
+SCFOps.td,ReduceReturnOp,scf,scf.reduce.return,terminator for reduce operation
+SCFOps.td,WhileOp,scf,scf.while,a generic 'while' loop
+SCFOps.td,IndexSwitchOp,scf,scf.index_switch,switch-case operation on an index argument
+SCFOps.td,YieldOp,scf,scf.yield,loop yield and termination operation
+ArmSVE.td,SdotOp,armsve,armsve.sdot,Vector-vector dot product and accumulate op
+ArmSVE.td,SmmlaOp,armsve,armsve.smmla,Matrix-matrix multiply and accumulate op
+ArmSVE.td,UdotOp,armsve,armsve.udot,Vector-vector dot product and accumulate op
+ArmSVE.td,UmmlaOp,armsve,armsve.ummla,Matrix-matrix multiply and accumulate op
+ArmSVE.td,UsmmlaOp,armsve,armsve.usmmla,Matrix-matrix multiply and accumulate op
+ArmSVE.td,ConvertFromSvboolOp,armsve,armsve.convert_from_svbool,Convert a svbool type to a SVE predicate type
+ArmSVE.td,ConvertToSvboolOp,armsve,armsve.convert_to_svbool,Convert a SVE predicate type to a svbool type
+ArmSVE.td,ZipX2Op,armsve,armsve.zip.x2,Multi-vector two-way zip op
+ArmSVE.td,ZipX4Op,armsve,armsve.zip.x4,Multi-vector four-way zip op
+ArmSVE.td,PselOp,armsve,armsve.psel,Predicate select
+ArmSVE.td,DupQLaneOp,armsve,armsve.dupq_lane,Broadcast indexed 128-bit segment to vector
+MPIOps.td,MPI_InitOp,mpi,mpi.init,"Initialize the MPI library, equivalent to `MPI_Init(NULL, NULL)`"
+MPIOps.td,MPI_CommWorldOp,mpi,mpi.comm_world,"Get the World communicator, equivalent to `MPI_COMM_WORLD`"
+MPIOps.td,MPI_CommRankOp,mpi,mpi.comm_rank,"Get the current rank, equivalent to"
+MPIOps.td,MPI_CommSizeOp,mpi,mpi.comm_size,"Get the size of the group associated to the communicator,"
+MPIOps.td,MPI_CommSplitOp,mpi,mpi.comm_split,Partition the group associated with the given communicator into
+MPIOps.td,MPI_SendOp,mpi,mpi.send,"Equivalent to `MPI_Send(ptr, size, dtype, dest, tag, comm)`"
+MPIOps.td,MPI_ISendOp,mpi,mpi.isend,"Equivalent to `MPI_Isend(ptr, size, dtype, dest, tag, comm)`"
+MPIOps.td,MPI_RecvOp,mpi,mpi.recv,"Equivalent to `MPI_Recv(ptr, size, dtype, source, tag,"
+MPIOps.td,MPI_IRecvOp,mpi,mpi.irecv,"Equivalent to `MPI_Irecv(ptr, size, dtype, source, tag,"
+MPIOps.td,MPI_AllGatherOp,mpi,mpi.allgather,Sin descripción
+MPIOps.td,MPI_AllReduceOp,mpi,mpi.allreduce,"Equivalent to `MPI_Allreduce(sendbuf, recvbuf, op, comm)`"
+MPIOps.td,MPI_ReduceScatterBlockOp,mpi,mpi.reduce_scatter_block,"Equivalent to `MPI_Reduce_scatter_block(sendbuf, recvbuf,"
+MPIOps.td,MPI_Barrier,mpi,mpi.barrier,Equivalent to `MPI_Barrier(comm)`
+MPIOps.td,MPI_Wait,mpi,mpi.wait,"Equivalent to `MPI_Wait(req, MPI_STATUS_IGNORE)`"
+MPIOps.td,MPI_FinalizeOp,mpi,mpi.finalize,"Finalize the MPI library, equivalent to `MPI_Finalize()`"
+MPIOps.td,MPI_RetvalCheckOp,mpi,mpi.retval_check,Check an MPI return value against an error class
+MPIOps.td,MPI_ErrorClassOp,mpi,mpi.error_class,"Get the error class from an error code, equivalent to"
+MathOps.td,Math_SincosOp,math,math.sincos,sine and cosine of the specified value
+MathOps.td,Math_FPowIOp,math,math.fpowi,floating point raised to the signed integer power
+ShardOps.td,Shard_GridOp,shard,shard.grid,Description of a device/process grid.
+ShardOps.td,Shard_GridShapeOp,shard,shard.grid_shape,Get the shape of the grid.
+ShardOps.td,Shard_ProcessMultiIndexOp,shard,shard.process_multi_index,Get the multi index of current device along specified grid axes.
+ShardOps.td,Shard_ProcessLinearIndexOp,shard,shard.process_linear_index,Get the linear index of the current device.
+ShardOps.td,Shard_NeighborsLinearIndicesOp,shard,shard.neighbors_linear_indices,For given grid index get the linear indices of the direct neighbor processes along the given split.
+ShardOps.td,Shard_ShardingOp,shard,shard.sharding,Define a sharding of a tensor.
+ShardOps.td,Shard_GetShardingOp,shard,shard.get_sharding,Get the sharding of the given tensor.
+ShardOps.td,Shard_ShardShapeOp,shard,shard.shard_shape,Get the shard shape for a given process/device.
+ShardOps.td,Shard_ShardOp,shard,shard.shard,Annotate on how a tensor is sharded across a shard.
+ShardOps.td,Shard_UpdateHaloOp,shard,shard.update_halo,Update halo data.
+XeGPUOps.td,XeGPU_CreateNdDescOp,xegpu,xegpu.create_nd_tdesc,Create nd-tensor descriptor operation
+XeGPUOps.td,XeGPU_PrefetchNdOp,xegpu,xegpu.prefetch_nd,prefetches a n-D block to cache
+XeGPUOps.td,XeGPU_LoadNdOp,xegpu,xegpu.load_nd,loads a n-D block from memory (represented by TensorDesc)
+XeGPUOps.td,XeGPU_StoreNdOp,xegpu,xegpu.store_nd,"stores a n-D block register region back to memory, currently only supports 2D"
+XeGPUOps.td,XeGPU_PrefetchOp,xegpu,xegpu.prefetch,prefetches a set of scattered data points to cache
+XeGPUOps.td,XeGPU_LoadGatherOp,xegpu,xegpu.load,load a set of scattered data points from memory.
+XeGPUOps.td,XeGPU_StoreScatterOp,xegpu,xegpu.store,store data to scattered memory locations.
+XeGPUOps.td,XeGPU_DpasOp,xegpu,xegpu.dpas,It performs mma computation
+XeGPUOps.td,XeGPU_AtomicRMWOp,xegpu,xegpu.atomic_rmw,Atomic read-modify-write operation on the TensorDesc.
+XeGPUOps.td,XeGPU_AllocNbarrierOp,xegpu,xegpu.alloc_nbarrier,It allocates a set of named barriers.
+XeGPUOps.td,XeGPU_InitNbarrierOp,xegpu,xegpu.init_nbarrier,It assigns a named barrier to the current thread.
+XeGPUOps.td,XeGPU_NbarrierArriveOp,xegpu,xegpu.nbarrier_arrive,It signals the arrival at the named barrier.
+XeGPUOps.td,XeGPU_NbarrierWaitOp,xegpu,xegpu.nbarrier_wait,It waits for a named barrier.
+XeGPUOps.td,XeGPU_FenceOp,xegpu,xegpu.fence,It synchronizes memory accesses.
+XeGPUOps.td,XeGPU_ConvertLayoutOp,xegpu,xegpu.convert_layout,Convert the layout of the input operand
+XeGPUOps.td,XeGPU_CreateMemDescOp,xegpu,xegpu.create_mem_desc,Create a memory descriptor.
+XeGPUOps.td,XeGPU_LoadMatrixOp,xegpu,xegpu.load_matrix,Sin descripción
+XeGPUOps.td,XeGPU_StoreMatrixOp,xegpu,xegpu.store_matrix,Sin descripción
+XeGPUOps.td,XeGPU_TruncfOp,xegpu,xegpu.truncf,It performs floating point truncation from higher precision
+XeGPUOps.td,XeGPU_DpasMxOp,xegpu,xegpu.dpas_mx,It performs scaled mma computation
+SparseTensorOps.td,SparseTensor_NewOp,sparsetensor,sparsetensor.new,Sin descripción
+SparseTensorOps.td,SparseTensor_AssembleOp,sparsetensor,sparsetensor.assemble,Returns a sparse tensor assembled from the given levels and values
+SparseTensorOps.td,SparseTensor_DisassembleOp,sparsetensor,sparsetensor.disassemble,Copies the levels and values of the given sparse tensor
+SparseTensorOps.td,SparseTensor_ConvertOp,sparsetensor,sparsetensor.convert,Sin descripción
+SparseTensorOps.td,SparseTensor_ReinterpretMapOp,sparsetensor,sparsetensor.reinterpret_map,Reinterprets the dimension/level maps of the source tensor
+SparseTensorOps.td,SparseTensor_ToPositionsOp,sparsetensor,sparsetensor.positions,Extracts the `level`-th positions array of the `tensor`
+SparseTensorOps.td,SparseTensor_ToCoordinatesOp,sparsetensor,sparsetensor.coordinates,Extracts the `level`-th coordinates array of the `tensor`
+SparseTensorOps.td,SparseTensor_ToCoordinatesBufferOp,sparsetensor,sparsetensor.coordinates_buffer,Extracts the linear coordinates array from a tensor
+SparseTensorOps.td,SparseTensor_ToValuesOp,sparsetensor,sparsetensor.values,Extracts numerical values array from a tensor
+SparseTensorOps.td,SparseTensor_NumberOfEntriesOp,sparsetensor,sparsetensor.number_of_entries,Returns the number of entries that are stored in the tensor.
+SparseTensorOps.td,SparseTensor_ConcatenateOp,sparsetensor,sparsetensor.concatenate,Concatenates a list of tensors into a single tensor.
+SparseTensorOps.td,SparseTensor_ToSliceOffsetOp,sparsetensor,sparsetensor.slice.offset,Extracts the offset of the sparse tensor slice at the given dimension
+SparseTensorOps.td,SparseTensor_ToSliceStrideOp,sparsetensor,sparsetensor.slice.stride,Extracts the stride of the sparse tensor slice at the given dimension
+SparseTensorOps.td,SparseTensor_StorageSpecifierInitOp,sparsetensor,sparsetensor.storage_specifier.init,Sin descripción
+SparseTensorOps.td,SparseTensor_GetStorageSpecifierOp,sparsetensor,sparsetensor.storage_specifier.get,Sin descripción
+SparseTensorOps.td,SparseTensor_SetStorageSpecifierOp,sparsetensor,sparsetensor.storage_specifier.set,Sin descripción
+SparseTensorOps.td,SparseTensor_LvlOp,sparsetensor,sparsetensor.lvl,level index operation
+SparseTensorOps.td,SparseTensor_CrdTranslateOp,sparsetensor,sparsetensor.crd_translate,Sin descripción
+SparseTensorOps.td,SparseTensor_PushBackOp,sparsetensor,sparsetensor.push_back,Sin descripción
+SparseTensorOps.td,SparseTensor_ExpandOp,sparsetensor,sparsetensor.expand,Sin descripción
+SparseTensorOps.td,SparseTensor_CompressOp,sparsetensor,sparsetensor.compress,Sin descripción
+SparseTensorOps.td,SparseTensor_LoadOp,sparsetensor,sparsetensor.load,Rematerializes tensor from underlying sparse storage format
+SparseTensorOps.td,SparseTensor_OutOp,sparsetensor,sparsetensor.out,Sin descripción
+SparseTensorOps.td,SparseTensor_SortOp,sparsetensor,sparsetensor.sort,Sorts the arrays in xs and ys lexicographically on the
+SparseTensorOps.td,SparseTensor_ReorderCOOOp,sparsetensor,sparsetensor.reorder_coo,Reorder the input COO such that it has the the same order as
+SparseTensorOps.td,SparseTensor_BinaryOp,sparsetensor,sparsetensor.binary,Binary set operation utilized within linalg.generic
+SparseTensorOps.td,SparseTensor_UnaryOp,sparsetensor,sparsetensor.unary,Unary set operation utilized within linalg.generic
+SparseTensorOps.td,SparseTensor_ReduceOp,sparsetensor,sparsetensor.reduce,Custom reduction operation utilized within linalg.generic
+SparseTensorOps.td,SparseTensor_SelectOp,sparsetensor,sparsetensor.select,Select operation utilized within linalg.generic
+SparseTensorOps.td,SparseTensor_YieldOp,sparsetensor,sparsetensor.yield,Yield from sparse_tensor set-like operations
+SparseTensorOps.td,SparseTensor_ForeachOp,sparsetensor,sparsetensor.foreach,Iterates over elements in a tensor
+SparseTensorOps.td,ExtractIterSpaceOp,sparsetensor,sparsetensor.extract_iteration_space,Extracts an iteration space from a sparse tensor between certain levels
+SparseTensorOps.td,ExtractValOp,sparsetensor,sparsetensor.extract_value,Extracts a value from a sparse tensor using an iterator.
+SparseTensorOps.td,IterateOp,sparsetensor,sparsetensor.iterate,Iterates over a sparse iteration space
+SparseTensorOps.td,SparseTensor_CoIterateOp,sparsetensor,sparsetensor.coiterate,Co-iterates over a set of sparse iteration spaces
+SparseTensorOps.td,SparseTensor_PrintOp,sparsetensor,sparsetensor.print,Sin descripción
+SparseTensorOps.td,SparseTensor_HasRuntimeLibraryOp,sparsetensor,sparsetensor.has_runtime_library,Sin descripción
+PDLOps.td,PDL_ApplyNativeConstraintOp,pdl,pdl.apply_native_constraint,Apply a native constraint to a set of provided entities
+PDLOps.td,PDL_ApplyNativeRewriteOp,pdl,pdl.apply_native_rewrite,Apply a native rewrite method inside of pdl.rewrite region
+PDLOps.td,PDL_AttributeOp,pdl,pdl.attribute,Define an input attribute in a pattern
+PDLOps.td,PDL_EraseOp,pdl,pdl.erase,Mark an input operation as `erased`
+PDLOps.td,PDL_OperandOp,pdl,pdl.operand,Define an external input operand in a pattern
+PDLOps.td,PDL_OperandsOp,pdl,pdl.operands,Define a range of input operands in a pattern
+PDLOps.td,PDL_OperationOp,pdl,pdl.operation,Define an operation within a pattern
+PDLOps.td,PDL_PatternOp,pdl,pdl.pattern,Define a rewrite pattern
+PDLOps.td,PDL_RangeOp,pdl,pdl.range,Construct a range of pdl entities
+PDLOps.td,PDL_ReplaceOp,pdl,pdl.replace,Mark an input operation as `replaced`
+PDLOps.td,PDL_ResultOp,pdl,pdl.result,Extract a result from an operation
+PDLOps.td,PDL_ResultsOp,pdl,pdl.results,Extract a result group from an operation
+PDLOps.td,PDL_RewriteOp,pdl,pdl.rewrite,Specify the rewrite of a matched pattern
+PDLOps.td,PDL_TypeOp,pdl,pdl.type,Define a type handle within a pattern
+PDLOps.td,PDL_TypesOp,pdl,pdl.types,Define a range of type handles within a pattern
+VectorOps.td,Vector_ContractionOp,vector,vector.contract,vector contraction operation
+VectorOps.td,Vector_ReductionOp,vector,vector.reduction,reduction operation
+VectorOps.td,Vector_MultiDimReductionOp,vector,vector.multi_reduction,Multi-dimensional reduction operation
+VectorOps.td,Vector_BroadcastOp,vector,vector.broadcast,broadcast operation
+VectorOps.td,Vector_ShuffleOp,vector,vector.shuffle,shuffle operation
+VectorOps.td,Vector_InterleaveOp,vector,vector.interleave,constructs a vector by interleaving two input vectors
+VectorOps.td,Vector_DeinterleaveOp,vector,vector.deinterleave,constructs two vectors by deinterleaving an input vector
+VectorOps.td,Vector_ExtractOp,vector,vector.extract,extract operation
+VectorOps.td,Vector_ToElementsOp,vector,vector.to_elements,operation that decomposes a vector into all its scalar elements
+VectorOps.td,Vector_FromElementsOp,vector,vector.from_elements,operation that defines a vector from scalar elements
+VectorOps.td,Vector_InsertOp,vector,vector.insert,insert operation
+VectorOps.td,Vector_ScalableInsertOp,vector,vector.scalable.insert,insert subvector into scalable vector operation
+VectorOps.td,Vector_ScalableExtractOp,vector,vector.scalable.extract,extract subvector from scalable vector operation
+VectorOps.td,Vector_InsertStridedSliceOp,vector,vector.insert_strided_slice,strided_slice operation
+VectorOps.td,Vector_OuterProductOp,vector,vector.outerproduct,vector outerproduct with optional fused add
+VectorOps.td,Vector_ExtractStridedSliceOp,vector,vector.extract_strided_slice,extract_strided_slice operation
+VectorOps.td,Vector_TransferReadOp,vector,vector.transfer_read,Reads a supervector from memory into an SSA vector value.
+VectorOps.td,Vector_TransferWriteOp,vector,vector.transfer_write,The vector.transfer_write op writes a supervector to memory.
+VectorOps.td,Vector_LoadOp,vector,vector.load,reads an n-D slice of memory into an n-D vector
+VectorOps.td,Vector_StoreOp,vector,vector.store,writes an n-D vector to an n-D slice of memory
+VectorOps.td,Vector_MaskedLoadOp,vector,vector.maskedload,loads elements from memory into a vector as defined by a mask vector
+VectorOps.td,Vector_MaskedStoreOp,vector,vector.maskedstore,stores elements from a vector into memory as defined by a mask vector
+VectorOps.td,Vector_GatherOp,vector,vector.gather,Sin descripción
+VectorOps.td,Vector_ScatterOp,vector,vector.scatter,Sin descripción
+VectorOps.td,Vector_ExpandLoadOp,vector,vector.expandload,reads elements from memory and spreads them into a vector as defined by a mask
+VectorOps.td,Vector_CompressStoreOp,vector,vector.compressstore,writes elements selectively from a vector as defined by a mask
+VectorOps.td,Vector_ShapeCastOp,vector,vector.shape_cast,shape_cast casts between vector shapes
+VectorOps.td,Vector_BitCastOp,vector,vector.bitcast,bitcast casts between vectors
+VectorOps.td,Vector_TypeCastOp,vector,vector.type_cast,type_cast op converts a scalar memref to a vector memref
+VectorOps.td,Vector_ConstantMaskOp,vector,vector.constant_mask,creates a constant vector mask
+VectorOps.td,Vector_CreateMaskOp,vector,vector.create_mask,creates a vector mask
+VectorOps.td,Vector_MaskOp,vector,vector.mask,Predicates a maskable vector operation
+VectorOps.td,Vector_TransposeOp,vector,vector.transpose,vector transpose operation
+VectorOps.td,Vector_PrintOp,vector,vector.print,print operation (for testing and debugging)
+VectorOps.td,VectorScaleOp,vector,vector.vscale,Load vector scale size
+VectorOps.td,Vector_ScanOp,vector,vector.scan,Scan operation
+VectorOps.td,Vector_StepOp,vector,vector.step,A linear sequence of values from 0 to N
+VectorOps.td,Vector_YieldOp,vector,vector.yield,Terminates and yields values from vector regions.
+EmitC.td,EmitC_FileOp,emitc,emitc.file,A file container operation
+EmitC.td,EmitC_AddressOfOp,emitc,emitc.address_of,Address operation
+EmitC.td,EmitC_ApplyOp,emitc,emitc.apply,Deprecated (use address_of/dereference)
+EmitC.td,EmitC_CallOpaqueOp,emitc,emitc.call_opaque,Opaque call operation
+EmitC.td,EmitC_CastOp,emitc,emitc.cast,Cast operation
+EmitC.td,EmitC_ConstantOp,emitc,emitc.constant,Constant operation
+EmitC.td,EmitC_DereferenceOp,emitc,emitc.dereference,Dereference operation
+EmitC.td,EmitC_ExpressionOp,emitc,emitc.expression,Expression operation
+EmitC.td,EmitC_ForOp,emitc,emitc.for,For operation
+EmitC.td,EmitC_CallOp,emitc,emitc.call,Call operation
+EmitC.td,EmitC_DeclareFuncOp,emitc,emitc.declare_func,An operation to declare a function
+EmitC.td,EmitC_FuncOp,emitc,emitc.func,An operation with a name containing a single `SSACFG` region
+EmitC.td,EmitC_ReturnOp,emitc,emitc.return,Function return operation
+EmitC.td,EmitC_IncludeOp,emitc,emitc.include,Include operation
+EmitC.td,EmitC_LiteralOp,emitc,emitc.literal,Literal operation
+EmitC.td,EmitC_LoadOp,emitc,emitc.load,Load an lvalue into an SSA value.
+EmitC.td,EmitC_MemberOp,emitc,emitc.member,Member operation
+EmitC.td,EmitC_MemberOfPtrOp,emitc,emitc.member_of_ptr,Member of pointer operation
+EmitC.td,EmitC_ConditionalOp,emitc,emitc.conditional,Conditional (ternary) operation
+EmitC.td,EmitC_VariableOp,emitc,emitc.variable,Variable operation
+EmitC.td,EmitC_GlobalOp,emitc,emitc.global,A global variable
+EmitC.td,EmitC_GetGlobalOp,emitc,emitc.get_global,Obtain access to a global variable
+EmitC.td,EmitC_VerbatimOp,emitc,emitc.verbatim,Verbatim operation
+EmitC.td,EmitC_AssignOp,emitc,emitc.assign,Assign operation
+EmitC.td,EmitC_YieldOp,emitc,emitc.yield,Block termination operation
+EmitC.td,EmitC_IfOp,emitc,emitc.if,If-then-else operation
+EmitC.td,EmitC_SubscriptOp,emitc,emitc.subscript,Subscript operation
+EmitC.td,EmitC_SwitchOp,emitc,emitc.switch,Switch operation
+EmitC.td,EmitC_ClassOp,emitc,emitc.class,"Represents a C++ class definition, encapsulating fields and methods."
+EmitC.td,EmitC_FieldOp,emitc,emitc.field,A field within a class
+EmitC.td,EmitC_GetFieldOp,emitc,emitc.get_field,Obtain access to a field within a class instance
+EmitC.td,EmitC_DoOp,emitc,emitc.do,Do-while operation
+WasmSSAOps.td,WasmSSA_BlockReturnOp,wasmssa,wasmssa.block_return,Return from the current block
+WasmSSAOps.td,WasmSSA_BranchIfOp,wasmssa,wasmssa.branch_if,Jump to target level if condition has non-zero value
+WasmSSAOps.td,WasmSSA_ConstOp,wasmssa,wasmssa.const,Operator that represents a constant value
+WasmSSAOps.td,WasmSSA_FuncOp,wasmssa,wasmssa.func,Sin descripción
+WasmSSAOps.td,WasmSSA_FuncCallOp,wasmssa,wasmssa.call,Calling a Wasm function
+WasmSSAOps.td,WasmSSA_FuncImportOp,wasmssa,wasmssa.import_func,Importing a function variable
+WasmSSAOps.td,WasmSSA_GlobalOp,wasmssa,wasmssa.global,WebAssembly global value
+WasmSSAOps.td,WasmSSA_GlobalImportOp,wasmssa,wasmssa.import_global,Importing a global variable
+WasmSSAOps.td,WasmSSA_GlobalGetOp,wasmssa,wasmssa.global_get,Returns the value of the global passed as argument.
+WasmSSAOps.td,WasmSSA_IfOp,wasmssa,wasmssa.if,"Execute the if region if condition value is non-zero, the else region otherwise."
+WasmSSAOps.td,WasmSSA_LocalOp,wasmssa,wasmssa.local,Declaration of local variable
+WasmSSAOps.td,WasmSSA_LocalGetOp,wasmssa,wasmssa.local_get,Set local to value and return the operand.
+WasmSSAOps.td,WasmSSA_LocalSetOp,wasmssa,wasmssa.local_set,Set local to given value
+WasmSSAOps.td,WasmSSA_LocalTeeOp,wasmssa,wasmssa.local_tee,Set local to value and return the operand.
+WasmSSAOps.td,WasmSSA_MemOp,wasmssa,wasmssa.memory,WebAssembly memory definition
+WasmSSAOps.td,WasmSSA_MemImportOp,wasmssa,wasmssa.import_mem,Importing a memory
+WasmSSAOps.td,WasmSSA_TableOp,wasmssa,wasmssa.table,WebAssembly table value
+WasmSSAOps.td,WasmSSA_TableImportOp,wasmssa,wasmssa.import_table,Importing a table
+WasmSSAOps.td,WasmSSA_ReturnOp,wasmssa,wasmssa.return,Return from the current function frame
+WasmSSAOps.td,WasmSSA_ExtendSI32Op,wasmssa,wasmssa.extend_i32_s,Sin descripción
+WasmSSAOps.td,WasmSSA_ExtendUI32Op,wasmssa,wasmssa.extend_i32_u,Sin descripción
+WasmSSAOps.td,WasmSSA_ExtendLowBitsSOp,wasmssa,wasmssa.extend,Sin descripción
+WasmSSAOps.td,WasmSSA_EqzOp,wasmssa,wasmssa.eqz,Check if the given value is equal to zero
+TensorOps.td,Tensor_BitcastOp,tensor,tensor.bitcast,tensor bitcast operation
+TensorOps.td,Tensor_CastOp,tensor,tensor.cast,tensor cast operation
+TensorOps.td,Tensor_ConcatOp,tensor,tensor.concat,tensor concatenation operation
+TensorOps.td,Tensor_DimOp,tensor,tensor.dim,dimension index operation
+TensorOps.td,Tensor_EmptyOp,tensor,tensor.empty,empty tensor operation
+TensorOps.td,Tensor_ExtractOp,tensor,tensor.extract,element extraction operation
+TensorOps.td,Tensor_FromElementsOp,tensor,tensor.from_elements,tensor from elements operation.
+TensorOps.td,Tensor_GatherOp,tensor,tensor.gather,gather a subset of a tensor at specified indices
+TensorOps.td,Tensor_GenerateOp,tensor,tensor.generate,Creates a dynamically sized tensor from elements
+TensorOps.td,Tensor_InsertOp,tensor,tensor.insert,element insertion operation
+TensorOps.td,Tensor_RankOp,tensor,tensor.rank,rank operation
+TensorOps.td,Tensor_ReshapeOp,tensor,tensor.reshape,tensor reshape operation
+TensorOps.td,Tensor_PadOp,tensor,tensor.pad,tensor pad operation
+TensorOps.td,Tensor_ParallelInsertSliceOp,tensor,tensor.parallel_insert_slice,Sin descripción
+TensorOps.td,Tensor_ScatterOp,tensor,tensor.scatter,scatter a tensor into a destination tensor at specified indices
+TensorOps.td,Tensor_SplatOp,tensor,tensor.splat,tensor splat or broadcast operation
+TensorOps.td,Tensor_YieldOp,tensor,tensor.yield,Yield a value from a region
+BasicPtxBuilderInterface.td,NVVM_SpecialOp,nvvm,nvvm.special.op,Sin descripción
+XeVMOps.td,XeVM_BlockLoadOp,xevm,xevm.blockload,subgroup block load
+XeVMOps.td,XeVM_BlockStoreOp,xevm,xevm.blockstore,subgroup block store
+XeVMOps.td,XeVM_BlockLoad2dOp,xevm,xevm.blockload2d,2D block load
+XeVMOps.td,XeVM_BlockStore2dOp,xevm,xevm.blockstore2d,2D block store
+XeVMOps.td,XeVM_MemfenceOp,xevm,xevm.memfence,Work-item's memory fence.
+XeVMOps.td,XeVM_PrefetchOp,xevm,xevm.prefetch,Prefetch data into a cache subsystem.
+XeVMOps.td,XeVM_BlockPrefetch2dOp,xevm,xevm.blockprefetch2d,2D block prefetch
+XeVMOps.td,XeVM_MMAOp,xevm,xevm.mma,Subgroup matrix multiply-add
+XeVMOps.td,XeVM_TruncfOp,xevm,xevm.truncf,Floating point truncation from f16/bf16 to f8/bf8/f4
+XeVMOps.td,XeVM_MMAMxOp,xevm,xevm.mma_mx,Subgroup matrix multiply-add with MxN shape and MX scaling
+LLVMOps.td,LLVM_AllocaOp,llvm,llvm.alloca,Sin descripción
+LLVMOps.td,LLVM_GEPOp,llvm,llvm.getelementptr,Sin descripción
+LLVMOps.td,LLVM_InvokeOp,llvm,llvm.invoke,Sin descripción
+LLVMOps.td,LLVM_LandingpadOp,llvm,llvm.landingpad,Sin descripción
+LLVMOps.td,LLVM_VaArgOp,llvm,llvm.va_arg,Call to an LLVM function.
+LLVMOps.td,LLVM_ExtractElementOp,llvm,llvm.extractelement,Extract an element from an LLVM vector.
+LLVMOps.td,LLVM_ExtractValueOp,llvm,llvm.extractvalue,Extract a value from an LLVM struct.
+LLVMOps.td,LLVM_InsertElementOp,llvm,llvm.insertelement,Insert an element into an LLVM vector.
+LLVMOps.td,LLVM_InsertValueOp,llvm,llvm.insertvalue,Insert a value into an LLVM struct.
+LLVMOps.td,LLVM_ShuffleVectorOp,llvm,llvm.shufflevector,Construct a permutation of two vectors.
+LLVMOps.td,LLVM_SelectOp,llvm,llvm.select,Sin descripción
+LLVMOps.td,LLVM_FreezeOp,llvm,llvm.freeze,Sin descripción
+LLVMOps.td,LLVM_AddressOfOp,llvm,llvm.mlir.addressof,"Creates a pointer pointing to a global, alias or a function"
+LLVMOps.td,LLVM_GlobalOp,llvm,llvm.mlir.global,LLVM dialect global.
+LLVMOps.td,LLVM_GlobalCtorsOp,llvm,llvm.mlir.global_ctors,LLVM dialect global_ctors.
+LLVMOps.td,LLVM_GlobalDtorsOp,llvm,llvm.mlir.global_dtors,LLVM dialect global_dtors.
+LLVMOps.td,LLVM_AliasOp,llvm,llvm.mlir.alias,LLVM dialect alias.
+LLVMOps.td,LLVM_IFuncOp,llvm,llvm.mlir.ifunc,LLVM dialect ifunc
+LLVMOps.td,LLVM_DSOLocalEquivalentOp,llvm,llvm.dso_local_equivalent,Creates a LLVM dso_local_equivalent ptr
+LLVMOps.td,LLVM_BlockAddressOp,llvm,llvm.blockaddress,Creates a LLVM blockaddress ptr
+LLVMOps.td,LLVM_BlockTagOp,llvm,llvm.blocktag,Sin descripción
+LLVMOps.td,LLVM_ComdatSelectorOp,llvm,llvm.comdat_selector,LLVM dialect comdat selector declaration
+LLVMOps.td,LLVM_ComdatOp,llvm,llvm.comdat,LLVM dialect comdat region
+LLVMOps.td,LLVM_LLVMFuncOp,llvm,llvm.func,LLVM dialect function.
+LLVMOps.td,LLVM_NoneTokenOp,llvm,llvm.mlir.none,Defines a value containing an empty token to LLVM type.
+LLVMOps.td,LLVM_UndefOp,llvm,llvm.mlir.undef,Creates an undefined value of LLVM dialect type.
+LLVMOps.td,LLVM_PoisonOp,llvm,llvm.mlir.poison,Creates a poison value of LLVM dialect type.
+LLVMOps.td,LLVM_ZeroOp,llvm,llvm.mlir.zero,Creates a zero-initialized value of LLVM dialect type.
+LLVMOps.td,LLVM_ConstantOp,llvm,llvm.mlir.constant,Defines a constant of LLVM type.
+LLVMOps.td,LLVM_FenceOp,llvm,llvm.fence,Sin descripción
+LLVMOps.td,LLVM_InlineAsmOp,llvm,llvm.inline_asm,Sin descripción
+LLVMOps.td,LLVM_CallIntrinsicOp,llvm,llvm.call_intrinsic,Call to an LLVM intrinsic function.
+LLVMOps.td,LLVM_LinkerOptionsOp,llvm,llvm.linker_options,Options to pass to the linker when the object file is linked
+LLVMOps.td,LLVM_ModuleFlagsOp,llvm,llvm.module_flags,Information about module properties
+LLVMOps.td,LLVM_NamedMetadataOp,llvm,llvm.named_metadata,Module-level named metadata
+VCIXOps.td,VCIX_BinaryImmOp,vcix,vcix.v.iv,Binary VCIX operation with an immediate second operand
+VCIXOps.td,VCIX_BinaryOp,vcix,vcix.v.sv,Binary VCIX operation
+NVVMOps.td,NVVM_InlinePtxOp,nvvm,nvvm.inline_ptx,Inline PTX Op
+NVVMOps.td,NVVM_ReduxOp,nvvm,nvvm.redux.sync,Redux Sync Op
+NVVMOps.td,NVVM_NanosleepOp,nvvm,nvvm.nanosleep,Suspends the thread for a specified duration.
+NVVMOps.td,NVVM_MBarrierInitOp,nvvm_ptxbuilder,nvvm_ptxbuilder.mbarrier.init,MBarrier Initialization Op
+NVVMOps.td,NVVM_MBarrierArriveExpectTxOp,nvvm_ptxbuilder,nvvm_ptxbuilder.mbarrier.arrive.expect_tx,MBarrier Arrive with Expected Transaction Count
+NVVMOps.td,NVVM_MBarrierTryWaitParityOp,nvvm_ptxbuilder,nvvm_ptxbuilder.mbarrier.try_wait.parity,MBarrier Potentially-Blocking Try Wait with Phase Parity
+NVVMOps.td,NVVM_BarrierArriveOp,nvvm_ptxbuilder,nvvm_ptxbuilder.barrier.arrive,Sin descripción
+NVVMOps.td,NVVM_ClusterArriveOp,nvvm,nvvm.cluster.arrive,Cluster Barrier Arrive Op
+NVVMOps.td,NVVM_ClusterArriveRelaxedOp,nvvm,nvvm.cluster.arrive.relaxed,Cluster Barrier Relaxed Arrive Op
+NVVMOps.td,NVVM_ClusterWaitOp,nvvm,nvvm.cluster.wait,Cluster Barrier Wait Op
+NVVMOps.td,NVVM_MembarOp,nvvm,nvvm.memory.barrier,Memory barrier operation
+NVVMOps.td,NVVM_FenceScClusterOp,nvvm,nvvm.fence.sc.cluster,Sin descripción
+NVVMOps.td,NVVM_FenceSyncRestrictOp,nvvm,nvvm.fence.sync_restrict,Uni-directional thread fence operation
+NVVMOps.td,NVVM_FenceMbarrierInitOp,nvvm,nvvm.fence.mbarrier.init,Sin descripción
+NVVMOps.td,NVVM_FenceProxyOp,nvvm,nvvm.fence.proxy,Sin descripción
+NVVMOps.td,NVVM_FenceProxyAcquireOp,nvvm,nvvm.fence.proxy.acquire,Uni-directional proxy fence operation with acquire semantics
+NVVMOps.td,NVVM_FenceProxyReleaseOp,nvvm,nvvm.fence.proxy.release,Uni-directional proxy fence operation with release semantics
+NVVMOps.td,NVVM_FenceProxySyncRestrictOp,nvvm,nvvm.fence.proxy.sync_restrict,Uni-directional proxy fence operation with sync_restrict
+NVVMOps.td,NVVM_SetMaxRegisterOp,nvvm,nvvm.setmaxregister,Sin descripción
+NVVMOps.td,NVVM_ShflOp,nvvm,nvvm.shfl.sync,NVVM Dialect Op for shfl.sync
+NVVMOps.td,NVVM_VoteSyncOp,nvvm,nvvm.vote.sync,Vote across thread group
+NVVMOps.td,NVVM_ElectSyncOp,nvvm,nvvm.elect.sync,Elect one leader thread
+NVVMOps.td,NVVM_CpAsyncOp,nvvm,nvvm.cp.async.shared.global,Sin descripción
+NVVMOps.td,NVVM_CpAsyncCommitGroupOp,nvvm,nvvm.cp.async.commit.group,Sin descripción
+NVVMOps.td,NVVM_CpAsyncWaitGroupOp,nvvm,nvvm.cp.async.wait.group,NVVM Dialect Op for cp.async.mbarrier.arrive
+NVVMOps.td,NVVM_ConvertFloatToTF32Op,nvvm,nvvm.convert.float.to.tf32,Convert the given float input to TF32
+NVVMOps.td,NVVM_ConvertF32x2ToF4x2Op,nvvm,nvvm.convert.f32x2.to.f4x2,Convert a pair of float inputs to f4x2
+NVVMOps.td,NVVM_ConvertF32x2ToF6x2Op,nvvm,nvvm.convert.f32x2.to.f6x2,Convert a pair of float inputs to f6x2
+NVVMOps.td,NVVM_ConvertF32x2ToF8x2Op,nvvm,nvvm.convert.f32x2.to.f8x2,Convert a pair of float inputs to f8x2
+NVVMOps.td,NVVM_ConvertF16x2ToF8x2Op,nvvm,nvvm.convert.f16x2.to.f8x2,Convert an f16x2 input to f8x2
+NVVMOps.td,NVVM_ConvertBF16x2ToF8x2Op,nvvm,nvvm.convert.bf16x2.to.f8x2,Convert a pair of bf16 inputs to f8x2
+NVVMOps.td,NVVM_ConvertF32x2ToS2F6x2Op,nvvm,nvvm.convert.f32x2.to.s2f6x2,Convert a pair of f32 inputs to S2F6x2
+NVVMOps.td,NVVM_ConvertBF16x2ToS2F6x2Op,nvvm,nvvm.convert.bf16x2.to.s2f6x2,Convert a pair of BF16 inputs to S2F6x2
+NVVMOps.td,NVVM_WMMALoadOp,nvvm,nvvm.wmma.load,Warp synchronous matrix load
+NVVMOps.td,NVVM_WMMAStoreOp,nvvm,nvvm.wmma.store,Warp synchronous matrix store
+NVVMOps.td,NVVM_WMMAMmaOp,nvvm,nvvm.wmma.mma,Warp synchronous matrix-multiply accumulate using tensor cores.
+NVVMOps.td,NVVM_StMatrixOp,nvvm,nvvm.stmatrix,cooperative matrix store
+NVVMOps.td,NVVM_LdMatrixOp,nvvm,nvvm.ldmatrix,cooperative matrix load
+NVVMOps.td,NVVM_MmaOp,nvvm,nvvm.mma.sync,cooperative matrix-multiply and accumulate
+NVVMOps.td,NVVM_MmaSpOp,nvvm,nvvm.mma.sp.sync,cooperative sparse matrix-multiply and accumulate
+NVVMOps.td,NVVM_CpAsyncBulkCommitGroupOp,nvvm,nvvm.cp.async.bulk.commit.group,Sin descripción
+NVVMOps.td,NVVM_CpAsyncBulkWaitGroupOp,nvvm,nvvm.cp.async.bulk.wait_group,Sin descripción
+NVVMOps.td,NVVM_CpAsyncBulkTensorGlobalToSharedClusterOp,nvvm,nvvm.cp.async.bulk.tensor.shared.cluster.global,Sin descripción
+NVVMOps.td,NVVM_CpAsyncBulkTensorSharedCTAToGlobalOp,nvvm_ptxbuilder,nvvm_ptxbuilder.cp.async.bulk.tensor.global.shared.cta,Sin descripción
+NVVMOps.td,NVVM_PrefetchOp,nvvm,nvvm.prefetch,Brings the cache line containing an address into the specified cache level
+NVVMOps.td,NVVM_CpAsyncBulkTensorReduceOp,nvvm,nvvm.cp.async.bulk.tensor.reduce,Sin descripción
+NVVMOps.td,NVVM_CpAsyncBulkGlobalToSharedClusterOp,nvvm,nvvm.cp.async.bulk.shared.cluster.global,Async bulk copy from global to Shared {cta or cluster} memory
+NVVMOps.td,NVVM_CpAsyncBulkSharedCTAToSharedClusterOp,nvvm,nvvm.cp.async.bulk.shared.cluster.shared.cta,Async bulk copy from Shared CTA memory to Shared cluster memory
+NVVMOps.td,NVVM_CpAsyncBulkSharedCTAToGlobalOp,nvvm,nvvm.cp.async.bulk.global.shared.cta,Async bulk copy from Shared CTA memory to Global memory
+NVVMOps.td,NVVM_WgmmaFenceAlignedOp,nvvm,nvvm.wgmma.fence.aligned,Sin descripción
+NVVMOps.td,NVVM_WgmmaGroupSyncAlignedOp,nvvm,nvvm.wgmma.commit.group.sync.aligned,Sin descripción
+NVVMOps.td,NVVM_WgmmaWaitGroupSyncOp,nvvm,nvvm.wgmma.wait.group.sync.aligned,Sin descripción
+NVVMOps.td,NVVM_WgmmaMmaAsyncOp,nvvm,nvvm.wgmma.mma_async,Sin descripción
+NVVMOps.td,NVVM_GriddepcontrolOp,nvvm,nvvm.griddepcontrol,Sin descripción
+NVVMOps.td,NVVM_MapaOp,nvvm,nvvm.mapa,Sin descripción
+NVVMOps.td,NVVM_MatchSyncOp,nvvm,nvvm.match.sync,Broadcast and compare a value across threads in warp
+NVVMOps.td,NVVM_BulkStoreOp,nvvm,nvvm.st.bulk,Bulk Store Op
+NVVMOps.td,NVVM_Exit,nvvm,nvvm.exit,Exit Op
+NVVMOps.td,NVVM_Breakpoint,nvvm,nvvm.breakpoint,Breakpoint Op
+NVVMOps.td,NVVM_Tcgen05AllocOp,nvvm,nvvm.tcgen05.alloc,Tcgen05 alloc operation
+NVVMOps.td,NVVM_Tcgen05DeallocOp,nvvm,nvvm.tcgen05.dealloc,Tcgen05 dealloc operation
+NVVMOps.td,NVVM_Tcgen05RelinquishAllocPermitOp,nvvm,nvvm.tcgen05.relinquish_alloc_permit,Tcgen05 Op to relinquish the right to allocate
+NVVMOps.td,NVVM_Tcgen05FenceOp,nvvm,nvvm.tcgen05.fence,Tcgen05 fence operations
+NVVMOps.td,NVVM_Tcgen05WaitOp,nvvm,nvvm.tcgen05.wait,Tcgen05 wait operations
+NVVMOps.td,NVVM_Tcgen05CommitOp,nvvm,nvvm.tcgen05.commit,Tcgen05 commit operations
+NVVMOps.td,NVVM_Tcgen05ShiftOp,nvvm,nvvm.tcgen05.shift,Tcgen05 shift operation
+NVVMOps.td,NVVM_Tcgen05CpOp,nvvm,nvvm.tcgen05.cp,Tcgen05 copy operation
+NVVMOps.td,NVVM_Tcgen05MmaSmemDescOp,nvvm,nvvm.tcgen05.mma_smem_desc,Constructs a Shared Memory descriptor for MMA Operands A or B
+NVVMOps.td,NVVM_Tcgen05LdOp,nvvm,nvvm.tcgen05.ld,tensor memory load instructions
+NVVMOps.td,NVVM_Tcgen05LdRedOp,nvvm,nvvm.tcgen05.ld.red,Tcgen05 tensor memory load and reduce instructions
+NVVMOps.td,NVVM_Tcgen05StOp,nvvm,nvvm.tcgen05.st,tensor memory store instructions
+NVVMOps.td,NVVM_ClusterLaunchControlTryCancelOp,nvvm,nvvm.clusterlaunchcontrol.try.cancel,Request atomically canceling the launch of a cluster that has not started running yet
+NVVMOps.td,NVVM_ClusterLaunchControlQueryCancelOp,nvvm,nvvm.clusterlaunchcontrol.query.cancel,Query the response of a clusterlaunchcontrol.try.cancel operation
+NVVMOps.td,NVVM_Tcgen05MMAOp,nvvm,nvvm.tcgen05.mma,Performs MMA operation on 5th-gen tensor cores
+NVVMOps.td,NVVM_Tcgen05MMASparseOp,nvvm,nvvm.tcgen05.mma.sp,Performs MMA operation with sparse A matrix on 5th-gen tensor cores
+NVVMOps.td,NVVM_Tcgen05MMABlockScaleOp,nvvm,nvvm.tcgen05.mma.block_scale,Performs block scaled MMA operation on 5th-gen tensor cores
+NVVMOps.td,NVVM_Tcgen05MMASparseBlockScaleOp,nvvm,nvvm.tcgen05.mma.sp.block_scale,Performs block scaled MMA operation with sparse A matrix on 5th-gen tensor cores
+NVVMOps.td,NVVM_Tcgen05MMAWsOp,nvvm,nvvm.tcgen05.mma.ws,Performs weight stationary convolution MMA operation on 5th-gen tensor cores
+NVVMOps.td,NVVM_Tcgen05MMAWsSparseOp,nvvm,nvvm.tcgen05.mma.ws.sp,Performs weight stationary convolution MMA with sparse A matrix on 5th-gen tensor cores
+NVVMOps.td,NVVM_FmaOp,nvvm,nvvm.fma,Take the square root of a value
+ROCDLOps.td,ROCDL_BarrierOp,rocdl,rocdl.barrier,Wait until DSCNT is less than or equal to `count`
+UBOps.td,PoisonOp,ub,ub.poison,Poisoned constant operation.
+UBOps.td,UnreachableOp,ub,ub.unreachable,Unreachable operation.
+AsyncOps.td,Async_ExecuteOp,async,async.execute,Asynchronous execute operation
+AsyncOps.td,Async_FuncOp,async,async.func,async function operation
+AsyncOps.td,Async_CallOp,async,async.call,async call operation
+AsyncOps.td,Async_ReturnOp,async,async.return,Async function return operation
+AsyncOps.td,Async_YieldOp,async,async.yield,terminator for Async execute operation
+AsyncOps.td,Async_AwaitOp,async,async.await,waits for the argument to become ready
+AsyncOps.td,Async_CreateGroupOp,async,async.create_group,creates an empty async group
+AsyncOps.td,Async_AddToGroupOp,async,async.add_to_group,adds an async token or value to the group
+AsyncOps.td,Async_AwaitAllOp,async,async.await_all,waits for the all async tokens or values in the group to
+AsyncOps.td,Async_CoroIdOp,async,async.coro.id,returns a switched-resume coroutine identifier
+AsyncOps.td,Async_CoroBeginOp,async,async.coro.begin,returns a handle to the coroutine
+AsyncOps.td,Async_CoroFreeOp,async,async.coro.free,deallocates the coroutine frame
+AsyncOps.td,Async_CoroEndOp,async,async.coro.end,marks the end of the coroutine in the suspend block
+AsyncOps.td,Async_CoroSaveOp,async,async.coro.save,saves the coroutine state
+AsyncOps.td,Async_CoroSuspendOp,async,async.coro.suspend,suspends the coroutine
+AsyncOps.td,Async_RuntimeCreateOp,async,async.runtime.create,creates an async runtime token or value
+AsyncOps.td,Async_RuntimeCreateGroupOp,async,async.runtime.create_group,creates an async runtime group
+AsyncOps.td,Async_RuntimeSetAvailableOp,async,async.runtime.set_available,switches token or value to available state
+AsyncOps.td,Async_RuntimeSetErrorOp,async,async.runtime.set_error,switches token or value to error state
+AsyncOps.td,Async_RuntimeIsErrorOp,async,async.runtime.is_error,"returns true if token, value or group is in error state"
+AsyncOps.td,Async_RuntimeAwaitOp,async,async.runtime.await,blocks the caller thread until the operand becomes available
+AsyncOps.td,Async_RuntimeResumeOp,async,async.runtime.resume,resumes the coroutine on a thread managed by the runtime
+AsyncOps.td,Async_RuntimeAwaitAndResumeOp,async,async.runtime.await_and_resume,awaits the async operand and resumes the coroutine
+AsyncOps.td,Async_RuntimeStoreOp,async,async.runtime.store,stores the value into the runtime async.value
+AsyncOps.td,Async_RuntimeLoadOp,async,async.runtime.load,loads the value from the runtime async.value
+AsyncOps.td,Async_RuntimeAddToGroupOp,async,async.runtime.add_to_group,adds an async token or value to the group
+AsyncOps.td,Async_RuntimeAddRefOp,async,async.runtime.add_ref,adds a reference to async value
+AsyncOps.td,Async_RuntimeDropRefOp,async,async.runtime.drop_ref,drops a reference to async value
+AsyncOps.td,Async_RuntimeNumWorkerThreadsOp,async,async.runtime.num_worker_threads,gets the number of threads in the threadpool from the runtime
+PDLInterpOps.td,PDLInterp_ApplyRewriteOp,pdlinterp,pdlinterp.apply_rewrite,Invoke and apply an externally registered rewrite method
+PDLInterpOps.td,PDLInterp_BranchOp,pdlinterp,pdlinterp.branch,General branch operation
+PDLInterpOps.td,PDLInterp_ContinueOp,pdlinterp,pdlinterp.continue,Breaks the current iteration
+PDLInterpOps.td,PDLInterp_CreateAttributeOp,pdlinterp,pdlinterp.create_attribute,Create an interpreter handle to a constant `Attribute`
+PDLInterpOps.td,PDLInterp_CreateOperationOp,pdlinterp,pdlinterp.create_operation,Create an instance of a specific `Operation`
+PDLInterpOps.td,PDLInterp_CreateTypeOp,pdlinterp,pdlinterp.create_type,Create an interpreter handle to a constant `Type`
+PDLInterpOps.td,PDLInterp_CreateTypesOp,pdlinterp,pdlinterp.create_types,Create an interpreter handle to a range of constant `Type`s
+PDLInterpOps.td,PDLInterp_EraseOp,pdlinterp,pdlinterp.erase,Mark an operation as `erased`
+PDLInterpOps.td,PDLInterp_ExtractOp,pdlinterp,pdlinterp.extract,Extract the item at the specified index in a range
+PDLInterpOps.td,PDLInterp_FinalizeOp,pdlinterp,pdlinterp.finalize,Finalize a pattern match or rewrite sequence
+PDLInterpOps.td,PDLInterp_ForEachOp,pdlinterp,pdlinterp.foreach,Iterates over a range of values or ranges
+PDLInterpOps.td,PDLInterp_FuncOp,pdlinterp,pdlinterp.func,PDL Interpreter Function Operation
+PDLInterpOps.td,PDLInterp_GetAttributeOp,pdlinterp,pdlinterp.get_attribute,Get a specified attribute value from an `Operation`
+PDLInterpOps.td,PDLInterp_GetAttributeTypeOp,pdlinterp,pdlinterp.get_attribute_type,Get the result type of a specified `Attribute`
+PDLInterpOps.td,PDLInterp_GetDefiningOpOp,pdlinterp,pdlinterp.get_defining_op,Get the defining operation of a `Value`
+PDLInterpOps.td,PDLInterp_GetOperandOp,pdlinterp,pdlinterp.get_operand,Get a specified operand from an `Operation`
+PDLInterpOps.td,PDLInterp_GetOperandsOp,pdlinterp,pdlinterp.get_operands,Get a specified operand group from an `Operation`
+PDLInterpOps.td,PDLInterp_GetResultOp,pdlinterp,pdlinterp.get_result,Get a specified result from an `Operation`
+PDLInterpOps.td,PDLInterp_GetResultsOp,pdlinterp,pdlinterp.get_results,Get a specified result group from an `Operation`
+PDLInterpOps.td,PDLInterp_GetUsersOp,pdlinterp,pdlinterp.get_users,Get the users of a `Value`
+PDLInterpOps.td,PDLInterp_GetValueTypeOp,pdlinterp,pdlinterp.get_value_type,Get the result type of a specified `Value`
+PDLInterpOps.td,PDLInterp_CreateRangeOp,pdlinterp,pdlinterp.create_range,Construct a range of PDL entities
+PDLInterpOps.td,PDLInterp_RecordMatchOp,pdlinterp,pdlinterp.record_match,Record the metadata for a successful pattern match
+PDLInterpOps.td,PDLInterp_ReplaceOp,pdlinterp,pdlinterp.replace,Mark an operation as `replace`d
+ControlFlowOps.td,AssertOp,cf,cf.assert,Assert operation with message attribute
+ControlFlowOps.td,BranchOp,cf,cf.br,Branch operation
+ControlFlowOps.td,CondBranchOp,cf,cf.cond_br,Conditional branch operation
+ControlFlowOps.td,SwitchOp,cf,cf.switch,Switch operation
+AMDGPUOps.td,AMDGPU_ExtPackedFp8Op,amdgpu,amdgpu.ext_packed_fp8,Extend a fp8 value to a float or a vector of packed fp8 values to two floats
+AMDGPUOps.td,AMDGPU_ScaledExtPackedMatrixOp,amdgpu,amdgpu.scaled_ext_packed_matrix,Extend a wave-wide matrix of packed floating point values
+AMDGPUOps.td,AMDGPU_ScaledExtPackedOp,amdgpu,amdgpu.scaled_ext_packed,Extend a vector of packed floating point values
+AMDGPUOps.td,AMDGPU_PackedTrunc2xFp8Op,amdgpu,amdgpu.packed_trunc_2xfp8,Round two floats into a packed vector of 8-bit floats
+AMDGPUOps.td,AMDGPU_PackedScaledTruncOp,amdgpu,amdgpu.packed_scaled_trunc,Round two floats into a packed vector of floats
+AMDGPUOps.td,AMDGPU_PackedStochRoundFp8Op,amdgpu,amdgpu.packed_stoch_round_fp8,Round float stochiastically into a packed vector of 8-bit floats
+AMDGPUOps.td,AMDGPU_FatRawBufferCastOp,amdgpu,amdgpu.fat_raw_buffer_cast,Create a raw buffer fat pointer that matches `memref`
+AMDGPUOps.td,AMDGPU_RawBufferLoadOp,amdgpu,amdgpu.raw_buffer_load,"Raw Buffer load, exposing GCN features"
+AMDGPUOps.td,AMDGPU_RawBufferStoreOp,amdgpu,amdgpu.raw_buffer_store,"Raw Buffer Store, exposing GCN features"
+AMDGPUOps.td,AMDGPU_RawBufferAtomicCmpswapOp,amdgpu,amdgpu.raw_buffer_atomic_cmpswap,Raw Buffer Atomic compare-and-swap
+AMDGPUOps.td,AMDGPU_RawBufferAtomicFaddOp,amdgpu,amdgpu.raw_buffer_atomic_fadd,Raw Buffer Floating-point Atomic Add (MI-* only)
+AMDGPUOps.td,AMDGPU_RawBufferAtomicFmaxOp,amdgpu,amdgpu.raw_buffer_atomic_fmax,Raw Buffer Floating-point Atomic Max (non-GFX9)
+AMDGPUOps.td,AMDGPU_RawBufferAtomicSmaxOp,amdgpu,amdgpu.raw_buffer_atomic_smax,Raw Buffer Signed Integer Atomic Max
+AMDGPUOps.td,AMDGPU_RawBufferAtomicUminOp,amdgpu,amdgpu.raw_buffer_atomic_umin,Raw Buffer Unsigned Integer Atomic Min
+AMDGPUOps.td,AMDGPU_DPPOp,amdgpu,amdgpu.dpp,AMDGPU DPP operation
+AMDGPUOps.td,AMDGPU_SwizzleBitModeOp,amdgpu,amdgpu.swizzle_bitmode,"AMDGPU ds_swizzle op, bitmode variant"
+AMDGPUOps.td,AMDGPU_PermlaneSwapOp,amdgpu,amdgpu.permlane_swap,AMDGPU permlane swap op
+AMDGPUOps.td,AMDGPU_PermlaneVarOp,amdgpu,amdgpu.permlane_var,AMDGPU variable-selector permlane op (GFX12+)
+AMDGPUOps.td,AMDGPU_LDSBarrierOp,amdgpu,amdgpu.lds_barrier,Barrier that includes a wait for LDS memory operations.
+AMDGPUOps.td,AMDGPU_SchedBarrierOp,amdgpu,amdgpu.sched_barrier,Barrier that limits the backend scheduler of instruction movement
+AMDGPUOps.td,AMDGPU_MemoryCounterWaitOp,amdgpu,amdgpu.memory_counter_wait,Wait for specified hardware counters
+AMDGPUOps.td,AMDGPU_MFMAOp,amdgpu,amdgpu.mfma,MLIR wrapper for CDNA mfma instructions
+AMDGPUOps.td,AMDGPU_WMMAOp,amdgpu,amdgpu.wmma,MLIR wrapper for wmma instructions
+AMDGPUOps.td,AMDGPU_DotOp,amdgpu,amdgpu.dot,MLIR wrapper for AMDGPU v_dot* intrinsics
+AMDGPUOps.td,AMDGPU_SparseMFMAOp,amdgpu,amdgpu.sparse_mfma,MLIR wrapper for CDNA sparse mfma (smfmac) instructions
+AMDGPUOps.td,AMDGPU_SparseWMMAOp,amdgpu,amdgpu.sparse_wmma,MLIR wrapper for gfx12+ sparse wmma instructions
+AMDGPUOps.td,AMDGPU_GatherToLDSOp,amdgpu,amdgpu.gather_to_lds,MLIR wrapper for CDNA Gather to LDS instructions
+AMDGPUOps.td,AMDGPU_GlobalLoadAsyncToLDSOp,amdgpu,amdgpu.global_load_async_to_lds,MLIR wrapper for async global load to lds instructions
+AMDGPUOps.td,AMDGPU_TransposeLoadOp,amdgpu,amdgpu.transpose_load,MLIR wrapper for CDNA transpose Load instructions
+AMDGPUOps.td,AMDGPU_GlobalTransposeLoadOp,amdgpu,amdgpu.global_transpose_load,MLIR wrapper for global memory transpose load instructions
+AMDGPUOps.td,AMDGPU_ScaledMFMAOp,amdgpu,amdgpu.scaled_mfma,MLIR wrapper for CDNA scaled mfma instructions
+AMDGPUOps.td,AMDGPU_ScaledWMMAOp,amdgpu,amdgpu.scaled_wmma,MLIR wrapper for scaled wmma instructions
+AMDGPUOps.td,AMDGPU_TensorLoadToLDSOp,amdgpu,amdgpu.tensor_load_to_lds,Load tensors from global memory to LDS.
+AMDGPUOps.td,AMDGPU_TensorStoreFromLDSOp,amdgpu,amdgpu.tensor_store_from_lds,Store tensors from LDS to global memory.
+AMDGPUOps.td,AMDGPU_DsBarrierInitOp,amdgpu,amdgpu.ds_barrier_init,Initialize an in-LDS barrier.
+AMDGPUOps.td,AMDGPU_DsBarrierPollStateOp,amdgpu,amdgpu.ds_barrier_poll_state,Atomically read the state of an in-LDS barrier.
+AMDGPUOps.td,AMDGPU_DsAsyncBarrierArriveOp,amdgpu,amdgpu.ds_async_barrier_arrive,Asynchronously arrive at an in-LDS barrier.
+AMDGPUOps.td,AMDGPU_DsBarrierArriveOp,amdgpu,amdgpu.ds_barrier_arrive,Arrive at an in-LDS barrier and return old state.
+AMDGPUOps.td,AMDGPU_DsBarrierStatePhaseOp,amdgpu,amdgpu.ds_barrier_state_phase,Extract the phase of a barrier state.
+AMDGPUOps.td,AMDGPU_DsBarrierStatePendingCountOp,amdgpu,amdgpu.ds_barrier_state_pending_count,Extract the pending count of a barrier state.
+AMDGPUOps.td,AMDGPU_DsBarrierStateInitCountOp,amdgpu,amdgpu.ds_barrier_state_init_count,Extract the init count of a barrier state.
+AMDGPUOps.td,AMDGPU_DsBarrierStatePhaseParity,amdgpu,amdgpu.ds_barrier_state_phase_parity,Extract the phase parity of a barrier state.
+AMDGPUOps.td,AMDGPU_GlobalPrefetchOp,amdgpu,amdgpu.global_prefetch,Prefetch data to caches.
+BufferizationOps.td,Bufferization_AllocTensorOp,bufferization,bufferization.alloc_tensor,allocate buffer for a tensor
+BufferizationOps.td,Bufferization_CloneOp,bufferization,bufferization.clone,clone a memref
+BufferizationOps.td,Bufferization_MaterializeInDestinationOp,bufferization,bufferization.materialize_in_destination,copy a tensor
+BufferizationOps.td,Bufferization_DeallocTensorOp,bufferization,bufferization.dealloc_tensor,Sin descripción
+BufferizationOps.td,Bufferization_ToTensorOp,bufferization,bufferization.to_tensor,create a tensor-like type from a buffer-like type
+BufferizationOps.td,Bufferization_ToBufferOp,bufferization,bufferization.to_buffer,cast a tensor-like type to buffer-like type
+BufferizationOps.td,Bufferization_DeallocOp,bufferization,bufferization.dealloc,deallocates the given memrefs if no alias is retained
