@@ -31,8 +31,6 @@ OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"
 USE_REMOTE_MODEL = os.getenv("USE_REMOTE_MODEL", "0") == "1"
 REMOTE_MODEL_URL = os.getenv("GEMMA_API_URL", "https://unsubtly-dash-economy.ngrok-free.dev")
 
-
-
 # Strict parameters for code generation
 GENERATION_PARAMS = {
     "max_tokens": 4096,
@@ -43,3 +41,4 @@ GENERATION_PARAMS = {
 # --- MLOPS CONFIGURATION ---
 WANDB_PROJECT_NAME = "llm-mlir-compiler"
 WANDB_ENTITY = None  # Automatic if configured in the environment
+

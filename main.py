@@ -39,13 +39,62 @@ def main():
     schema_str = json.dumps(MlirResponse.model_json_schema(), indent=2)
     
     system_prompt = (
-        "You are an expert LLM compiler in Triton MLIR. You must output ONLY a valid JSON object "
-        f"that EXACTLY complies with the following JSON Schema:\n{schema_str}\n\n"
-        "STRICT RULES:\n"
-        "1. DO NOT include markdown code blocks (e.g., ```json) or text outside the JSON.\n"
-        "2. In 'arguments' and 'returns', use only strings (e.g., '%arg0'), NOT dictionaries.\n"
-        "3. You MUST ONLY use the opcodes provided in the JSON Schema Enum.\n"
-        "4. In iter_args and operands, you MUST ONLY use valid registers (e.g., '%0'). NEVER use raw numbers (e.g., '0.0'). If you need a constant, create it first with 'arith.constant'.\n"
+        "Role: You are a Block-Level GPU Architect and expert LLM compiler in Triton MLIR. "
+        "Your job is to translate high-level mathematical descriptions to a strict intermediate language in JSON format (Static Single Assignment - SSA).\n\n"
+        f"You must output ONLY a valid JSON object that EXACTLY complies with the following JSON Schema:\n{schema_str}\n\n"
+        "CRITICAL RULES:\n"
+        "1. Immutability & Scoping: Each operation must save its result in a new temporary register (e.g., '%0'). Registers defined inside a block (e.g., scf.for or scf.if) CANNOT be accessed outside. To use them outside, you MUST pass them through 'iter_args' and 'results' (for scf.for) or 'results' (for scf.if), and yield them using 'scf.yield'.\n"
+        "2. Data Types: Define the exact MLIR type ONLY in the function 'arguments' block or for explicit casting. Do not invent types.\n"
+        "3. Valid Operands: In 'iter_args' and 'operands', you may use valid registers (e.g., '%0') or raw numerical constants (e.g., 2.0). Raw numbers will be automatically injected as 'arith.constant'. If you explicitly use 'arith.constant', you MUST provide the value in the 'attributes' field (e.g., \"attributes\": {\"value\": 1.0}).\n"
+        "4. Exact Opcodes: You MUST ONLY use the opcodes provided in the JSON Schema Enum.\n"
+        "5. Output Format: DO NOT include markdown code blocks (e.g., ```json) or text outside the JSON. Your output must be parseable by json.loads().\n"
+        "6. Nested Blocks: For control flow like scf.for, use the nested 'body' list property. Do not use flat 'end_for' markers. To yield values to the next iteration of an scf.for loop or out of an scf.if block, add an object with 'opcode': 'scf.yield' and its 'operands' at the end of the 'body' list.\n"
+        "7. NO Array Indexing: DO NOT use array indexing like '%arg0[%i]' or '%tensor[idx]'. This does NOT exist in MLIR SSA. To access tensor elements, use 'tensor.extract' with indices as separate operands. For whole-tensor operations, use vectorized ops directly.\n"
+        "8. Reductions: If you use 'tt.reduce', you MUST include the 'region_combiner' field (e.g., \"region_combiner\": \"arith.addf\" or \"arith.maximumf\").\n"
+        "9. NO UNDECLARED VARIABLES: You CANNOT use any register (e.g., '%is_final_pass', '%final_output') as an operand, condition, or return value unless it was EXPLICITLY defined beforehand either in the function 'arguments' or as the 'result' of a previous operation. Do not invent variables.\n"
+        "10. Chain of Thought: The 'reasoning' field MUST be used to plan the topological order. You MUST list every register you will create (e.g., %0, %1) and explain where the 'iter_args' values come from before outputting the JSON.\n"
+        "11. Tensor Operations: 'tensor.extract' returns a SINGLE scalar value, NOT a row or column. If you extract from a 2D tensor (e.g., tensor<128x128xf32>), you MUST provide TWO indices (e.g., operands: ['%tensor', '%row_idx', '%col_idx']).\n"
+        "12. scf.for Rules: If a loop has 'iter_args', the VERY LAST operation in its 'body' array MUST be an 'scf.yield' with the exact same number of operands as the 'iter_args'. Do not forget the final yield.\n\n"
+        "EXPECTED EXAMPLE (Iterative Max with scf.for and scf.if):\n"
+        "User: \"Find the maximum value in a tensor by iterating and keeping the running max.\"\n"
+        "Response JSON:\n"
+        "{\n"
+        "  \"reasoning\": \"I will use an scf.for loop to iterate. I need a loop variable %i. The running max will be passed via iter_args %current_max. Inside the loop, I load the value into %val, compare it using arith.cmpf into %is_greater, and use scf.if to select the new max into %new_max. Finally, I yield %new_max to the next iteration.\",\n"
+        "  \"code\": {\n"
+        "    \"function_name\": \"find_max\",\n"
+        "    \"arguments\": [\n"
+        "      {\"name\": \"%tensor\", \"type\": \"tensor<128xf32>\"}\n"
+        "    ],\n"
+        "    \"operations\": [\n"
+        "      {\n"
+        "        \"opcode\": \"scf.for\",\n"
+        "        \"lower_bound\": 0,\n"
+        "        \"upper_bound\": 128,\n"
+        "        \"step\": 1,\n"
+        "        \"loop_var\": \"%i\",\n"
+        "        \"iter_args\": {\"%current_max\": 0.0},\n"
+        "        \"results\": [\"%final_max\"],\n"
+        "        \"body\": [\n"
+        "          {\"opcode\": \"tensor.extract\", \"operands\": [\"%tensor\", \"%i\"], \"result\": \"%val\"},\n"
+        "          {\"opcode\": \"arith.cmpf\", \"operands\": [\"%val\", \"%current_max\"], \"result\": \"%is_greater\", \"attributes\": {\"predicate\": 2}},\n"
+        "          {\n"
+        "            \"opcode\": \"scf.if\",\n"
+        "            \"condition\": \"%is_greater\",\n"
+        "            \"results\": [\"%new_max\"],\n"
+        "            \"then_body\": [\n"
+        "              {\"opcode\": \"scf.yield\", \"operands\": [\"%val\"]}\n"
+        "            ],\n"
+        "            \"else_body\": [\n"
+        "              {\"opcode\": \"scf.yield\", \"operands\": [\"%current_max\"]}\n"
+        "            ]\n"
+        "          },\n"
+        "          {\"opcode\": \"scf.yield\", \"operands\": [\"%new_max\"]}\n"
+        "        ]\n"
+        "      }\n"
+        "    ],\n"
+        "    \"returns\": [\"%final_max\"]\n"
+        "  }\n"
+        "}\n"
     )
     
     user_prompt = (
@@ -93,7 +142,13 @@ def main():
             parsed_json = json.loads(clean_json)
             response_obj = MlirResponse(**parsed_json)
             
-            # 2. Translation to MLIR
+            # 2. Semantic AST Validation
+            from core.semantic_validator import SemanticValidator
+            semantic_errors = SemanticValidator.validate(response_obj)
+            if semantic_errors:
+                raise RuntimeError("Multiple Semantic Errors Found:\n" + "\n".join(semantic_errors))
+            
+            # 3. Translation to MLIR
             print("Translating to MLIR Dialects...")
             mlir_code = translator.translate_to_module(response_obj.code)
             
@@ -116,8 +171,26 @@ def main():
         success = False
         print(f"[X] Semantic/Syntactic failure intercepted:\n{error_msg}")
         if tracker: tracker.log_iteration(attempt, user_prompt, raw_response, mlir_code, success, error_msg)
-        
-        user_prompt += f"\n\nYour previous attempt failed with this error:\n{error_msg}\nCorrect the JSON to fix it."
+
+        feedback_context = (
+            f"\n\n--- PREVIOUS ATTEMPT FAILED ---\n"
+            f"You generated this JSON:\n{raw_response}\n\n"
+            f"But it failed semantic validation with the following error(s):\n"
+            f"[COMPILER ERROR]: {error_msg}\n"
+        )
+
+        if "not found in environment" in error_msg:
+            user_prompt += (
+                f"\n\n[COMPILER ERROR]: {error_msg}\n"
+                f"CRITICAL RULE VIOLATION: You used a register that DOES NOT EXIST. "
+                f"In MLIR, you cannot invent variables like '%is_final_pass'. "
+                f"If you need a boolean condition for scf.if, you MUST compute it first using 'arith.cmpf' and assign it to a result register. "
+                f"If you need to return a value, it MUST be the 'result' of a previous operation."
+            )
+        elif "requires a single operand" in error_msg:
+            user_prompt += feedback_context + "Correct the arity of the operation and output the fixed JSON."
+        else:
+            user_prompt += feedback_context + "Analyze the error, correct the logical flaw in the JSON, and output the fixed version."
 
     if tracker: tracker.finish()
     print("\nProcess finished.")

@@ -6,6 +6,7 @@ from google import genai
 from google.genai import types
 import core.config as config
 from core.schemas import MlirResponse
+import time
 
 def run_kimi(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
@@ -121,27 +122,43 @@ def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
     """
     # The remote API expects 'prompt' and 'max_tokens'
     prompt = f"<bos><start_of_turn>user\n{system_p}\n\n{user_p}<end_of_turn>\n<start_of_turn>model\n"
-    
-    payload = {
-        "prompt": prompt,
-        "max_tokens": config.GENERATION_PARAMS["max_tokens"]
-    }
-    
+    payload = {"prompt": prompt, "max_tokens": config.GENERATION_PARAMS["max_tokens"]}
     if schema:
-        # Enviar el schema JSON para que Kaggle aplique XGrammar
-        payload["schema"] = schema.model_json_schema()
-        
-    url = f"{config.REMOTE_MODEL_URL.rstrip('/')}/generate"
-    response = requests.post(url, json=payload, timeout=600)
+        payload["schema_dict"] = schema.model_json_schema()
+
+    url = config.REMOTE_MODEL_URL.rstrip('/')
+    
+    # 1. Lanzar el job (retorna inmediatamente)
+    response = requests.post(f"{url}/generate", json=payload, timeout=30)
     response.raise_for_status()
-    
-    res_text = response.json().get("response", "")
-    
-    # Strip the prompt if it's echoed back
-    if res_text.startswith(prompt):
-        res_text = res_text[len(prompt):].strip()
+    job_id = response.json()["job_id"]
+    print(f"[Remote] Job lanzado: {job_id}. Esperando resultado...")
+
+    # 2. Polling hasta que esté listo
+    poll_interval = 8  # segundos entre cada check
+    max_wait = 600     # 10 minutos máximo
+    elapsed = 0
+
+    while elapsed < max_wait:
+        time.sleep(poll_interval)
+        elapsed += poll_interval
         
-    return res_text
+        status_resp = requests.get(f"{url}/status/{job_id}", timeout=15)
+        status_resp.raise_for_status()
+        data = status_resp.json()
+
+        if data["status"] == "done":
+            res_text = data["response"]
+            # Strip del prompt si viene en el response
+            if res_text.startswith(prompt):
+                res_text = res_text[len(prompt):].strip()
+            return res_text
+        elif data["status"] == "error":
+            raise RuntimeError(f"Error en servidor remoto: {data['error']}")
+        else:
+            print(f"[Remote] Pendiente... ({elapsed}s)")
+
+    raise TimeoutError(f"Job {job_id} no completó en {max_wait}s")
 
 def generate_llm_response(model_name: str, system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
