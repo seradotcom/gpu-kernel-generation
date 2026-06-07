@@ -52,7 +52,7 @@ def run_benchmarks():
         system_prompt = prompt_builder.build_prompt(base_user_prompt, MlirResponse.model_json_schema())
         
         success = False
-        max_retries = 4 # Intentamos hasta 4 veces por kernel
+        max_retries = 3 # Reducido a 3 según petición
         error_history = ""
         
         for attempt in range(max_retries):
@@ -86,8 +86,9 @@ def run_benchmarks():
                     # Accumulate history so the SLM doesn't regress
                     error_history += f"\n- Attempt {attempt+1} errors:\n{error_msg}\n"
                     
+                    snippet = raw_response if len(raw_response) < 1000 else raw_response[:500] + "\n...[TRUNCATED]...\n" + raw_response[-500:]
                     feedback = f"\n\n--- PREVIOUS ATTEMPTS HISTORY ---{error_history}\n"
-                    feedback += f"\nYou generated this code in the last attempt:\n```json\n{code_json_str}\n```\n\n"
+                    feedback += f"\nIn your last attempt, you generated this JSON:\n{snippet}\n\n"
                     
                     if "scf.for loop defines" in error_msg and "iter_args but returns" in error_msg:
                         feedback += "CRITICAL RULE: The number of 'results' in scf.for MUST EXACTLY MATCH the number of 'iter_args'.\n"
@@ -137,11 +138,15 @@ def run_benchmarks():
                     results[name] = {"status": "remote_server_error", "error": str(e)}
             except TimeoutError as e:
                 print(f"  -> Job timed out: {e}")
-                if attempt == max_retries - 1:
-                    results[name] = {"status": "timeout_error"}
+                results[name] = {"status": "timeout_error"}
+                break
             except Exception as e:
                 error_str = str(e)
                 print(f"  -> Pipeline exception: {error_str}")
+                
+                if "CUDA out of memory" in error_str:
+                    results[name] = {"status": "remote_server_error", "error": "CUDA out of memory"}
+                    break
                 
                 error_history += f"\n- Attempt {attempt+1} errors:\n[PYTHON EXCEPTION]: {error_str}\n"
                 
@@ -155,12 +160,23 @@ def run_benchmarks():
                     pass
                 
                 feedback = f"\n\n--- PREVIOUS ATTEMPTS HISTORY ---{error_history}\n"
-                feedback += f"\nYou generated this code in the last attempt:\n```json\n{code_json_str}\n```\n\n"
+                snippet = code_json_str if len(code_json_str) < 500 else code_json_str[:250] + "\n...[TRUNCATED]...\n" + code_json_str[-250:]
+                feedback += f"\nYou generated this code in the last attempt:\n```json\n{snippet}\n```\n\n"
                 
                 if "not found in environment" in error_str:
                     feedback += "CRITICAL RULE VIOLATION: You used a register that DOES NOT EXIST. Every operand must be the 'result' of a previous operation.\n"
                 elif "attributes.value" in error_str:
                     feedback += "CRITICAL RULE: 'arith.constant' MUST have a 'value' field (e.g. \"value\": 0.0) so the compiler knows the numeric value.\n"
+                if "must be floating-point-like, but got '!tt.ptr<f32>'" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The compiler failed because you tried to do Math (like arith.addf) on POINTERS. This happened because you forgot to add explicit 'out_type': 'tensor<...xf32>' to your 'tt.load' operation, so the compiler assumed it returned a pointer instead of math data.\n"
+                if "literal_error" in error_str or "validation errors for MlirResponse" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: Pydantic Schema Validation Failed. Make sure you included 'operands': [] even if the operation takes no operands (like tt.make_range), and ensure your 'out_type' strictly follows the MLIR syntax.\n"
+                if "failed to verify that result type matches ptr type" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: 'tt.addptr' MUST return EXACTLY the same type as its pointer operand! If your input pointer is 'tensor<...x!tt.ptr<f32>>', your 'out_type' MUST also be exactly 'tensor<...x!tt.ptr<f32>>'. Do not change the type or shape!\n"
+                if "operand #1 must be 1-bit signless integer" in error_str and "tt.load" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The mask operand (operand #1) of 'tt.load' or 'tt.store' MUST be a boolean tensor (i1), e.g., 'tensor<1024xi1>'. You passed an i32 tensor instead. Use 'arith.cmpi' to create a boolean mask first!\n"
+                if "'tt.addptr' op operand #0 must be ptr" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The first operand of 'tt.addptr' MUST be a pointer (e.g. '!tt.ptr<f32>'). You passed a math tensor (like 'f32'). You must pass a base pointer, NOT a loaded value!\n"
                     
                 current_user_prompt = base_user_prompt + feedback + "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                 

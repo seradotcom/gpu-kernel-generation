@@ -162,6 +162,12 @@ def main():
             feedback_context += "CRITICAL RULE VIOLATION: You used 'tensor.extract' with the wrong number of indices. DO NOT use 'tensor.extract' to slice a row! To slice a row, you MUST use Triton pointer arithmetic ('tt.make_range', 'tt.splat', 'tt.addptr', 'tt.load').\n"
         if "requires a single operand" in error_msg:
             feedback_context += "CRITICAL RULE: Correct the arity of the operation.\n"
+        if "must be floating-point-like, but got '!tt.ptr<f32>'" in error_msg:
+            feedback_context += "CRITICAL RULE VIOLATION: The compiler failed because you tried to do Math (like arith.addf) on POINTERS. This happened because you forgot to add explicit 'out_type': 'tensor<...xf32>' to your 'tt.load' operation, so the compiler assumed it returned a pointer instead of math data.\n"
+        if "literal_error" in error_msg or "validation errors for MlirResponse" in error_msg:
+            feedback_context += "CRITICAL RULE VIOLATION: Pydantic Schema Validation Failed. Make sure you included 'operands': [] even if the operation takes no operands (like tt.make_range), and ensure your 'out_type' strictly follows the MLIR syntax.\n"
+        if "failed to verify that result type matches ptr type" in error_msg:
+            feedback_context += "CRITICAL RULE VIOLATION: 'tt.addptr' MUST return EXACTLY the same type as its pointer operand! If your input pointer is 'tensor<...x!tt.ptr<f32>>', your 'out_type' MUST also be exactly 'tensor<...x!tt.ptr<f32>>'. Do not change the type or shape!\n"
 
         current_user_prompt = base_user_prompt + feedback_context + "\nAnalyze ALL past errors, correct the logical flaw in the JSON, and output the fixed version."
 

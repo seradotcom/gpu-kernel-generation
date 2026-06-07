@@ -138,6 +138,24 @@ class MLIRTranslator:
                 except Exception:
                     pass
             return ir.F32Type.get()
+            
+        if getattr(opcode, "value", opcode) == "tt.load":
+            if resolved_operands:
+                input_type = resolved_operands[0].type
+                try:
+                    # input_type is tensor<1024x!tt.ptr<f32>>
+                    if ir.ShapedType.isinstance(input_type):
+                        shaped = ir.ShapedType(input_type)
+                        elem_type = shaped.element_type
+                        if "ptr" in str(elem_type): # hacky but works for triton
+                            # In triton !tt.ptr<f32> we want to extract f32
+                            # but we can just assume F32 for now
+                            return ir.RankedTensorType.get(shaped.shape, ir.F32Type.get())
+                    elif "ptr" in str(input_type):
+                        return ir.F32Type.get()
+                except Exception:
+                    pass
+            return ir.F32Type.get()
 
         if resolved_operands:
             return resolved_operands[0].type
@@ -159,11 +177,17 @@ class MLIRTranslator:
                     for name in op_obj.operands:
                         if name is None or name == "none":
                             continue
+                        parsed_num = None
                         if isinstance(name, (int, float)):
+                            parsed_num = name
+                        elif isinstance(name, str) and name.lstrip('-').replace('.','',1).isdigit():
+                            parsed_num = float(name) if '.' in name else int(name)
+
+                        if parsed_num is not None:
                             # Auto-inject arith.constant for literals
-                            is_float = isinstance(name, float)
+                            is_float = isinstance(parsed_num, float)
                             attr_type = ir.F32Type.get() if is_float else ir.IntegerType.get_signless(32)
-                            attr_val = ir.FloatAttr.get(attr_type, float(name)) if is_float else ir.IntegerAttr.get(attr_type, int(name))
+                            attr_val = ir.FloatAttr.get(attr_type, float(parsed_num)) if is_float else ir.IntegerAttr.get(attr_type, int(parsed_num))
                             const_op = ir.Operation.create("arith.constant", results=[attr_type], operands=[], attributes={"value": attr_val})
                             operands.append(const_op.result)
                         else:
@@ -295,10 +319,16 @@ class MLIRTranslator:
                     for name in op_obj.operands:
                         if name is None or name == "none":
                             continue
+                        parsed_num = None
                         if isinstance(name, (int, float)):
-                            is_float = isinstance(name, float)
+                            parsed_num = name
+                        elif isinstance(name, str) and name.lstrip('-').replace('.','',1).isdigit():
+                            parsed_num = float(name) if '.' in name else int(name)
+
+                        if parsed_num is not None:
+                            is_float = isinstance(parsed_num, float)
                             attr_type = ir.F32Type.get() if is_float else ir.IntegerType.get_signless(32)
-                            attr_val = ir.FloatAttr.get(attr_type, float(name)) if is_float else ir.IntegerAttr.get(attr_type, int(name))
+                            attr_val = ir.FloatAttr.get(attr_type, float(parsed_num)) if is_float else ir.IntegerAttr.get(attr_type, int(parsed_num))
                             const_op = ir.Operation.create("arith.constant", results=[attr_type], operands=[], attributes={"value": attr_val})
                             operands.append(const_op.result)
                         else:
@@ -317,10 +347,16 @@ class MLIRTranslator:
                     # iter_args with literal fallback
                     iter_args_values = []
                     for init_val in op_obj.iter_args.values():
+                        parsed_num = None
                         if isinstance(init_val, (int, float)):
-                            is_float = isinstance(init_val, float)
+                            parsed_num = init_val
+                        elif isinstance(init_val, str) and init_val.lstrip('-').replace('.','',1).isdigit():
+                            parsed_num = float(init_val) if '.' in init_val else int(init_val)
+
+                        if parsed_num is not None:
+                            is_float = isinstance(parsed_num, float)
                             attr_type = ir.F32Type.get() if is_float else ir.IntegerType.get_signless(32)
-                            attr_val = ir.FloatAttr.get(attr_type, float(init_val)) if is_float else ir.IntegerAttr.get(attr_type, int(init_val))
+                            attr_val = ir.FloatAttr.get(attr_type, float(parsed_num)) if is_float else ir.IntegerAttr.get(attr_type, int(parsed_num))
                             const_op = ir.Operation.create("arith.constant", results=[attr_type], operands=[], attributes={"value": attr_val})
                             iter_args_values.append(const_op.result)
                         elif init_val in self.value_env:

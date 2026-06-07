@@ -8,46 +8,108 @@ from pydantic import BaseModel, Field
 
 class MLIRType(str, Enum):
     """
-    Allowed MLIR types. Explicitly enumerated to ensure XGrammar
-    enforces them correctly (regex with bounded quantifiers can fail).
+    Tipos MLIR estrictos. Se usa un Enum para evitar que el LLM alucine
+    tamaños de bloque subóptimos (ej. 137) obligándolo a usar potencias de 2.
     """
-    # Scalars
+    # === Escalares base ===
     F32   = "f32"
     F16   = "f16"
     I32   = "i32"
     I1    = "i1"
     INDEX = "index"
 
-    # 1D Tensors - Common sizes in GPU kernels
+    # === Punteros base ===
+    PTR_F32 = "!tt.ptr<f32>"
+    PTR_F16 = "!tt.ptr<f16>"
+    PTR_I32 = "!tt.ptr<i32>"
+
+    # === 1D Tensors: Datos Matemáticos (f32 / f16) ===
+    T_16_F32   = "tensor<16xf32>"
     T_32_F32   = "tensor<32xf32>"
     T_64_F32   = "tensor<64xf32>"
     T_128_F32  = "tensor<128xf32>"
     T_256_F32  = "tensor<256xf32>"
     T_512_F32  = "tensor<512xf32>"
     T_1024_F32 = "tensor<1024xf32>"
+    T_2048_F32 = "tensor<2048xf32>"
+
+    T_16_F16   = "tensor<16xf16>"
     T_32_F16   = "tensor<32xf16>"
     T_64_F16   = "tensor<64xf16>"
     T_128_F16  = "tensor<128xf16>"
     T_256_F16  = "tensor<256xf16>"
     T_512_F16  = "tensor<512xf16>"
     T_1024_F16 = "tensor<1024xf16>"
+    T_2048_F16 = "tensor<2048xf16>"
 
-    # 2D Tensors
+    # === 1D Tensors: Índices/Offsets (Para tt.make_range) ===
+    T_16_I32   = "tensor<16xi32>"
+    T_32_I32   = "tensor<32xi32>"
+    T_64_I32   = "tensor<64xi32>"
+    T_128_I32  = "tensor<128xi32>"
+    T_256_I32  = "tensor<256xi32>"
+    T_512_I32  = "tensor<512xi32>"
+    T_1024_I32 = "tensor<1024xi32>"
+    T_2048_I32 = "tensor<2048xi32>"
+
+    # === 1D Tensors: Máscaras Booleanas (Para arith.cmpf y tt.load) ===
+    T_16_I1   = "tensor<16xi1>"
+    T_32_I1   = "tensor<32xi1>"
+    T_64_I1   = "tensor<64xi1>"
+    T_128_I1  = "tensor<128xi1>"
+    T_256_I1  = "tensor<256xi1>"
+    T_512_I1  = "tensor<512xi1>"
+    T_1024_I1 = "tensor<1024xi1>"
+    T_2048_I1 = "tensor<2048xi1>"
+
+    # === 1D Tensors: Tensores de Punteros (Para tt.splat y tt.addptr) ===
+    T_16_PTR_F32   = "tensor<16x!tt.ptr<f32>>"
+    T_32_PTR_F32   = "tensor<32x!tt.ptr<f32>>"
+    T_64_PTR_F32   = "tensor<64x!tt.ptr<f32>>"
+    T_128_PTR_F32  = "tensor<128x!tt.ptr<f32>>"
+    T_256_PTR_F32  = "tensor<256x!tt.ptr<f32>>"
+    T_512_PTR_F32  = "tensor<512x!tt.ptr<f32>>"
+    T_1024_PTR_F32 = "tensor<1024x!tt.ptr<f32>>"
+    T_2048_PTR_F32 = "tensor<2048x!tt.ptr<f32>>"
+
+    T_16_PTR_F16   = "tensor<16x!tt.ptr<f16>>"
+    T_32_PTR_F16   = "tensor<32x!tt.ptr<f16>>"
+    T_64_PTR_F16   = "tensor<64x!tt.ptr<f16>>"
+    T_128_PTR_F16  = "tensor<128x!tt.ptr<f16>>"
+    T_256_PTR_F16  = "tensor<256x!tt.ptr<f16>>"
+    T_512_PTR_F16  = "tensor<512x!tt.ptr<f16>>"
+    T_1024_PTR_F16 = "tensor<1024x!tt.ptr<f16>>"
+    T_2048_PTR_F16 = "tensor<2048x!tt.ptr<f16>>"
+
+    # === 2D Tensors: Bloques para Matmul, Softmax 2D, LayerNorm ===
+    # (Tamaños simétricos)
+    T_16x16_F32   = "tensor<16x16xf32>"
+    T_32x32_F32   = "tensor<32x32xf32>"
     T_64x64_F32   = "tensor<64x64xf32>"
+    T_128x128_F32 = "tensor<128x128xf32>"
+    T_256x256_F32 = "tensor<256x256xf32>"
+
+    # (Tamaños asimétricos típicos)
+    T_32x64_F32   = "tensor<32x64xf32>"
+    T_64x32_F32   = "tensor<64x32xf32>"
     T_64x128_F32  = "tensor<64x128xf32>"
     T_128x64_F32  = "tensor<128x64xf32>"
-    T_128x128_F32 = "tensor<128x128xf32>"
-    T_64x64_F16   = "tensor<64x64xf16>"
-    T_64x128_F16  = "tensor<64x128xf16>"
-    T_128x64_F16  = "tensor<128x64xf16>"
-    T_128x128_F16 = "tensor<128x128xf16>"
+    
+    # (Lo mismo para i32 (offsets), i1 (máscaras) y Punteros en 2D)
+    T_16x16_I32   = "tensor<16x16xi32>"
+    T_32x32_I32   = "tensor<32x32xi32>"
+    T_64x64_I32   = "tensor<64x64xi32>"
+    T_128x128_I32 = "tensor<128x128xi32>"
 
-    # Triton Pointers
-    PTR_F32 = "!tt.ptr<f32>"
-    PTR_F16 = "!tt.ptr<f16>"
+    T_16x16_I1   = "tensor<16x16xi1>"
+    T_32x32_I1   = "tensor<32x32xi1>"
+    T_64x64_I1   = "tensor<64x64xi1>"
+    T_128x128_I1 = "tensor<128x128xi1>"
 
-    T_256_I32 = "tensor<256xi32>"
-    T_256_PTR_F32 = "tensor<256x!tt.ptr<f32>>"
+    T_16x16_PTR_F32   = "tensor<16x16x!tt.ptr<f32>>"
+    T_32x32_PTR_F32   = "tensor<32x32x!tt.ptr<f32>>"
+    T_64x64_PTR_F32   = "tensor<64x64x!tt.ptr<f32>>"
+    T_128x128_PTR_F32 = "tensor<128x128x!tt.ptr<f32>>"
     
 class MlirOpcode(str, Enum):
     # Arith Dialect
