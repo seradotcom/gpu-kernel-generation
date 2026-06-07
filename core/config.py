@@ -16,14 +16,18 @@ if os.path.exists(MLIR_BINDINGS_PATH):
 else:
     print(f"[Warning] Native MLIR binding not found at {MLIR_BINDINGS_PATH}. Ensure LLVM is compiled.")
 
-# --- API KEYS ---
+# --- API KEYS & ADC SETUP ---
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 WANDB_API_KEY = os.getenv("WANDB_API_KEY", "")
 
+# Google Cloud Vertex AI Settings
+GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID", "TU_ID_DE_PROYECTO")
+GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
+
 # --- MODEL CONFIGURATION ---
 MODEL_KIMI = "meta/llama-3.1-405b-instruct" # Proxy model in Nvidia API
-MODEL_GEMINI = "gemini-3.1-flash-lite"      # Gemini model
+MODEL_GEMINI = "gemini-2.5-flash"      # Gemini model
 MODEL_OLLAMA = "gemma4:e2b"                 # Local Ollama model
 
 OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"

@@ -46,28 +46,29 @@ class TritonBackend:
             raise ImportError("Triton is not installed in this environment.")
             
         # Target hardware parameters.
-        # In production, extract dynamically with `torch.cuda.get_device_capability()`.
-        # Assuming Ampere (sm_80) or Hopper for research purposes.
-        compute_capability = 80  
+        # En producción se extrae dinámicamente con `torch.cuda.get_device_capability()`.
+        # GTX 1650 usa arquitectura Turing (Compute Capability 7.5 -> 75)
+        compute_capability = 75  
         
         # Triton internal compilation options.
-        # Mimicking what triton.jit does under the hood.
-        options = tc.ASTSource(
-            fn=None, # No Python function exists
-            signature={}, # Inferred from TTIR
-            constants={}
-        )
+        import tempfile
+        from triton.backends.compiler import GPUTarget
         
-        # triton.compiler.compile receives a .ttir, .llir, or .ptx string.
-        # We explicitly tell it to compile towards the 'ptx' target.
         try:
-            # In recent Triton versions (3.0+), `compile` signature varies.
-            # We usually use 'src' as the string or make_backend.
+            target = GPUTarget("cuda", compute_capability, 32)
+            with tempfile.NamedTemporaryFile(suffix=".ttir", delete=False) as f:
+                f.write(ttir_string.encode("utf-8"))
+                temp_filename = f.name
+                
             compiled_kernel = tc.compile(
-                src=ttir_string,
-                target=("cuda", compute_capability),
+                src=temp_filename,
+                target=target,
                 options={"num_warps": num_warps, "num_stages": num_stages}
             )
+            
+            # Remove temporary file
+            if os.path.exists(temp_filename):
+                os.remove(temp_filename)
             
             # compiled_kernel contains the final ASM code (PTX) and shared memory used
             return compiled_kernel.asm["ptx"]

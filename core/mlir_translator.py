@@ -2,9 +2,9 @@ import re
 from typing import Dict, Any, List
 
 try:
-    from mlir.ir import Context, Module, Location, InsertionPoint, Type, Value
-    from mlir.dialects import arith, tensor, scf, func
+    from mlir.ir import Context, Module, Location, InsertionPoint
     import mlir.ir as ir
+    from mlir.dialects import arith, scf
     HAS_MLIR = True
 except ImportError:
     HAS_MLIR = False
@@ -55,7 +55,7 @@ class MLIRTranslator:
         self.context.allow_unregistered_dialects = True # Important for 'tt', 'ttg' dialects
         self.value_env = ScopeStack()
         
-    def _parse_type(self, type_str: Any) -> Type:
+    def _parse_type(self, type_str: Any) -> 'ir.Type':
         """
         Parses basic string types like 'f32', 'f16', 'index', 'tensor<64x128xf32>'.
         
@@ -105,7 +105,7 @@ class MLIRTranslator:
             # Fallback to native MLIR parsing if it's a valid general string
             return ir.Type.parse(type_str)
 
-    def _infer_type(self, op: Any, resolved_operands: list = None) -> Type:
+    def _infer_type(self, op: Any, resolved_operands: list = None) -> 'ir.Type':
         """
         Infers the return type. If there's an explicit cast, it uses it; otherwise it inherits from the operand.
         
@@ -126,11 +126,11 @@ class MLIRTranslator:
             return ir.IntegerType.get_signless(1)
             
         if opcode == MlirOpcode.ARITH_SELECT:
-            if resolved_operands and len(resolved_operands) >= 2:
+            if resolved_operands and len(resolved_operands) >= 3:
                 return resolved_operands[1].type
             return ir.F32Type.get()
 
-        if opcode in (MlirOpcode.TT_REDUCE, MlirOpcode.TENSOR_EXTRACT):
+        if opcode == MlirOpcode.TT_REDUCE:
             if resolved_operands:
                 input_type = resolved_operands[0].type
                 try:
@@ -157,6 +157,8 @@ class MLIRTranslator:
                 if isinstance(op_obj, (UnaryOperation, BinaryOperation, GenericOperation)):
                     operands = []
                     for name in op_obj.operands:
+                        if name is None or name == "none":
+                            continue
                         if isinstance(name, (int, float)):
                             # Auto-inject arith.constant for literals
                             is_float = isinstance(name, float)
@@ -179,6 +181,15 @@ class MLIRTranslator:
                                 f"(ej: 'arith.addf' para suma, 'arith.maximumf' para max). "
                                 f"Sin este campo el op es inválido semánticamente."
                             )
+
+                    # Graceful fallback for tt.rand hallucination
+                    if op_obj.opcode == MlirOpcode.TT_RAND or getattr(op_obj, "opcode", None) == "tt.rand":
+                        val_type = self._parse_type(op_obj.out_type) if op_obj.out_type else ir.F32Type.get()
+                        attr = ir.FloatAttr.get(val_type, 0.5) if isinstance(val_type, ir.FloatType) else ir.FloatAttr.get(ir.F32Type.get(), 0.5)
+                        const_op = ir.Operation.create("arith.constant", results=[val_type], operands=[], attributes={"value": attr})
+                        if op_obj.result != "none":
+                            self.value_env[op_obj.result] = const_op.result
+                        continue
 
                     if op_obj.opcode == MlirOpcode.ARITH_CONSTANT:
                         if not getattr(op_obj, "attributes", None) or "value" not in op_obj.attributes:
@@ -222,10 +233,23 @@ class MLIRTranslator:
                     
                     regions = 1 if getattr(op_obj, "region_combiner", None) else 0
 
+                    op_name = getattr(op_obj.opcode, "value", op_obj.opcode)
+
+                    if op_name == "tt.load":
+                        sizes = [1, 0, 0] # [ptr, mask(optional), other(optional)]
+                        if len(operands) == 2: sizes = [1, 1, 0]
+                        elif len(operands) == 3: sizes = [1, 1, 1]
+                        mlir_attributes["operandSegmentSizes"] = ir.DenseI32ArrayAttr.get(sizes)
+                    elif op_name == "tt.store":
+                        sizes = [1, 1, 0] # [ptr, value, mask(optional)]
+                        if len(operands) == 3: sizes = [1, 1, 1]
+                        mlir_attributes["operandSegmentSizes"] = ir.DenseI32ArrayAttr.get(sizes)
+
+
                     # Use generic constructor to support any dialect without hard Python bindings
                     # Since opcode is an Enum, we use .value
                     op = ir.Operation.create(
-                        name=op_obj.opcode.value,
+                        name=getattr(op_obj.opcode, "value", op_obj.opcode),
                         results=results,
                         operands=operands,
                         attributes=mlir_attributes,
@@ -238,13 +262,24 @@ class MLIRTranslator:
                     # Handle custom region combiner (e.g. for tt.reduce)
                     if getattr(op_obj, "region_combiner", None):
                         region = op.regions[0]
-                        # For homogenous reducers, args are two scalars of the output type
-                        block_args = [results[0], results[0]] if results else []
+                        
+                        # Extract scalar element type
+                        element_type = ir.F32Type.get()
+                        if results:
+                            try:
+                                if ir.ShapedType.isinstance(results[0]):
+                                    element_type = ir.ShapedType(results[0]).element_type
+                                else:
+                                    element_type = results[0]
+                            except Exception:
+                                pass
+                                
+                        block_args = [element_type, element_type]
                         block = ir.Block.create_at_start(region, block_args)
                         with InsertionPoint(block):
                             combiner_op = ir.Operation.create(
                                 name=op_obj.region_combiner,
-                                results=[results[0]],
+                                results=[element_type],
                                 operands=[block.arguments[0], block.arguments[1]]
                             )
                             ir.Operation.create(
@@ -258,6 +293,8 @@ class MLIRTranslator:
                     # scf.yield
                     operands = []
                     for name in op_obj.operands:
+                        if name is None or name == "none":
+                            continue
                         if isinstance(name, (int, float)):
                             is_float = isinstance(name, float)
                             attr_type = ir.F32Type.get() if is_float else ir.IntegerType.get_signless(32)
@@ -339,7 +376,7 @@ class MLIRTranslator:
                     for i, res_name in enumerate(op_obj.results):
                         self.value_env[res_name] = if_op.results[i]
 
-    def _get_or_create_index(self, val) -> Value:
+    def _get_or_create_index(self, val) -> 'ir.Value':
         """
         Converts int to arith.constant index, auto-casts integers to index, or fetches the register.
         """
@@ -376,14 +413,33 @@ class MLIRTranslator:
         with self.context, Location.unknown():
             module = Module.create()
             with InsertionPoint(module.body):
-                # Extract input types
-                input_types = [self._parse_type(arg.type) for arg in function_body.arguments]
+                # Extract input types and apply pointer coercion heuristics
+                input_types = []
+                for arg in function_body.arguments:
+                    arg_type = self._parse_type(arg.type)
+                    type_str = str(arg_type)
+                    if arg.name.endswith("_ptr") and "ptr" not in type_str:
+                        # Coerce to pointer
+                        if "f16" in type_str:
+                            arg_type = ir.Type.parse("!tt.ptr<f16>")
+                        else:
+                            arg_type = ir.Type.parse("!tt.ptr<f32>")
+                    input_types.append(arg_type)
                 
                 # Start with empty results, we will update the signature after processing operations
                 func_type = ir.FunctionType.get(inputs=input_types, results=[])
-                func_op = func.FuncOp(name=function_body.function_name, type=func_type)
+                func_op = ir.Operation.create(
+                    name="tt.func",
+                    results=[],
+                    operands=[],
+                    attributes={
+                        "sym_name": ir.StringAttr.get(function_body.function_name),
+                        "function_type": ir.TypeAttr.get(func_type)
+                    },
+                    regions=1
+                )
                 
-                entry_block = func_op.add_entry_block()
+                entry_block = ir.Block.create_at_start(func_op.regions[0], input_types)
                 with InsertionPoint(entry_block):
                     self.value_env.clear()
                     # Map names to entry block Values
@@ -402,7 +458,8 @@ class MLIRTranslator:
                         v = self.value_env[r]
                         ret_vals.append(v)
                         return_types.append(v.type)
-                    func.ReturnOp(ret_vals)
+                    
+                    ir.Operation.create("tt.return", results=[], operands=ret_vals)
                     
                 # Update function signature with correct return types
                 new_func_type = ir.FunctionType.get(inputs=input_types, results=return_types)

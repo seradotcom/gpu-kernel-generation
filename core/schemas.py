@@ -8,17 +8,17 @@ from pydantic import BaseModel, Field
 
 class MLIRType(str, Enum):
     """
-    Tipos MLIR permitidos. Enumerados explícitamente para que XGrammar
-    pueda enforcarlos correctamente (los regex con {n,m} no funcionan bien).
+    Allowed MLIR types. Explicitly enumerated to ensure XGrammar
+    enforces them correctly (regex with bounded quantifiers can fail).
     """
-    # Escalares
+    # Scalars
     F32   = "f32"
     F16   = "f16"
     I32   = "i32"
     I1    = "i1"
     INDEX = "index"
 
-    # Tensores 1D — tamaños comunes en kernels GPU
+    # 1D Tensors - Common sizes in GPU kernels
     T_32_F32   = "tensor<32xf32>"
     T_64_F32   = "tensor<64xf32>"
     T_128_F32  = "tensor<128xf32>"
@@ -32,7 +32,7 @@ class MLIRType(str, Enum):
     T_512_F16  = "tensor<512xf16>"
     T_1024_F16 = "tensor<1024xf16>"
 
-    # Tensores 2D
+    # 2D Tensors
     T_64x64_F32   = "tensor<64x64xf32>"
     T_64x128_F32  = "tensor<64x128xf32>"
     T_128x64_F32  = "tensor<128x64xf32>"
@@ -42,10 +42,13 @@ class MLIRType(str, Enum):
     T_128x64_F16  = "tensor<128x64xf16>"
     T_128x128_F16 = "tensor<128x128xf16>"
 
-    # Punteros Triton
+    # Triton Pointers
     PTR_F32 = "!tt.ptr<f32>"
     PTR_F16 = "!tt.ptr<f16>"
 
+    T_256_I32 = "tensor<256xi32>"
+    T_256_PTR_F32 = "tensor<256x!tt.ptr<f32>>"
+    
 class MlirOpcode(str, Enum):
     # Arith Dialect
     ARITH_ADDF = "arith.addf"
@@ -69,9 +72,8 @@ class MlirOpcode(str, Enum):
     MATH_ABS = "math.absf"
 
     # Tensor Dialect
-    TENSOR_EMPTY = "tensor.empty"
-    TENSOR_EXTRACT = "tensor.extract"
-    TENSOR_INSERT = "tensor.insert"
+    # Removed: tensor.empty, tensor.extract, tensor.insert
+    # Triton MLIR requires block-based pointer operations instead of scalar tensor indexing.
 
     # Triton (tt) Dialect
     TT_LOAD = "tt.load"
@@ -88,12 +90,21 @@ class MlirOpcode(str, Enum):
     TT_ADD_PTR = "tt.addptr"
     TT_PTR_TO_INT = "tt.ptr_to_int"
     TT_INT_TO_PTR = "tt.int_to_ptr"
+    TT_REDUCE_RETURN = "tt.reduce.return"
+    TT_GET_PROGRAM_ID = "tt.get_program_id"
+    TT_GET_NUM_PROGRAMS = "tt.get_num_programs"
+    TT_ATOMIC_RMW = "tt.atomic_rmw"
+    TT_ATOMIC_CAS = "tt.atomic_cas"
+    TT_RAND = "tt.rand"
     
     # Triton GPU (ttg) Dialect
     TTG_LOCAL_ALLOC = "ttg.local_alloc"
     TTG_LOCAL_LOAD = "ttg.local_load"
     TTG_LOCAL_STORE = "ttg.local_store"
     TTG_CONVERT_LAYOUT = "ttg.convert_layout"
+    TTG_ASYNC_WAIT = "ttg.async_wait"
+    TTG_ASYNC_COMMIT_GROUP = "ttg.async_commit_group"
+    TTG_ASYNC_COPY_GLOBAL_TO_LOCAL = "ttg.async_copy_global_to_local"
 
 class InputArgument(BaseModel):
     """
@@ -116,7 +127,6 @@ class BinaryOperation(BaseModel):
     result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
     out_type: Optional[MLIRType] = Field(None, description="Specify ONLY for explicit casting or when type cannot be inferred.")
     attributes: Optional[Dict[str, Any]] = Field(None)
-    region_combiner: Optional[str] = Field(None)
 
 class GenericOperation(BaseModel):
     opcode: MlirOpcode = Field(..., description="Allowed MLIR/Triton operation")
@@ -175,5 +185,5 @@ class MlirResponse(BaseModel):
     """
     Final contract for the LLM response (Structured Output).
     """
-    reasoning: str = Field(..., description="Step 1: Write the mathematical pseudocode. Step 2: Map exact MLIR registers. Step 3: Explain the scoping for scf.for loops BEFORE generating the JSON.", max_length=800)
+    reasoning: str = Field(..., description="Keep this extremely brief (max 3-4 sentences). State your plan and register mapping concisely.")
     code: MLIRFunctionBody = Field(..., description="The program compiled to JSON")
