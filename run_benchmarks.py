@@ -18,6 +18,10 @@ from core.mlops_tracker import MLOpsTracker
 def run_benchmarks():
     print("=== Starting TritonBench LLM-MLIR Evaluator with Triton Python Feedback Loop ===")
     
+    # Setup output directory for artifacts
+    os.makedirs("output", exist_ok=True)
+    print("[Info] Artifacts will be saved to ./output/")
+    
     prompts_file = "benchmark_prompts.json"
     if not os.path.exists(prompts_file):
         print(f"Error: {prompts_file} not found. Creating a default one with Phase 1 prompts.")
@@ -70,8 +74,13 @@ def run_benchmarks():
         for attempt in range(max_retries):
             raw_response = ""
             try:
-                print(f"  [Attempt {attempt+1}/{max_retries}] Generating JSON via LLM...")
+                print(f"  [Attempt {attempt+1}/{max_retries}] Stage 1/5: Calling Gemini API...")
                 raw_response = generate_llm_response("gemini", system_prompt, current_user_prompt, schema=MlirResponse)
+                print(f"    -> LLM responded ({len(raw_response)} chars)")
+                
+                # Save raw response for debugging
+                with open(f"output/{name}_attempt{attempt+1}_raw.txt", "w") as f:
+                    f.write(raw_response)
                 
                 clean_json = raw_response.strip()
                 import re
@@ -81,8 +90,8 @@ def run_benchmarks():
                 if json_match:
                     clean_json = json_match.group(1).strip()
                 else:
-                    # Remove <think>...</think> blocks
-                    clean_json = re.sub(r'<think>.*?</think>', '', clean_json, flags=re.DOTALL).strip()
+                    # Remove markdown code blocks
+                    clean_json = re.sub(r'```.*?```', '', clean_json, flags=re.DOTALL).strip()
                     # Try to find outermost braces
                     brace_match = re.search(r'(\{.*\})', clean_json, flags=re.DOTALL)
                     if brace_match:
@@ -90,35 +99,60 @@ def run_benchmarks():
                     else:
                         clean_json = clean_json.strip()
                 
+                print(f"    -> Extracted JSON ({len(clean_json)} chars)")
+                print(f"    -> JSON preview: {clean_json[:200]}...")
+                
                 response_json = json.loads(clean_json)
                 mlir_obj = MlirResponse(**response_json)
+                print("    -> Pydantic validation PASSED")
                 
-                print("  [2/5] Validating MLIR Semantics...")
+                # Save parsed JSON
+                with open(f"output/{name}_attempt{attempt+1}_parsed.json", "w") as f:
+                    json.dump(response_json, f, indent=2)
+                
+                print("  [2/5] Stage 2/5: Validating MLIR Semantics...")
                 semantic_errors = validator.validate(mlir_obj)
                 if semantic_errors:
                     error_msg = "\n".join(semantic_errors)
-                    print(f"    -> Semantic validation failed")
+                    print(f"    -> Semantic validation FAILED")
+                    print(f"    -> Errors: {error_msg[:500]}")
                     error_history += f"\n- Attempt {attempt+1} semantic errors:\n{error_msg}\n"
                     feedback = _build_feedback(error_history, raw_response, error_msg)
                     current_user_prompt = base_user_prompt + feedback
                     if tracker:
                         tracker.log_iteration(attempt, base_user_prompt, raw_response, "", False, error_msg)
                     continue
+                print("    -> Semantic validation PASSED")
                 
-                print("  [3/5] Translating to MLIR and verifying...")
+                print("  [3/5] Stage 3/5: Translating to MLIR and verifying...")
                 mlir_code = translator.translate_to_module(mlir_obj.code)
-                print(f"    -> MLIR verification passed")
+                print(f"    -> MLIR verification PASSED")
+                print(f"\n=== MLIR OUTPUT for {name} ===")
+                print(mlir_code)
+                print("=== END MLIR ===\n")
                 
-                print("  [4/5] Generating Triton Python from verified JSON...")
+                # Save MLIR code
+                with open(f"output/{name}_attempt{attempt+1}.mlir", "w") as f:
+                    f.write(mlir_code)
+                
+                print("  [4/5] Stage 4/5: Generating Triton Python from verified JSON...")
                 triton_python = triton_generator.generate(mlir_obj.code)
-                print(f"    -> Generated Triton Python:\n{triton_python}")
+                print(f"    -> Triton Python generation PASSED")
+                print(f"\n=== TRITON PYTHON for {name} ===")
+                print(triton_python)
+                print("=== END TRITON PYTHON ===\n")
                 
-                print("  [5/5] Compiling and benchmarking Triton kernel...")
+                # Save Triton Python code
+                with open(f"output/{name}_attempt{attempt+1}.py", "w") as f:
+                    f.write(triton_python)
+                
+                print("  [5/5] Stage 5/5: Compiling and benchmarking Triton kernel...")
                 exec_result = triton_executor.run(triton_python, n_elements=1024, warmup=2, reps=10)
                 
                 if not exec_result["success"]:
                     error_msg = exec_result["error"]
-                    print(f"    -> Triton execution failed:\n{error_msg}")
+                    print(f"    -> Triton execution FAILED")
+                    print(f"    -> Error: {error_msg[:500]}")
                     error_history += f"\n- Attempt {attempt+1} Triton execution error:\n{error_msg}\n"
                     feedback = _build_feedback(error_history, raw_response, error_msg)
                     current_user_prompt = base_user_prompt + feedback
@@ -153,8 +187,15 @@ def run_benchmarks():
                 results[name] = {"status": "timeout_error"}
                 break
             except Exception as e:
+                import traceback
                 error_str = str(e)
+                full_traceback = traceback.format_exc()
                 print(f"  -> Pipeline exception: {error_str}")
+                print(f"  -> Full traceback:\n{full_traceback[:1000]}")
+                
+                # Save error for debugging
+                with open(f"output/{name}_attempt{attempt+1}_error.txt", "w") as f:
+                    f.write(full_traceback)
                 
                 error_history += f"\n- Attempt {attempt+1} exception:\n{error_str}\n"
                 
@@ -187,6 +228,8 @@ def run_benchmarks():
                     feedback += "CRITICAL RULE VIOLATION: The first operand of 'tt.addptr' MUST be a pointer (e.g. '!tt.ptr<f32>'). You passed a math tensor (like 'f32'). You must pass a base pointer, NOT a loaded value!\n"
                 if "JSONDecodeError" in error_str or "Expecting value:" in error_str or "Unterminated string" in error_str:
                     feedback += "CRITICAL RULE VIOLATION: The JSON is invalid or truncated. This happens when you hit the token limit! You MUST be more concise, use 'scf.for' loops instead of unrolling manually, DO NOT generate redundant operations or duplicate constants, and ensure the JSON is fully closed.\n"
+                if "@triton.jit" in error_str or "jit functions should be defined" in error_str:
+                    feedback += "CRITICAL RULE: The Triton kernel must be defined in a proper Python file. Do not use eval/exec.\n"
                     
                 current_user_prompt = base_user_prompt + feedback + "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                 
@@ -210,6 +253,18 @@ def run_benchmarks():
             print(f"{k.ljust(20)}: {status} (Attempts: {attempts}, Correct: {correct}, Speedup: {speedup:.2f}x)")
         else:
             print(f"{k.ljust(20)}: {status} (Attempts: {attempts})")
+    
+    # List generated artifacts
+    print("\n=== Generated Artifacts ===")
+    if os.path.exists("output"):
+        artifacts = sorted(os.listdir("output"))
+        if artifacts:
+            for f in artifacts:
+                print(f"  output/{f}")
+        else:
+            print("  (no artifacts generated)")
+    else:
+        print("  (output directory missing)")
 
 
 def _build_feedback(error_history: str, raw_response: str, error_msg: str) -> str:

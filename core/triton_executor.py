@@ -59,10 +59,19 @@ class TritonExecutor:
             result["error"] = "Triton is not installed in this environment. Cannot compile or execute GPU kernels."
             return result
 
-        # --- 1. Compile the kernel code ---
-        namespace = {}
+        # --- 1. Write kernel to a real .py file (Triton's @triton.jit needs inspect.getsourcelines) ---
+        import tempfile
+        import importlib.util
+        
         try:
-            exec(triton_code, namespace)
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+                f.write(triton_code)
+                temp_path = f.name
+            
+            spec = importlib.util.spec_from_file_location("temp_kernel", temp_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            namespace = module.__dict__
         except Exception as e:
             result["error"] = f"Triton Python compilation failed:\n{traceback.format_exc()}"
             return result

@@ -2,13 +2,5 @@
   "vector_add": {
     "difficulty": "easy",
     "prompt": "Generate a Triton kernel that performs element-wise addition of two float32 vectors (A + B = C) using pointer arithmetic with a block size of 256. The kernel should take three pointer arguments: A_ptr, B_ptr, C_ptr. Use tt.make_range to create offsets, tt.splat and tt.addptr for pointer arithmetic, tt.load to read values, arith.addf to add them, and tt.store to write the result."
-  },
-  "element_mul": {
-    "difficulty": "easy",
-    "prompt": "Generate a Triton kernel that performs element-wise multiplication of two float32 vectors (A * B = C) using pointer arithmetic with a block size of 256. The kernel should take three pointer arguments: A_ptr, B_ptr, C_ptr. Use tt.make_range to create offsets, tt.splat and tt.addptr for pointer arithmetic, tt.load to read values, arith.mulf to multiply them, and tt.store to write the result."
-  },
-  "element_exp": {
-    "difficulty": "easy",
-    "prompt": "Generate a Triton kernel that computes the element-wise exponential of a float32 vector (exp(A) = B) using pointer arithmetic with a block size of 256. The kernel should take two pointer arguments: A_ptr, B_ptr. Use tt.make_range, tt.splat, tt.addptr, tt.load, math.exp, and tt.store."
   }
 }
