@@ -1,4 +1,5 @@
 torch
+triton
 wandb
 google-genai
 requests

@@ -1,0 +1,11 @@
+
+# Auto-generated / extracted
+.mlr_bindings/
+.mlir_bindings/
+__pycache__/
+core/__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+output_ptx/
+output/

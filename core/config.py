@@ -1,5 +1,6 @@
 import os
 import sys
+import tarfile
 from dotenv import load_dotenv
 
 # Load variables from .env file if it exists
@@ -7,14 +8,40 @@ load_dotenv()
 
 # --- NATIVE MLIR ENVIRONMENT SETUP ---
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# Assumes llvm-project is inside the main llm-mlir-compiler directory
-LLVM_PROJECT_DIR = os.path.join(PROJECT_ROOT, "llvm-project")
-MLIR_BINDINGS_PATH = os.path.join(LLVM_PROJECT_DIR, "build", "tools", "mlir", "python_packages", "mlir_core")
 
-if os.path.exists(MLIR_BINDINGS_PATH):
-    sys.path.append(MLIR_BINDINGS_PATH)
-else:
-    print(f"[Warning] Native MLIR binding not found at {MLIR_BINDINGS_PATH}. Ensure LLVM is compiled.")
+# 1. Try tarball first (GitHub Actions artifact)
+TARBALL_PATH = os.path.join(PROJECT_ROOT, "mlir-pybindings.tar.gz")
+EXTRACT_DIR = os.path.join(PROJECT_ROOT, ".mlir_bindings")
+TARBALL_MLIR_PATH = os.path.join(EXTRACT_DIR, "llvm-install", "python_packages", "mlir_core")
+
+MLIR_BINDINGS_PATH = None
+
+if os.path.exists(TARBALL_MLIR_PATH):
+    sys.path.append(TARBALL_MLIR_PATH)
+    MLIR_BINDINGS_PATH = TARBALL_MLIR_PATH
+    print(f"[Info] Using extracted MLIR bindings from tarball: {TARBALL_MLIR_PATH}")
+elif os.path.exists(TARBALL_PATH):
+    print(f"[Info] Extracting MLIR bindings tarball to {EXTRACT_DIR}...")
+    os.makedirs(EXTRACT_DIR, exist_ok=True)
+    with tarfile.open(TARBALL_PATH, "r:gz") as tar:
+        tar.extractall(path=EXTRACT_DIR)
+    if os.path.exists(TARBALL_MLIR_PATH):
+        sys.path.append(TARBALL_MLIR_PATH)
+        MLIR_BINDINGS_PATH = TARBALL_MLIR_PATH
+        print(f"[Info] MLIR bindings extracted and ready: {TARBALL_MLIR_PATH}")
+    else:
+        print(f"[Warning] Tarball extraction did not produce expected path: {TARBALL_MLIR_PATH}")
+
+# 2. Fallback to local llvm-project build
+if MLIR_BINDINGS_PATH is None:
+    LLVM_PROJECT_DIR = os.path.join(PROJECT_ROOT, "llvm-project")
+    LOCAL_MLIR_PATH = os.path.join(LLVM_PROJECT_DIR, "build", "tools", "mlir", "python_packages", "mlir_core")
+    if os.path.exists(LOCAL_MLIR_PATH):
+        sys.path.append(LOCAL_MLIR_PATH)
+        MLIR_BINDINGS_PATH = LOCAL_MLIR_PATH
+        print(f"[Info] Using local MLIR build: {LOCAL_MLIR_PATH}")
+    else:
+        print(f"[Warning] No MLIR bindings found. Tried tarball ({TARBALL_PATH}) and local build ({LOCAL_MLIR_PATH}).")
 
 # --- API KEYS & ADC SETUP ---
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")
