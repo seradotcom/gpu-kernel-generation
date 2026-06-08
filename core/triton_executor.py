@@ -91,8 +91,24 @@ class TritonExecutor:
 
         # --- 3. Infer signature from the kernel function ---
         import inspect
-        sig = inspect.signature(kernel_fn.kernel)
-        params = list(sig.parameters.keys())
+        # Triton JITFunction: .kernel may be None until compilation.
+        # Use arg_names (stable across versions) or inspect the wrapper itself.
+        if hasattr(kernel_fn, "arg_names") and kernel_fn.arg_names:
+            params = list(kernel_fn.arg_names)
+        else:
+            try:
+                sig = inspect.signature(kernel_fn)
+                params = list(sig.parameters.keys())
+            except Exception:
+                params = []
+        
+        # Fallback: parse function definition from source if inspect fails
+        if not params:
+            import re
+            src_match = re.search(r"def\s+\w+\s*\((.*?)\)", triton_code, re.DOTALL)
+            if src_match:
+                param_str = src_match.group(1)
+                params = [p.strip().split("=")[0].split(":")[0].strip() for p in param_str.split(",") if p.strip()]
 
         # --- 4. Create test tensors ---
         try:
@@ -161,6 +177,14 @@ class TritonExecutor:
             result["ref_time_ms"] = ref_time_ms
 
         result["success"] = True
+        
+        # --- Cleanup temp file ---
+        try:
+            if 'temp_path' in locals() and os.path.exists(temp_path):
+                os.remove(temp_path)
+        except Exception:
+            pass
+        
         return result
 
     def _create_test_tensors(self, param_names: list, n_elements: int) -> list:
