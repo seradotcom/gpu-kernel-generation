@@ -129,7 +129,11 @@ def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
     Makes a request to the remote Kaggle endpoint.
     """
     # The remote API expects 'prompt' and 'max_tokens'
-    prompt = f"<bos><start_of_turn>user\n{system_p}\n\n{user_p}<end_of_turn>\n<start_of_turn>model\n"
+    prompt = (
+        f"<|im_start|>system\n{system_p}<|im_end|>\n"
+        f"<|im_start|>user\n{user_p}<|im_end|>\n"
+        f"<|im_start|>assistant\n"
+    )
     payload = {"prompt": prompt, "max_tokens": config.GENERATION_PARAMS["max_tokens"]}
     if schema:
         payload["schema_dict"] = schema.model_json_schema()

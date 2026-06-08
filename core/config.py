@@ -37,7 +37,7 @@ REMOTE_MODEL_URL = os.getenv("GEMMA_API_URL", "https://unsubtly-dash-economy.ngr
 
 # Strict parameters for code generation
 GENERATION_PARAMS = {
-    "max_tokens": 4096,
+    "max_tokens":  768,
     "temperature": 0.1,  # Low temperature for determinism in code generation
     "top_p": 0.9,
 }

@@ -1,0 +1,26 @@
+{
+  "vec_ceil_kernel": {
+    "difficulty": "easy",
+    "prompt": "Apply CEIL element-wise to vector A into C. Arguments in order: input pointer A, then output pointer C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use math.ceil."
+  },
+  "vec_sum3_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add three vectors A, B and C element-wise into output D. Arguments in order: input pointer A, input pointer B, input pointer C, then output pointer D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Load A, B, C; arith.addf A and B; arith.addf that with C; store to D."
+  },
+  "vec_max3_kernel": {
+    "difficulty": "easy",
+    "prompt": "Element-wise MAXIMUM of three vectors A, B, C into output D. Arguments in order: input pointer A, input pointer B, input pointer C, then output pointer D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. arith.maximumf A and B, then arith.maximumf that with C, store to D."
+  },
+  "vec_min3_kernel": {
+    "difficulty": "easy",
+    "prompt": "Element-wise MINIMUM of three vectors A, B, C into output D. Arguments in order: input pointer A, input pointer B, input pointer C, then output pointer D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. arith.minimumf A and B, then arith.minimumf that with C, store to D."
+  },
+  "vec_negmul_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute -(A * B) element-wise into C. Arguments in order: input pointer A, input pointer B, output pointer C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Steps: arith.mulf A and B; then arith.negf of the product; store to C."
+  },
+  "vec_prod3_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply three vectors A, B, C element-wise into output D. Arguments in order: input pointer A, input pointer B, input pointer C, then output pointer D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. arith.mulf A and B, then arith.mulf that with C, store to D."
+  }
+}

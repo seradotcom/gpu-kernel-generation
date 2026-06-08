@@ -1,0 +1,38 @@
+{
+  "vec_ceil_kernel": {
+    "name": "vec_ceil_kernel",
+    "status": "local_failed",
+    "error": "Semantic errors:\n[SEMANTIC ERROR] 'arith.addf' requires operands of the EXACT SAME type/shape. Got 'tensor<256xf32>' and 'f32'. Use tt.splat to broadcast scalars to tensors if needed.",
+    "attempts": 3
+  },
+  "vec_sum3_kernel": {
+    "name": "vec_sum3_kernel",
+    "status": "local_failed",
+    "error": "Unterminated string starting at: line 26 column 18 (char 2164)",
+    "attempts": 3
+  },
+  "vec_max3_kernel": {
+    "name": "vec_max3_kernel",
+    "status": "local_failed",
+    "error": "Unterminated string starting at: line 25 column 93 (char 2190)",
+    "attempts": 3
+  },
+  "vec_min3_kernel": {
+    "name": "vec_min3_kernel",
+    "status": "local_failed",
+    "error": "Expecting property name enclosed in double quotes: line 25 column 67 (char 2195)",
+    "attempts": 3
+  },
+  "vec_negmul_kernel": {
+    "name": "vec_negmul_kernel",
+    "status": "local_failed",
+    "error": "Verification failed:\nerror: unknown: 'arith.extf' op operand type 'tensor<256xf32>' and result type 'tensor<256xf32>' are cast incompatible\n note: unknown: see current operation: %8 = \"arith.extf\"(%7) {width = 32 : i32} : (tensor<256xf32>) -> tensor<256xf32>",
+    "attempts": 3
+  },
+  "vec_prod3_kernel": {
+    "name": "vec_prod3_kernel",
+    "status": "local_failed",
+    "error": "Unterminated string starting at: line 25 column 105 (char 2191)",
+    "attempts": 3
+  }
+}
