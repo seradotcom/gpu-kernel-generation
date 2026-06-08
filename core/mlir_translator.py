@@ -157,6 +157,19 @@ class MLIRTranslator:
                     pass
             return ir.F32Type.get()
 
+        if getattr(opcode, "value", opcode) == "tt.make_range":
+            # Infer tensor<Nxi32> from attributes
+            start = 0
+            end = 0
+            if getattr(op, "attributes", None):
+                start = op.attributes.get("start", 0)
+                end = op.attributes.get("end", 0)
+            size = abs(end - start)
+            return ir.RankedTensorType.get([size], ir.IntegerType.get_signless(32))
+
+        if getattr(opcode, "value", opcode) == "tt.get_program_id":
+            return ir.IntegerType.get_signless(32)
+
         if resolved_operands:
             return resolved_operands[0].type
         # Default to index if no operands or out_type (e.g., constants)

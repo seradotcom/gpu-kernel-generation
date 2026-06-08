@@ -176,7 +176,14 @@ class SemanticValidator:
                     elif opcode == "tt.splat":
                         out_type = "unknown" # requires explicit out_type
                     elif opcode == "tt.make_range":
-                        out_type = "unknown"
+                        start = 0
+                        end = 0
+                        attrs = getattr(op, "attributes", {}) or {}
+                        if "start" in attrs: start = attrs["start"]
+                        if "end" in attrs: end = attrs["end"]
+                        out_type = f"tensor<{abs(end-start)}xi32>"
+                    elif opcode == "tt.get_program_id":
+                        out_type = "i32"
                     elif opcode == "tt.addptr":
                         out_type = resolved_types[0] if resolved_types else "unknown"
                     else:
