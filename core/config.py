@@ -76,7 +76,7 @@ GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 # --- MODEL CONFIGURATION ---
 MODEL_KIMI = "meta/llama-3.1-405b-instruct" # Proxy model in Nvidia API
-MODEL_GEMINI = "gemini-1.5-flash"      # Cheaper Gemini model with higher quota
+MODEL_GEMINI = "gemini-1.5-flash-8b"   # Cheaper Gemini model with higher quota
 MODEL_OLLAMA = "gemma4:e2b"                 # Local Ollama model
 
 OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"
