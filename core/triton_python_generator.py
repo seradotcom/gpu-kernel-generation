@@ -102,17 +102,23 @@ class TritonPythonGenerator:
         arg_names = [self._sanitize_name(arg.name) for arg in args]
         sig = f"def {func_name}({', '.join(arg_names)}):"
 
+        # --- Detect block size from tt.make_range ---
+        block_size = self._detect_block_size(ops)
+
         # --- Generate body ---
         lines = []
         symbols = self._build_symbol_table(function_body)
 
+        # Add block indexing
+        lines.append("    pid = tl.program_id(0)")
+        lines.append(f"    block_start = pid * {block_size}")
+
         for op in ops:
-            line = self._emit_op(op, symbols)
+            line = self._emit_op(op, symbols, block_size)
             if line:
                 lines.append(line)
 
         # Triton kernels don't return values; they operate via tt.store
-        # If returns is non-empty, it's an error in Phase 1 (no returns expected)
         if returns:
             lines.append(f"    # WARNING: kernel has returns {returns} — Triton kernels should not return values.")
 
@@ -130,7 +136,17 @@ class TritonPythonGenerator:
 
         return "\n".join(code_lines)
 
-    def _emit_op(self, op: Any, symbols: Dict[str, Any]) -> str:
+    def _detect_block_size(self, ops: list) -> int:
+        """Find BLOCK_SIZE from the first tt.make_range operation."""
+        for op in ops:
+            if getattr(op, "opcode", None) == "tt.make_range":
+                attrs = getattr(op, "attributes", {}) or {}
+                start = attrs.get("start", 0)
+                end = attrs.get("end", 1024)
+                return end - start
+        return 1024
+
+    def _emit_op(self, op: Any, symbols: Dict[str, Any], block_size: int) -> str:
         """
         Emit a single line of Python for a given JSON operation.
         Returns the line string or '' if nothing to emit.
@@ -161,18 +177,17 @@ class TritonPythonGenerator:
             end = attrs.get("end", 1024)
             py_name = self._sanitize_name(result)
             symbols[result] = py_name
-            return f"    {py_name} = tl.arange({start}, {end})"
+            return f"    {py_name} = block_start + tl.arange({start}, {end})"
 
         # --- tt.splat ---
         if opcode == "tt.splat":
-            # In Triton Python, splatting a scalar pointer is implicit in ptr + offset.
-            # We record the mapping but may not emit a line if followed by addptr.
-            # For now, just map the result to the operand name.
             if operands:
                 src = operands[0]
                 src_name = symbols.get(src, self._sanitize_name(src))
+                # Mark this register as a pointer expression (base ptr)
                 symbols[result] = src_name
-            return ""  # No line emitted; splat is implicit
+                symbols[f"__expr__{result}"] = src_name
+            return ""
 
         # --- tt.addptr ---
         if opcode == "tt.addptr":
@@ -181,26 +196,37 @@ class TritonPythonGenerator:
                 offset = operands[1]
                 base_name = symbols.get(base, self._sanitize_name(base))
                 offset_name = symbols.get(offset, self._sanitize_name(offset))
+                expr = f"{base_name} + {offset_name}"
                 py_name = self._sanitize_name(result)
                 symbols[result] = py_name
-                return f"    {py_name} = {base_name} + {offset_name}"
+                symbols[f"__expr__{result}"] = expr
+                # No line emitted; tt.load / tt.store will inline the expression directly
+                return ""
             return "    # ERROR: tt.addptr needs 2 operands"
 
         # --- tt.load ---
         if opcode == "tt.load":
             if operands:
-                ptr_name = symbols.get(operands[0], self._sanitize_name(operands[0]))
+                ptr_reg = operands[0]
+                # Inline pointer expression if available
+                ptr_expr = symbols.get(f"__expr__{ptr_reg}", None)
+                if ptr_expr is None:
+                    ptr_expr = symbols.get(ptr_reg, self._sanitize_name(ptr_reg))
                 py_name = self._sanitize_name(result)
                 symbols[result] = py_name
-                return f"    {py_name} = tl.load({ptr_name})"
+                return f"    {py_name} = tl.load({ptr_expr})"
             return "    # ERROR: tt.load needs a pointer operand"
 
         # --- tt.store ---
         if opcode == "tt.store":
             if len(operands) >= 2:
-                ptr_name = symbols.get(operands[0], self._sanitize_name(operands[0]))
-                val_name = symbols.get(operands[1], self._sanitize_name(operands[1]))
-                return f"    tl.store({ptr_name}, {val_name})"
+                ptr_reg = operands[0]
+                val_reg = operands[1]
+                ptr_expr = symbols.get(f"__expr__{ptr_reg}", None)
+                if ptr_expr is None:
+                    ptr_expr = symbols.get(ptr_reg, self._sanitize_name(ptr_reg))
+                val_expr = symbols.get(val_reg, self._sanitize_name(val_reg))
+                return f"    tl.store({ptr_expr}, {val_expr})"
             return "    # ERROR: tt.store needs ptr and value operands"
 
         # --- Binary arithmetic ---
