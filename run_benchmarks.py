@@ -18,7 +18,7 @@ from core.mlops_tracker import MLOpsTracker
 def run_benchmarks():
     print("=== Starting TritonBench LLM-MLIR Evaluator with Triton Python Feedback Loop ===")
     
-    prompts_file = "benchmark_prompts.json"
+    prompts_file = "benchmark_prompts_A.json"
     if not os.path.exists(prompts_file):
         print(f"Error: {prompts_file} not found. Creating a default one with Phase 1 prompts.")
         default_prompts = {
@@ -74,10 +74,21 @@ def run_benchmarks():
                 raw_response = generate_llm_response("gemini", system_prompt, current_user_prompt, schema=MlirResponse)
                 
                 clean_json = raw_response.strip()
-                if clean_json.startswith("```json"): clean_json = clean_json[7:]
-                if clean_json.startswith("```"): clean_json = clean_json[3:]
-                if clean_json.endswith("```"): clean_json = clean_json[:-3]
-                clean_json = clean_json.strip()
+                import re
+                
+                # Try to extract from ```json ... ``` first
+                json_match = re.search(r'```json\s*(.*?)\s*```', clean_json, flags=re.DOTALL)
+                if json_match:
+                    clean_json = json_match.group(1).strip()
+                else:
+                    # Remove <think>...</think> blocks
+                    clean_json = re.sub(r'<think>.*?</think>', '', clean_json, flags=re.DOTALL).strip()
+                    # Try to find outermost braces
+                    brace_match = re.search(r'(\{.*\})', clean_json, flags=re.DOTALL)
+                    if brace_match:
+                        clean_json = brace_match.group(1).strip()
+                    else:
+                        clean_json = clean_json.strip()
                 
                 response_json = json.loads(clean_json)
                 mlir_obj = MlirResponse(**response_json)
@@ -156,8 +167,28 @@ def run_benchmarks():
                 except:
                     pass
                 
-                feedback = _build_feedback(error_history, raw_response, error_str)
-                current_user_prompt = base_user_prompt + feedback
+                feedback = f"\n\n--- PREVIOUS ATTEMPTS HISTORY ---{error_history}\n"
+                snippet = code_json_str if len(code_json_str) < 500 else code_json_str[:250] + "\n...[TRUNCATED]...\n" + code_json_str[-250:]
+                feedback += f"\nYou generated this code in the last attempt:\n```json\n{snippet}\n```\n\n"
+                
+                if "not found in environment" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: You used a register that DOES NOT EXIST. Every operand must be the 'result' of a previous operation.\n"
+                elif "attributes.value" in error_str:
+                    feedback += "CRITICAL RULE: 'arith.constant' MUST have a 'value' field (e.g. \"value\": 0.0) so the compiler knows the numeric value.\n"
+                if "must be floating-point-like, but got '!tt.ptr<f32>'" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The compiler failed because you tried to do Math (like arith.addf) on POINTERS. This happened because you forgot to add explicit 'out_type': 'tensor<...xf32>' to your 'tt.load' operation, so the compiler assumed it returned a pointer instead of math data.\n"
+                if "literal_error" in error_str or "validation errors for MlirResponse" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: Pydantic Schema Validation Failed. Make sure you included 'operands': [] even if the operation takes no operands (like tt.make_range), and ensure your 'out_type' strictly follows the MLIR syntax.\n"
+                if "failed to verify that result type matches ptr type" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: 'tt.addptr' MUST return EXACTLY the same type as its pointer operand! If your input pointer is 'tensor<...x!tt.ptr<f32>>', your 'out_type' MUST also be exactly 'tensor<...x!tt.ptr<f32>>'. Do not change the type or shape!\n"
+                if "operand #1 must be 1-bit signless integer" in error_str and "tt.load" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The mask operand (operand #1) of 'tt.load' or 'tt.store' MUST be a boolean tensor (i1), e.g., 'tensor<1024xi1>'. You passed an i32 tensor instead. Use 'arith.cmpi' to create a boolean mask first!\n"
+                if "'tt.addptr' op operand #0 must be ptr" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The first operand of 'tt.addptr' MUST be a pointer (e.g. '!tt.ptr<f32>'). You passed a math tensor (like 'f32'). You must pass a base pointer, NOT a loaded value!\n"
+                if "JSONDecodeError" in error_str or "Expecting value:" in error_str or "Unterminated string" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The JSON is invalid or truncated. This happens when you hit the token limit! You MUST be more concise, use 'scf.for' loops instead of unrolling manually, DO NOT generate redundant operations or duplicate constants, and ensure the JSON is fully closed.\n"
+                    
+                current_user_prompt = base_user_prompt + feedback + "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                 
                 if attempt == max_retries - 1:
                     results[name] = {"status": "exception", "error": error_str}

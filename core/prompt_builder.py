@@ -12,20 +12,23 @@ class PromptBuilder:
             "1. Immutability & Scoping: Each operation saves its result in a new temporary register (e.g., '%0'). "
             "Registers defined inside a block (e.g., scf.for) CANNOT be accessed outside.\n"
             "2. TOPOLOGICAL ORDERING: You MUST define a register BEFORE you use it. For example, create '%mask' using 'arith.cmpf' BEFORE using it in 'tt.load'.\n"
-            "3. NO UNDECLARED VARIABLES: You CANNOT use any register as an operand unless EXPLICITLY defined beforehand. No forward references.\n"
-            "4. TYPE MATCHING: 'arith.addf', 'arith.divf', 'arith.mulf' require EXACTLY the same shape and type. You CANNOT directly add a tensor and a scalar ('f32'). First broadcast the scalar using 'tt.splat', then apply math. DO NOT use pointers ('!tt.ptr<f32>') in math operations.\n"
-            "5. FLOAT OPERATIONS: 'arith.divf', 'arith.addf', 'math.exp' expect float types ('f32', 'tensor<...xf32>'). DO NOT pass integers ('i32', 'index') to float math ops.\n"
+            "3. NO UNDECLARED VARIABLES: You CANNOT use any register as an operand unless EXPLICITLY defined beforehand. No forward references. ALWAYS double-check your variable names.\n"
+            "4. TYPE MATCHING: 'arith.addf', 'arith.subf', 'arith.mulf', 'arith.divf', 'arith.cmpf' require EXACTLY the same shape and type for all operands. You CANNOT directly add a tensor and a scalar ('f32'). You MUST first broadcast the scalar using 'tt.splat', then apply math. NO EXCEPTIONS.\n"
+            "5. FLOAT OPERATIONS: 'arith.divf', 'arith.addf', 'math.exp' expect float types ('f32', 'tensor<...xf32>'). DO NOT pass integers ('i32', 'index') to float math ops. NOTE: The result of 'tt.reduce' is a SCALAR (e.g., 'f32'). You MUST use 'tt.splat' on it before using it in math operations with other tensors!\n"
             "6. POINTERS: 'tt.load' and 'tt.store' operate on pointers. 'tt.load' returns math values (tensors/f32), NOT pointers. 'tt.store' consumes math values and writes to pointers.\n"
             "7. TT.STORE OPERAND ORDER: For 'tt.store', the FIRST operand MUST be the pointer ('%ptr'), and the SECOND operand MUST be the value ('%val'). e.g., operands: ['%ptr', '%val']. DO NOT swap them!\n"
             "8. SPMD PARADIGM: Do NOT use 'scf.for' to iterate over the grid or PIDs! The Triton kernel runs per-block. Use 'tt.get_program_id' (with 'axis' attribute) to get the block index. ONLY use 'scf.for' for loops WITHIN a block (e.g., reduction over sequence length).\n"
             "9. SCF.FOR CORRECTNESS: If you use 'scf.for', it MUST have an 'scf.yield' as its LAST operation. The number of 'results' must EXACTLY match the number of 'iter_args', and 'scf.yield' must return exactly that many operands.\n"
-            "10. REDUCE COMBINERS: 'tt.reduce' region_combiner MUST be a binary op (e.g. 'arith.addf', 'arith.maximumf'). NEVER use unary ops like 'math.exp'.\n"
-            "11. CMP ATTRIBUTES: 'arith.cmpf' (for floats) and 'arith.cmpi' (for ints/index) REQUIRE a 'predicate' attribute inside the 'attributes' dict (e.g., {\"attributes\": {\"predicate\": 1}} for OGT or {\"attributes\": {\"predicate\": 2}} for SLT). Do NOT put it at the root of the JSON.\n"
-            "12. CONSTANTS: You CANNOT pass numeric literals (like 1024 or 0.0) directly as operands to most instructions. You MUST create them first using 'arith.constant' (e.g., {\"opcode\": \"arith.constant\", \"attributes\": {\"value\": 1024}, \"result\": \"%c1024\", \"out_type\": \"i32\"}) and pass the register.\n"
+            "10. REDUCE COMBINERS: 'tt.reduce' MUST include an 'axis' attribute in 'attributes' (e.g. {\"axis\": 0}). Its region_combiner MUST be a binary op (e.g. 'arith.addf', 'arith.maximumf').\n"
+            "11. CMP ATTRIBUTES: 'arith.cmpf' (for floats) and 'arith.cmpi' (for ints/index) REQUIRE a 'predicate' attribute inside the 'attributes' dict (e.g., {\"attributes\": {\"predicate\": 1}} for OGT or {\"attributes\": {\"predicate\": 2}} for SLT).\n"
+            "12. CONSTANTS: You CANNOT pass numeric literals directly as operands. You MUST create them first using 'arith.constant'. EVERY 'arith.constant' MUST define its numeric value in attributes. For floats, DO NOT use extremely long decimals; round to 4 decimal places or use scientific notation.\n"
             "13. OUT_TYPE IS MANDATORY FOR MEMORY: Operations like 'tt.make_range', 'tt.splat', 'tt.addptr', and 'tt.load' MUST have an explicit 'out_type'. If you omit it, the compiler will assume they return pointers and math operations like 'arith.addf' will fail!\n"
-            "14. MAKE_RANGE ARITY: 'tt.make_range' takes EXACTLY 0 operands. Pass an empty list: \"operands\": []. It REQUIRES 'start' and 'end' in 'attributes'. Its out_type MUST be a tensor of integers (e.g., 'tensor<256xi32>').\n"
+            "14. MAKE_RANGE STRICT RULES: 'tt.make_range' takes EXACTLY 0 operands (pass []). It REQUIRES 'start' and 'end' in 'attributes'. Its out_type MUST be a tensor of standard integers (e.g., 'tensor<256xi32>'). DO NOT use 'index' or 'tensor<...xindex>'!\n"
             "15. KERNEL RETURNS: The main 'code' block must ALWAYS return an empty list: \"returns\": []. Triton GPU kernels modify global memory via 'tt.store', they do not return variables.\n"
-            "16. HARDWARE BLOCK SIZES: GPUs operate on strict powers of 2. For any tensor shape, you MUST pick a power of 2 from the allowed schema (e.g., 16, 32, 64, 128, 256, 512, 1024). NEVER use arbitrary sizes like 100 or 150. If the problem specifies arbitrary bounds, pad it using a boolean mask ('tensor<...xi1>') generated by 'arith.cmpi'.\n"
+            "16. INTEGER TYPES: Always use 'i32' for all loop steps, bounds, offsets, arithmetic logic, and program ids. Do NOT mix 'index' and 'i32'. Use 'i32' explicitly.\n"
+            "17. HARDWARE BLOCK SIZES: GPUs operate on strict powers of 2. Pick a power of 2 from the allowed schema (e.g., 128, 256). Pad using boolean masks if bounds are arbitrary.\n"
+            "18. CONCISENESS AND NO UNROLLING: DO NOT unroll loops manually. Use 'scf.for'. DO NOT hallucinate or generate repetitive/redundant constants (e.g., %c_result_splat_out1 ... %c_result_splat_out88). Be extremely concise to avoid exceeding token limits.\n"
+            "19. JSON VALIDITY: Your JSON MUST be complete and properly closed before the end of the response. DO NOT generate more operations than necessary.\n"
         )
         
         self.few_shot_examples = (
@@ -48,6 +51,15 @@ class PromptBuilder:
             "- TT.REDUCE PARADIGM:\n"
             "  {\"opcode\": \"tt.reduce\", \"operands\": [\"%tensor\"], \"result\": \"%row_sum\", \"region_combiner\": \"arith.addf\", \"attributes\": {\"axis\": 0}}\n"
             "  NOTE: `region_combiner` MUST be a valid binary op like `arith.addf`, `arith.maximumf`. NEVER use unary ops like `math.exp`.\n\n"
+            "- 2D TILE / MATRIX PARADIGM (For tt.dot):\n"
+            "  To load a 2D block, you must create 1D ranges, expand them, broadcast, and add to the base pointer:\n"
+            "  1. tt.make_range -> %rm (0 to 128)\n"
+            "  2. tt.make_range -> %rn (0 to 128)\n"
+            "  3. tt.expand_dims(%rm) {\"dimension_to_expand\": 1} -> %rm_exp (shape 128x1)\n"
+            "  4. tt.expand_dims(%rn) {\"dimension_to_expand\": 0} -> %rn_exp (shape 1x128)\n"
+            "  5. tt.broadcast(%rm_exp) -> %rm_bcast (shape 128x128)\n"
+            "  6. tt.broadcast(%rn_exp) -> %rn_bcast (shape 128x128)\n"
+            "  7. Multiply offsets by strides and add to base pointer to get the 2D pointer tensor.\n\n"
             "- PERFECT VECTOR ADD JSON (Use this exact structure for simple kernels):\n"
             "{\n"
             "  \"code\": {\n"
@@ -89,10 +101,12 @@ class PromptBuilder:
             "tt.make_range": "Returns a tensor of indices. Requires 'start' and 'end' attributes (int). Takes EXACTLY 0 operands (pass []). Example attributes: {\"start\": 0, \"end\": 1024}",
             "tt.splat": "Broadcasts a scalar to a tensor of a given shape. Requires 'shape' attribute (list of ints). Operands: [value].",
             "tt.expand_dims": "Inserts a size-1 dimension into a tensor's shape. Requires 'dimension_to_expand' attribute (int). Operands: [tensor].",
+            "tt.broadcast": "Broadcasts a tensor to a larger shape. Operands: [tensor]. Requires correct out_type.",
             "tt.addptr": "Adds an offset to a tensor of pointers. Operands: [base_ptr, offset].",
             "tt.load": "Loads data from a pointer or tensor of pointers. Operands: [ptr_tensor].",
             "tt.store": "Stores data to a pointer or tensor of pointers. Operands: [ptr_tensor, value_tensor].",
-            "tt.dot": "Performs matrix multiplication. Operands: [tensor_a, tensor_b]."
+            "tt.dot": "Performs matrix multiplication. Operands: [tensor_a, tensor_b]. Both operands MUST be 2D tensors of the same inner dimension (e.g. MxK and KxN).",
+            "tt.reduce": "Reduces a tensor along a specific axis. Requires 'axis' attribute and 'region_combiner' attribute (like 'arith.addf'). Operands: [tensor]."
         }
 
     def _fetch_rag_context(self, user_prompt: str) -> str:
@@ -130,7 +144,22 @@ class PromptBuilder:
         """
         Builds the system prompt by dynamically injecting rules based on keywords.
         """
-        schema_str = json.dumps(json_schema)
+        import copy
+        schema_copy = copy.deepcopy(json_schema)
+        
+        # Minify massive Enums to save context tokens (Guided Decoding still uses the full backend schema)
+        if "$defs" in schema_copy:
+            if "MLIRType" in schema_copy["$defs"]:
+                schema_copy["$defs"]["MLIRType"]["enum"] = [
+                    "<REDACTED: Any valid scalar (e.g., 'f32'), pointer ('!tt.ptr<i32>'), or tensor shape (e.g., 'tensor<128x256xf32>')>"
+                ]
+            if "MlirOpcode" in schema_copy["$defs"]:
+                # Keep only a few examples in the prompt to save tokens, the backend FSM will enforce the rest
+                schema_copy["$defs"]["MlirOpcode"]["enum"] = [
+                    "arith.addf", "arith.cmpi", "tt.load", "tt.store", "tt.splat", "tt.make_range", "tt.addptr", "..."
+                ]
+
+        schema_str = json.dumps(schema_copy, indent=2)
         
         prompt = (
             "Role: You are a Block-Level GPU Architect and expert LLM compiler in Triton MLIR. "
