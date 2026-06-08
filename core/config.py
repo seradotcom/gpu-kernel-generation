@@ -40,8 +40,30 @@ if MLIR_BINDINGS_PATH is None:
         sys.path.append(LOCAL_MLIR_PATH)
         MLIR_BINDINGS_PATH = LOCAL_MLIR_PATH
         print(f"[Info] Using local MLIR build: {LOCAL_MLIR_PATH}")
-    else:
-        print(f"[Warning] No MLIR bindings found. Tried tarball ({TARBALL_PATH}) and local build ({LOCAL_MLIR_PATH}).")
+
+# 3. Check sys.path / PYTHONPATH for pre-installed bindings (e.g. Google Drive, custom envs)
+if MLIR_BINDINGS_PATH is None:
+    for p in sys.path:
+        if p.endswith("mlir_core") and os.path.exists(p):
+            MLIR_BINDINGS_PATH = p
+            print(f"[Info] Using MLIR bindings from sys.path: {p}")
+            break
+
+# 4. Common cloud / mounted-drive fallbacks
+if MLIR_BINDINGS_PATH is None:
+    FALLBACK_PATHS = [
+        "/content/drive/MyDrive/llvm-install/python_packages/mlir_core",  # Google Colab
+        "/kaggle/input/llvm-install/python_packages/mlir_core",            # Kaggle Dataset
+    ]
+    for p in FALLBACK_PATHS:
+        if os.path.exists(p):
+            sys.path.append(p)
+            MLIR_BINDINGS_PATH = p
+            print(f"[Info] Using MLIR bindings from fallback path: {p}")
+            break
+
+if MLIR_BINDINGS_PATH is None:
+    print(f"[Warning] No MLIR bindings found. Tried tarball ({TARBALL_PATH}), local build ({LOCAL_MLIR_PATH}), sys.path, and fallback paths.")
 
 # --- API KEYS & ADC SETUP ---
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")

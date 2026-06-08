@@ -78,7 +78,7 @@ def run_gemini(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
     # Enable Gemini's native XGrammar/Structured Outputs
     if schema:
         config_params["response_mime_type"] = "application/json"
-        config_params["response_schema"] = schema
+        config_params["response_schema"] = schema.model_json_schema()
         
     gl_config = types.GenerateContentConfig(**config_params)
     

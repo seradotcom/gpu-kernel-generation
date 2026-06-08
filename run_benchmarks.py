@@ -46,7 +46,7 @@ def run_benchmarks():
     prompt_builder = PromptBuilder()
     
     try:
-        tracker = MLOpsTracker(project_name="llm-mlir-compiler")
+        tracker = MLOpsTracker(job_type="llm-mlir-compiler")
     except Exception as e:
         print(f"[Info] Running without MLOps tracking: {e}")
         tracker = None
