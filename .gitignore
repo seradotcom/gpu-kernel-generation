@@ -9,3 +9,4 @@ core/__pycache__/
 .venv/
 output_ptx/
 output/
+*.tar.gz
