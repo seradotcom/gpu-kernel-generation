@@ -144,18 +144,38 @@ class MLIRTranslator:
                 input_type = resolved_operands[0].type
                 try:
                     # input_type is tensor<1024x!tt.ptr<f32>>
-                    if ir.ShapedType.isinstance(input_type):
-                        shaped = ir.ShapedType(input_type)
-                        elem_type = shaped.element_type
-                        if "ptr" in str(elem_type): # hacky but works for triton
-                            # In triton !tt.ptr<f32> we want to extract f32
-                            # but we can just assume F32 for now
-                            return ir.RankedTensorType.get(shaped.shape, ir.F32Type.get())
-                    elif "ptr" in str(input_type):
-                        return ir.F32Type.get()
+                    shaped = ir.ShapedType(input_type)
+                    elem_type = str(shaped.element_type)
+                    import re
+                    match = re.search(r"!tt\.ptr<([^>]+)>", elem_type)
+                    if match:
+                        t = self._parse_type(match.group(1))
+                        return ir.RankedTensorType.get(shaped.shape, t)
                 except Exception:
                     pass
+                
+                input_type_str = str(input_type)
+                import re
+                match = re.search(r"!tt\.ptr<([^>]+)>", input_type_str)
+                if match:
+                    return self._parse_type(match.group(1))
             return ir.F32Type.get()
+
+        if getattr(opcode, "value", opcode) == "tt.splat":
+            if resolved_operands:
+                # Find dominant shape from existing environment variables
+                shape = [256]
+                for scope in reversed(self.value_env.scopes):
+                    for val in scope.values():
+                        try:
+                            shape = ir.ShapedType(val.type).shape
+                            break
+                        except Exception:
+                            continue
+                    else:
+                        continue
+                    break
+                return ir.RankedTensorType.get(shape, resolved_operands[0].type)
 
         if getattr(opcode, "value", opcode) == "tt.make_range":
             # Infer tensor<Nxi32> from attributes
@@ -311,12 +331,9 @@ class MLIRTranslator:
                         element_type = ir.F32Type.get()
                         if results:
                             try:
-                                if ir.ShapedType.isinstance(results[0]):
-                                    element_type = ir.ShapedType(results[0]).element_type
-                                else:
-                                    element_type = results[0]
+                                element_type = ir.ShapedType(results[0]).element_type
                             except Exception:
-                                pass
+                                element_type = results[0]
                                 
                         block_args = [element_type, element_type]
                         block = ir.Block.create_at_start(region, block_args)

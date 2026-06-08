@@ -114,88 +114,87 @@ def run_benchmarks():
                 semantic_errors = validator.validate(mlir_obj)
                 if semantic_errors:
                     error_msg = "\n".join(semantic_errors)
-                    print(f"    -> Semantic validation FAILED")
-                    print(f"    -> Errors: {error_msg[:500]}")
-                    error_history += f"\n- Attempt {attempt+1} semantic errors:\n{error_msg}\n"
-                    feedback = _build_feedback(error_history, raw_response, error_msg)
-                    current_user_prompt = base_user_prompt + feedback
-                    if tracker:
-                        tracker.log_iteration(attempt, base_user_prompt, raw_response, "", False, error_msg)
-                    continue
-                print("    -> Semantic validation PASSED")
-                
-                print("  [3/5] Stage 3/5: Translating to MLIR and verifying...")
-                mlir_code = translator.translate_to_module(mlir_obj.code)
-                print(f"    -> MLIR verification PASSED")
-                print(f"\n=== MLIR OUTPUT for {name} ===")
-                print(mlir_code)
-                print("=== END MLIR ===\n")
-                
-                # Save MLIR code
-                with open(f"output/{name}_attempt{attempt+1}.mlir", "w") as f:
-                    f.write(mlir_code)
-                
-                print("  [4/5] Stage 4/5: Generating Triton Python from verified JSON...")
-                triton_python = triton_generator.generate(mlir_obj.code)
-                print(f"    -> Triton Python generation PASSED")
-                print(f"\n=== TRITON PYTHON for {name} ===")
-                print(triton_python)
-                print("=== END TRITON PYTHON ===\n")
-                
-                # Save Triton Python code
-                with open(f"output/{name}_attempt{attempt+1}.py", "w") as f:
-                    f.write(triton_python)
-                
-                print("  [5/5] Stage 5/5: Compiling and benchmarking Triton kernel...")
-                exec_result = triton_executor.run(triton_python, n_elements=1024, warmup=2, reps=10)
-                
-                if not exec_result["success"]:
-                    error_msg = exec_result["error"]
-                    print(f"    -> Triton execution FAILED")
-                    print(f"    -> Error: {error_msg[:500]}")
-                    error_history += f"\n- Attempt {attempt+1} Triton execution error:\n{error_msg}\n"
-                    feedback = _build_feedback(error_history, raw_response, error_msg)
+                    print(f"    -> Validation failed:\n{error_msg}")
+                    
+                    if tracker: tracker.log_iteration(attempt, current_user_prompt, clean_json, "", False, error_msg)
+                    
+                    code_json_str = clean_json
+                    try:
+                        parsed = json.loads(clean_json)
+                        if "code" in parsed:
+                            code_json_str = json.dumps({"code": parsed["code"]}, indent=2)
+                    except:
+                        pass
+                        
+                    # Accumulate history so the SLM doesn't regress
+                    error_history += f"\n- Attempt {attempt+1} errors:\n{error_msg}\n"
+                    
+                    snippet = raw_response if len(raw_response) < 1000 else raw_response[:500] + "\n...[TRUNCATED]...\n" + raw_response[-500:]
+                    feedback = f"\n\n--- PREVIOUS ATTEMPTS HISTORY ---{error_history}\n"
+                    feedback += f"\nIn your last attempt, you generated this JSON:\n{snippet}\n\n"
+                    
+                    if "scf.for loop defines" in error_msg and "iter_args but returns" in error_msg:
+                        feedback += "CRITICAL RULE: The number of 'results' in scf.for MUST EXACTLY MATCH the number of 'iter_args'.\n"
+                    if "missing an scf.yield operation" in error_msg:
+                        feedback += "CRITICAL RULE: The LAST operation inside a 'scf.for' or 'scf.if' body MUST be 'scf.yield'. Do NOT forget to add the yield operation.\n"
+                    if "requires a pointer or tensor of pointers" in error_msg:
+                        feedback += "CRITICAL RULE: 'tt.load' or 'tt.store' MUST receive a pointer. If you have a base pointer like '%arg0_ptr', you must broadcast it using 'tt.splat' and then add offsets using 'tt.addptr'. Never pass raw scalars or standard tensors.\n"
+                    if "used in 'scf.yield' but was never defined in this scope" in error_msg:
+                        feedback += "CRITICAL RULE VIOLATION: You yielded the final result variable of the scf.for loop itself (e.g., '%final_max') inside the loop body. Inside the loop body, those final variables do not exist yet! You MUST yield the *newly computed values* for the current iteration (e.g., '%new_max' or '%current_max') so they can be passed to the next iteration.\n"
+                    elif "not found in environment" in error_msg or "never defined in this scope" in error_msg:
+                        feedback += "CRITICAL RULE VIOLATION: You used a register that DOES NOT EXIST. In MLIR, you cannot invent variables like '%is_max'. If you need a boolean condition, compute it first using 'arith.cmpf'. Every operand must be the 'result' of a previous operation.\n"
+                    if "requires an 'axis' attribute" in error_msg:
+                        feedback += "CRITICAL RULE: 'tt.reduce' MUST have an 'axis' attribute (e.g. {\"axis\": 0}). Do not forget it!\n"
+                    if "incorrect number of indices for extract_element" in error_msg:
+                        feedback += "CRITICAL RULE VIOLATION: You used 'tensor.extract' with the wrong number of indices. DO NOT use 'tensor.extract' to slice a row! To slice a row, you MUST use Triton pointer arithmetic ('tt.make_range', 'tt.splat', 'tt.addptr', 'tt.load').\n"
+                    if "requires a single operand" in error_msg:
+                        feedback += "CRITICAL RULE: Correct the arity of the operation.\n"
+                    
+                    feedback += "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                     current_user_prompt = base_user_prompt + feedback
                     if tracker:
                         tracker.log_iteration(attempt, base_user_prompt, raw_response, triton_python, False, error_msg)
                     continue
                 
-                # Success!
-                success = True
-                results[name] = {
-                    "status": "success",
-                    "attempts": attempt + 1,
-                    "correct": exec_result["correct"],
-                    "speedup": exec_result.get("speedup"),
-                    "kernel_time_ms": exec_result.get("kernel_time_ms"),
-                    "ref_time_ms": exec_result.get("ref_time_ms"),
-                }
-                print(f"    -> SUCCESS! Correct: {exec_result['correct']}, Speedup: {exec_result.get('speedup', 'N/A')}x")
-                if tracker:
-                    tracker.log_iteration(attempt, base_user_prompt, raw_response, triton_python, True, None)
-                break
-                
+                print("  [4/4] Compiling to PTX via Triton Backend...")
+                if backend:
+                    ptx_code = backend.compile_ttir_to_ptx(ttir_code)
+                    success = True
+                    results[name] = {"status": "success", "attempts": attempt + 1}
+                    
+                    if tracker: tracker.log_iteration(attempt, current_user_prompt, clean_json, ttir_code, True)
+                    
+                    os.makedirs("output_ptx", exist_ok=True)
+                    with open(f"output_ptx/{name}.ptx", "w") as f:
+                        f.write(ptx_code)
+                    print(f"    -> SUCCESS! Saved to output_ptx/{name}.ptx")
+                    if tracker: tracker.save_artifact(f"output_ptx/{name}.ptx", f"{name}_ptx")
+                    break
+                else:
+                    if tracker: tracker.log_iteration(attempt, current_user_prompt, clean_json, ttir_code, True)
+                    results[name] = {"status": "ttir_generated"}
+                    break
+                    
             except requests.exceptions.RequestException as e:
                 print(f"  -> Remote server error: {e}")
                 print("     Retrying after 10 seconds...")
                 import time
                 time.sleep(10)
                 if attempt == max_retries - 1:
-                    results[name] = {"status": "remote_server_error", "error": str(e)}
+                    results[name] = {"status": "remote_server_error", "error": str(e), "attempts": max_retries}
             except TimeoutError as e:
                 print(f"  -> Job timed out: {e}")
-                results[name] = {"status": "timeout_error"}
+                results[name] = {"status": "timeout_error", "attempts": attempt + 1}
                 break
             except Exception as e:
                 import traceback
                 error_str = str(e)
                 full_traceback = traceback.format_exc()
                 print(f"  -> Pipeline exception: {error_str}")
-                print(f"  -> Full traceback:\n{full_traceback[:1000]}")
                 
-                # Save error for debugging
-                with open(f"output/{name}_attempt{attempt+1}_error.txt", "w") as f:
-                    f.write(full_traceback)
+                if "CUDA out of memory" in error_str:
+                    results[name] = {"status": "remote_server_error", "error": "CUDA out of memory", "attempts": attempt + 1}
+                    break
                 
                 error_history += f"\n- Attempt {attempt+1} exception:\n{error_str}\n"
                 
@@ -234,12 +233,11 @@ def run_benchmarks():
                 current_user_prompt = base_user_prompt + feedback + "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                 
                 if attempt == max_retries - 1:
-                    results[name] = {"status": "exception", "error": error_str}
-                    if tracker:
-                        tracker.log_iteration(attempt, base_user_prompt, raw_response, "", False, error_str)
+                    results[name] = {"status": "exception", "error": error_str, "attempts": max_retries}
+                    if tracker: tracker.log_iteration(attempt, base_user_prompt, raw_response, "", False, error_str)
                     
         if not success and name not in results:
-            results[name] = {"status": "validation_failed_after_retries"}
+            results[name] = {"status": "validation_failed_after_retries", "attempts": max_retries}
             
     if tracker: tracker.finish()
     
