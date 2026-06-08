@@ -18,7 +18,7 @@ from core.mlops_tracker import MLOpsTracker
 def run_benchmarks():
     print("=== Starting TritonBench LLM-MLIR Evaluator with Triton Python Feedback Loop ===")
     
-    prompts_file = "benchmark_prompts_A.json"
+    prompts_file = "benchmark_prompts.json"
     if not os.path.exists(prompts_file):
         print(f"Error: {prompts_file} not found. Creating a default one with Phase 1 prompts.")
         default_prompts = {

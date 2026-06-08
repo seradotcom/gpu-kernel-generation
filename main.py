@@ -74,7 +74,7 @@ def main():
         try:
             client = genai.Client(project="project-2f46fba3-c3a3-456a-9d1", location="us-central1")
             # Pass the actual Pydantic schema to the client (XGrammar at API level)
-            raw_response = generate_llm_response("ollama", system_prompt, current_user_prompt, schema=MlirResponse)
+            raw_response = generate_llm_response("gemini", system_prompt, current_user_prompt, schema=MlirResponse)
         except Exception as e:
             print(f"[!] Error calling the API: {e}")
             break
