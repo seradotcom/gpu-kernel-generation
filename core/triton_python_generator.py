@@ -200,8 +200,8 @@ class TritonPythonGenerator:
                 py_name = self._sanitize_name(result)
                 symbols[result] = py_name
                 symbols[f"__expr__{result}"] = expr
-                # We emit a line for debug clarity, but load/store will inline
-                return f"    {py_name} = {expr}"
+                # No line emitted; tt.load / tt.store will inline the expression directly
+                return ""
             return "    # ERROR: tt.addptr needs 2 operands"
 
         # --- tt.load ---

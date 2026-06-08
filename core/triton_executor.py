@@ -128,7 +128,7 @@ class TritonExecutor:
         try:
             # Warmup
             for _ in range(warmup):
-                kernel_fn[grid](*[t.data_ptr() for t in tensors])
+                kernel_fn[grid](*tensors)
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
 
@@ -138,7 +138,7 @@ class TritonExecutor:
                 end = torch.cuda.Event(enable_timing=True)
                 start.record()
                 for _ in range(reps):
-                    kernel_fn[grid](*[t.data_ptr() for t in tensors])
+                    kernel_fn[grid](*tensors)
                 end.record()
                 torch.cuda.synchronize()
                 kernel_time_ms = start.elapsed_time(end) / reps
@@ -146,7 +146,7 @@ class TritonExecutor:
                 # CPU fallback timing (less precise)
                 t0 = time.perf_counter()
                 for _ in range(reps):
-                    kernel_fn[grid](*[t.data_ptr() for t in tensors])
+                    kernel_fn[grid](*tensors)
                 t1 = time.perf_counter()
                 kernel_time_ms = (t1 - t0) * 1000 / reps
 
