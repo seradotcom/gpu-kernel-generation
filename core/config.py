@@ -37,12 +37,16 @@ REMOTE_MODEL_URL = os.getenv("GEMMA_API_URL", "https://unsubtly-dash-economy.ngr
 
 # Strict parameters for code generation
 GENERATION_PARAMS = {
-    "max_tokens": 4096,
-    "temperature": 0.1,  # Low temperature for determinism in code generation
+    "max_tokens": 8192,
+    "temperature": 0.1, 
     "top_p": 0.9,
+    "repetition_penalty": 1.0,
 }
 
 # --- MLOPS CONFIGURATION ---
 WANDB_PROJECT_NAME = "llm-mlir-compiler"
 WANDB_ENTITY = None  # Automatic if configured in the environment
+
+# --- REMOTE MODEL CONFIGURATION ---
+REMOTE_PROMPT_TEMPLATE = "chatml" # Use "chatml" for Qwen, "gemma" for Gemma
 

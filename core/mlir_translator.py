@@ -247,7 +247,10 @@ class MLIRTranslator:
                                 elif all(isinstance(x, float) for x in v):
                                     mlir_attributes[k] = ir.ArrayAttr.get([ir.FloatAttr.get(ir.F32Type.get(), x) for x in v])
                             elif isinstance(v, int):
-                                mlir_attributes[k] = ir.IntegerAttr.get(ir.IntegerType.get_signless(32), v)
+                                if k == "predicate":
+                                    mlir_attributes[k] = ir.IntegerAttr.get(ir.IntegerType.get_signless(64), v)
+                                else:
+                                    mlir_attributes[k] = ir.IntegerAttr.get(ir.IntegerType.get_signless(32), v)
                             elif isinstance(v, float):
                                 mlir_attributes[k] = ir.FloatAttr.get(ir.F32Type.get(), v)
                             elif isinstance(v, bool):
@@ -258,6 +261,10 @@ class MLIRTranslator:
                     regions = 1 if getattr(op_obj, "region_combiner", None) else 0
 
                     op_name = getattr(op_obj.opcode, "value", op_obj.opcode)
+
+                    # Alias LLM hallucinations to valid MLIR opcodes
+                    if op_name == "arith.maxf": op_name = "arith.maximumf"
+                    if op_name == "arith.minf": op_name = "arith.minimumf"
 
                     if op_name == "tt.load":
                         sizes = [1, 0, 0] # [ptr, mask(optional), other(optional)]
@@ -273,7 +280,7 @@ class MLIRTranslator:
                     # Use generic constructor to support any dialect without hard Python bindings
                     # Since opcode is an Enum, we use .value
                     op = ir.Operation.create(
-                        name=getattr(op_obj.opcode, "value", op_obj.opcode),
+                        name=op_name,
                         results=results,
                         operands=operands,
                         attributes=mlir_attributes,

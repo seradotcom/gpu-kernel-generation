@@ -168,6 +168,8 @@ def main():
             feedback_context += "CRITICAL RULE VIOLATION: Pydantic Schema Validation Failed. Make sure you included 'operands': [] even if the operation takes no operands (like tt.make_range), and ensure your 'out_type' strictly follows the MLIR syntax.\n"
         if "failed to verify that result type matches ptr type" in error_msg:
             feedback_context += "CRITICAL RULE VIOLATION: 'tt.addptr' MUST return EXACTLY the same type as its pointer operand! If your input pointer is 'tensor<...x!tt.ptr<f32>>', your 'out_type' MUST also be exactly 'tensor<...x!tt.ptr<f32>>'. Do not change the type or shape!\n"
+        if "Malformed JSON:" in error_msg or "JSONDecodeError" in error_msg or "Expecting value:" in error_msg or "Unterminated string" in error_msg:
+            feedback_context += "CRITICAL RULE VIOLATION: The JSON is invalid or truncated. This happens when you hit the token limit! You MUST be more concise, use 'scf.for' loops instead of unrolling manually, DO NOT generate redundant operations or duplicate constants, and ensure the JSON is fully closed.\n"
 
         current_user_prompt = base_user_prompt + feedback_context + "\nAnalyze ALL past errors, correct the logical flaw in the JSON, and output the fixed version."
 

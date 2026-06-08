@@ -21,7 +21,7 @@ except ImportError:
 def run_benchmarks():
     print("=== Starting TritonBench LLM-MLIR Evaluator with Feedback Loop ===")
     
-    prompts_file = "benchmark_prompts.json"
+    prompts_file = "benchmark_prompts_A.json"
     if not os.path.exists(prompts_file):
         print(f"Error: {prompts_file} not found.")
         return
@@ -61,10 +61,21 @@ def run_benchmarks():
                 raw_response = generate_llm_response("ollama", system_prompt, current_user_prompt, schema=MlirResponse)
                 
                 clean_json = raw_response.strip()
-                if clean_json.startswith("```json"): clean_json = clean_json[7:]
-                if clean_json.startswith("```"): clean_json = clean_json[3:]
-                if clean_json.endswith("```"): clean_json = clean_json[:-3]
-                clean_json = clean_json.strip()
+                import re
+                
+                # Try to extract from ```json ... ``` first
+                json_match = re.search(r'```json\s*(.*?)\s*```', clean_json, flags=re.DOTALL)
+                if json_match:
+                    clean_json = json_match.group(1).strip()
+                else:
+                    # Remove <think>...</think> blocks
+                    clean_json = re.sub(r'<think>.*?</think>', '', clean_json, flags=re.DOTALL).strip()
+                    # Try to find outermost braces
+                    brace_match = re.search(r'(\{.*\})', clean_json, flags=re.DOTALL)
+                    if brace_match:
+                        clean_json = brace_match.group(1).strip()
+                    else:
+                        clean_json = clean_json.strip()
                 
                 response_json = json.loads(clean_json)
                 mlir_obj = MlirResponse(**response_json)
@@ -177,6 +188,8 @@ def run_benchmarks():
                     feedback += "CRITICAL RULE VIOLATION: The mask operand (operand #1) of 'tt.load' or 'tt.store' MUST be a boolean tensor (i1), e.g., 'tensor<1024xi1>'. You passed an i32 tensor instead. Use 'arith.cmpi' to create a boolean mask first!\n"
                 if "'tt.addptr' op operand #0 must be ptr" in error_str:
                     feedback += "CRITICAL RULE VIOLATION: The first operand of 'tt.addptr' MUST be a pointer (e.g. '!tt.ptr<f32>'). You passed a math tensor (like 'f32'). You must pass a base pointer, NOT a loaded value!\n"
+                if "JSONDecodeError" in error_str or "Expecting value:" in error_str or "Unterminated string" in error_str:
+                    feedback += "CRITICAL RULE VIOLATION: The JSON is invalid or truncated. This happens when you hit the token limit! You MUST be more concise, use 'scf.for' loops instead of unrolling manually, DO NOT generate redundant operations or duplicate constants, and ensure the JSON is fully closed.\n"
                     
                 current_user_prompt = base_user_prompt + feedback + "\nAnalyze ALL past errors, correct your JSON, and ensure strict compliance with MLIR rules."
                 

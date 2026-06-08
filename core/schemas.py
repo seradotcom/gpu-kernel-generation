@@ -6,111 +6,24 @@ from pydantic import BaseModel, Field
 # SCF & Triton Schema (Structured Outputs)
 # ---------------------------------------------------------
 
-class MLIRType(str, Enum):
-    """
-    Tipos MLIR estrictos. Se usa un Enum para evitar que el LLM alucine
-    tamaños de bloque subóptimos (ej. 137) obligándolo a usar potencias de 2.
-    """
-    # === Escalares base ===
-    F32   = "f32"
-    F16   = "f16"
-    I32   = "i32"
-    I1    = "i1"
-    INDEX = "index"
+# Dynamic MLIR Types Generation
+base_types = ["f32", "f16", "bf16", "i32", "i64", "i16", "i8", "i1", "index"]
+ptr_types = [f"!tt.ptr<{t}>" for t in base_types if t != "index"]
+all_scalar_types = base_types + ptr_types
 
-    # === Punteros base ===
-    PTR_F32 = "!tt.ptr<f32>"
-    PTR_F16 = "!tt.ptr<f16>"
-    PTR_I32 = "!tt.ptr<i32>"
+sizes_1d = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]
+tensors_1d = [f"tensor<{s}x{t}>" for s in sizes_1d for t in all_scalar_types]
 
-    # === 1D Tensors: Datos Matemáticos (f32 / f16) ===
-    T_16_F32   = "tensor<16xf32>"
-    T_32_F32   = "tensor<32xf32>"
-    T_64_F32   = "tensor<64xf32>"
-    T_128_F32  = "tensor<128xf32>"
-    T_256_F32  = "tensor<256xf32>"
-    T_512_F32  = "tensor<512xf32>"
-    T_1024_F32 = "tensor<1024xf32>"
-    T_2048_F32 = "tensor<2048xf32>"
+sizes_2d = [16, 32, 64, 128, 256]
+tensors_2d = [f"tensor<{s1}x{s2}x{t}>" for s1 in sizes_2d for s2 in sizes_2d for t in all_scalar_types]
 
-    T_16_F16   = "tensor<16xf16>"
-    T_32_F16   = "tensor<32xf16>"
-    T_64_F16   = "tensor<64xf16>"
-    T_128_F16  = "tensor<128xf16>"
-    T_256_F16  = "tensor<256xf16>"
-    T_512_F16  = "tensor<512xf16>"
-    T_1024_F16 = "tensor<1024xf16>"
-    T_2048_F16 = "tensor<2048xf16>"
+asym_2d = [(1, 128), (1, 256), (1, 1024), (32, 64), (64, 32), (64, 128), (128, 64)]
+tensors_2d_asym = [f"tensor<{s1}x{s2}x{t}>" for (s1, s2) in asym_2d for t in all_scalar_types]
 
-    # === 1D Tensors: Índices/Offsets (Para tt.make_range) ===
-    T_16_I32   = "tensor<16xi32>"
-    T_32_I32   = "tensor<32xi32>"
-    T_64_I32   = "tensor<64xi32>"
-    T_128_I32  = "tensor<128xi32>"
-    T_256_I32  = "tensor<256xi32>"
-    T_512_I32  = "tensor<512xi32>"
-    T_1024_I32 = "tensor<1024xi32>"
-    T_2048_I32 = "tensor<2048xi32>"
+ALL_MLIR_TYPES = all_scalar_types + tensors_1d + tensors_2d + tensors_2d_asym
+_enum_dict = {t.replace('<', '_').replace('>', '_').replace('!', '').replace('.', '_').replace('x', '_'): t for t in ALL_MLIR_TYPES}
+MLIRType = Enum('MLIRType', _enum_dict, type=str)
 
-    # === 1D Tensors: Máscaras Booleanas (Para arith.cmpf y tt.load) ===
-    T_16_I1   = "tensor<16xi1>"
-    T_32_I1   = "tensor<32xi1>"
-    T_64_I1   = "tensor<64xi1>"
-    T_128_I1  = "tensor<128xi1>"
-    T_256_I1  = "tensor<256xi1>"
-    T_512_I1  = "tensor<512xi1>"
-    T_1024_I1 = "tensor<1024xi1>"
-    T_2048_I1 = "tensor<2048xi1>"
-
-    # === 1D Tensors: Tensores de Punteros (Para tt.splat y tt.addptr) ===
-    T_16_PTR_F32   = "tensor<16x!tt.ptr<f32>>"
-    T_32_PTR_F32   = "tensor<32x!tt.ptr<f32>>"
-    T_64_PTR_F32   = "tensor<64x!tt.ptr<f32>>"
-    T_128_PTR_F32  = "tensor<128x!tt.ptr<f32>>"
-    T_256_PTR_F32  = "tensor<256x!tt.ptr<f32>>"
-    T_512_PTR_F32  = "tensor<512x!tt.ptr<f32>>"
-    T_1024_PTR_F32 = "tensor<1024x!tt.ptr<f32>>"
-    T_2048_PTR_F32 = "tensor<2048x!tt.ptr<f32>>"
-
-    T_16_PTR_F16   = "tensor<16x!tt.ptr<f16>>"
-    T_32_PTR_F16   = "tensor<32x!tt.ptr<f16>>"
-    T_64_PTR_F16   = "tensor<64x!tt.ptr<f16>>"
-    T_128_PTR_F16  = "tensor<128x!tt.ptr<f16>>"
-    T_256_PTR_F16  = "tensor<256x!tt.ptr<f16>>"
-    T_512_PTR_F16  = "tensor<512x!tt.ptr<f16>>"
-    T_1024_PTR_F16 = "tensor<1024x!tt.ptr<f16>>"
-    T_2048_PTR_F16 = "tensor<2048x!tt.ptr<f16>>"
-
-    # === 2D Tensors: Bloques para Matmul, Softmax 2D, LayerNorm ===
-    # (Tamaños simétricos)
-    T_16x16_F32   = "tensor<16x16xf32>"
-    T_32x32_F32   = "tensor<32x32xf32>"
-    T_64x64_F32   = "tensor<64x64xf32>"
-    T_128x128_F32 = "tensor<128x128xf32>"
-    T_256x256_F32 = "tensor<256x256xf32>"
-
-    # (Tamaños asimétricos típicos)
-    T_32x64_F32   = "tensor<32x64xf32>"
-    T_64x32_F32   = "tensor<64x32xf32>"
-    T_64x128_F32  = "tensor<64x128xf32>"
-    T_128x64_F32  = "tensor<128x64xf32>"
-    
-    # (Lo mismo para i32 (offsets), i1 (máscaras) y Punteros en 2D)
-    T_16x16_I32   = "tensor<16x16xi32>"
-    T_32x32_I32   = "tensor<32x32xi32>"
-    T_64x64_I32   = "tensor<64x64xi32>"
-    T_128x128_I32 = "tensor<128x128xi32>"
-
-    T_16x16_I1   = "tensor<16x16xi1>"
-    T_32x32_I1   = "tensor<32x32xi1>"
-    T_64x64_I1   = "tensor<64x64xi1>"
-    T_128x128_I1 = "tensor<128x128xi1>"
-
-    T_16x16_PTR_F32   = "tensor<16x16x!tt.ptr<f32>>"
-    T_32x32_PTR_F32   = "tensor<32x32x!tt.ptr<f32>>"
-    T_64x64_PTR_F32   = "tensor<64x64x!tt.ptr<f32>>"
-    T_128x128_PTR_F32 = "tensor<128x128x!tt.ptr<f32>>"
-    
 class MlirOpcode(str, Enum):
     # Arith Dialect
     ARITH_ADDF = "arith.addf"
@@ -119,10 +32,32 @@ class MlirOpcode(str, Enum):
     ARITH_DIVF = "arith.divf"
     ARITH_MAXIMUMF = "arith.maximumf"
     ARITH_MINIMUMF = "arith.minimumf"
+    ARITH_MAXF = "arith.maxf"
+    ARITH_MINF = "arith.minf"
+    ARITH_MAXSI = "arith.maxsi"
+    ARITH_MAXUI = "arith.maxui"
+    ARITH_MINSI = "arith.minsi"
+    ARITH_MINUI = "arith.minui"
     ARITH_CMPF = "arith.cmpf"
+    ARITH_CMPI = "arith.cmpi"
+    ARITH_ADDI = "arith.addi"
+    ARITH_SUBI = "arith.subi"
+    ARITH_MULI = "arith.muli"
+    ARITH_ANDI = "arith.andi"
+    ARITH_ORI = "arith.ori"
+    ARITH_XORI = "arith.xori"
     ARITH_CONSTANT = "arith.constant"
     ARITH_EXTF = "arith.extf"
     ARITH_TRUNCF = "arith.truncf"
+    ARITH_SITOFP = "arith.sitofp"
+    ARITH_FPTOSI = "arith.fptosi"
+    ARITH_EXTSI = "arith.extsi"
+    ARITH_EXTUI = "arith.extui"
+    ARITH_TRUNCI = "arith.trunci"
+    MATH_RSQRT = "math.rsqrt"
+    MATH_ERF = "math.erf"
+    TT_MAKE_BLOCK_PTR = "tt.make_block_ptr"
+
     ARITH_SELECT = "arith.select"
     
     # Math Dialect
@@ -177,25 +112,25 @@ class InputArgument(BaseModel):
     type: MLIRType = Field(..., description="Exact MLIR type. Choose from the available enum.")
 
 class UnaryOperation(BaseModel):
-    opcode: Literal["math.exp", "math.log", "math.sqrt", "math.cos", "math.sin", "math.absf", "arith.extf", "arith.truncf"] = Field(..., description="Ops with exactly 1 operand")
+    opcode: Literal["math.exp", "math.log", "math.sqrt", "math.rsqrt", "math.erf", "math.cos", "math.sin", "math.absf", "arith.extf", "arith.truncf", "arith.sitofp", "arith.fptosi", "arith.extsi", "arith.extui", "arith.trunci", "tt.ptr_to_int", "tt.int_to_ptr"] = Field(..., description="Ops with exactly 1 operand")
     operands: List[Union[str, float, int]] = Field(..., min_length=1, max_length=1, description="Input registers or literal numbers")
     result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
     out_type: Optional[MLIRType] = Field(None, description="Specify ONLY for explicit casting or when type cannot be inferred.")
-    attributes: Optional[Dict[str, Any]] = Field(None)
+    attributes: Optional[Dict[str, Union[int, float, str, bool, List[int], List[float]]]] = Field(None, description="Attributes like predicate=2 for cmpi, or value=256 for constant")
 
 class BinaryOperation(BaseModel):
-    opcode: Literal["arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "arith.cmpf"] = Field(..., description="Ops with exactly 2 operands")
+    opcode: Literal["arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "arith.maxf", "arith.minf", "arith.maxsi", "arith.maxui", "arith.minsi", "arith.minui", "arith.cmpf", "arith.cmpi", "arith.addi", "arith.subi", "arith.muli", "arith.divsi", "arith.divui", "arith.remsi", "arith.remui", "arith.shli", "arith.shrsi", "arith.shrui", "arith.andi", "arith.ori", "arith.xori", "tt.addptr"] = Field(..., description="Ops with exactly 2 operands")
     operands: List[Union[str, float, int]] = Field(..., min_length=2, max_length=2, description="Input registers or literal numbers")
     result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
     out_type: Optional[MLIRType] = Field(None, description="Specify ONLY for explicit casting or when type cannot be inferred.")
-    attributes: Optional[Dict[str, Any]] = Field(None)
+    attributes: Optional[Dict[str, Union[int, float, str, bool, List[int], List[float]]]] = Field(None, description="Attributes like predicate=2 for cmpi, or value=256 for constant")
 
 class GenericOperation(BaseModel):
     opcode: MlirOpcode = Field(..., description="Allowed MLIR/Triton operation")
-    operands: List[Union[str, float, int]] = Field(..., description="Input registers or literal numbers")
+    operands: List[Union[str, float, int]] = Field(default_factory=list, description="Input registers or literal numbers")
     result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
     out_type: Optional[MLIRType] = Field(None, description="Specify ONLY for explicit casting or when type cannot be inferred.")
-    attributes: Optional[Dict[str, Any]] = Field(None)
+    attributes: Optional[Dict[str, Union[int, float, str, bool, List[int], List[float]]]] = Field(None, description="Attributes like predicate=2 for cmpi, or value=256 for constant")
     region_combiner: Optional[str] = Field(None)
 
 AnyOperation = Union[UnaryOperation, BinaryOperation, GenericOperation]
