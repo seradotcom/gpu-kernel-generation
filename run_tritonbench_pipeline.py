@@ -139,11 +139,21 @@ def run_tritonbench_pipeline():
         test_path = bench_data["test_path"]
 
         # =====================================================================
-        # PHASE 1: Existing JSON + MLIR pipeline (unchanged logic)
+        # PHASE 1: Minimal JSON prompt for Groq (schema stripped to avoid 413)
         # =====================================================================
         print("\n[Phase 1/3] MLIR Generation and Verify")
-        system_prompt_json = prompt_builder.build_prompt(
-            abstracted_prompt, MlirResponse.model_json_schema()
+        system_prompt_json = (
+            "You are a GPU compiler expert. Generate a kernel as a JSON object with this exact top-level structure:\n"
+            '{"reasoning": "...", "code": {"function_name": "...", "arguments": [...], "operations": [...], "returns": []}}\n\n'
+            "Rules:\n"
+            "- arguments: list of {name: string, type: string} (e.g., '!tt.ptr<f32>', 'tensor<256xf32>')\n"
+            "- operations: list of {opcode: string, operands: [...], result: string, out_type: string (optional), attributes: dict (optional)}\n"
+            "- Supported opcodes include: arith.addf, arith.cmpf, arith.constant, tt.load, tt.store, tt.splat, tt.make_range, tt.addptr, scf.for, scf.yield, scf.if, math.exp, tt.reduce\n"
+            "- Use 'result': 'none' for ops with no output (e.g., tt.store, scf.yield).\n"
+            "- Define every register before use. Use exact same type strings for operands.\n"
+            "- The kernel must return an empty list: \"returns\": []\n"
+            "- Output ONLY the JSON object. No markdown, no extra text.\n\n"
+            "Task:\n" + abstracted_prompt
         )
 
         mlir_feedback = None
