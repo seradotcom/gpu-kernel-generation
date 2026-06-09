@@ -173,7 +173,7 @@ def run_tritonbench_pipeline():
             try:
                 print("    -> Calling LLM for JSON MLIR generation...")
                 json_raw = generate_llm_response(
-                    "groq", system_prompt_json, current_user_prompt, schema=MlirResponse
+                    "vllm", system_prompt_json, current_user_prompt, schema=MlirResponse
                 )
                 print(f"    -> LLM responded ({len(json_raw)} chars)")
 
@@ -263,7 +263,7 @@ def run_tritonbench_pipeline():
             try:
                 print("    -> Calling LLM for Triton Python generation...")
                 triton_raw = generate_llm_response(
-                    "groq", system_prompt_triton, triton_user_prompt, schema=None
+                    "vllm", system_prompt_triton, triton_user_prompt, schema=None
                 )
                 print(f"    -> LLM responded ({len(triton_raw)} chars)")
 

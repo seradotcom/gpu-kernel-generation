@@ -109,6 +109,10 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 MODEL_GROQ = "llama-3.1-8b-instant"      # Cheaper/faster, good for code
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 
+# --- VLLM (Remote / Ngrok) CONFIGURATION ---
+VLLM_URL = os.getenv("VLLM_URL", "https://efficient-lethargy-haggler.ngrok-free.dev")
+VLLM_MODEL = os.getenv("VLLM_MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
+
 # --- REMOTE MODEL CONFIGURATION ---
 REMOTE_PROMPT_TEMPLATE = "chatml" # Use "chatml" for Qwen, "gemma" for Gemma
 

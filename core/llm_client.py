@@ -181,6 +181,32 @@ def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
 
     raise TimeoutError(f"Job {job_id} did not complete within {max_wait}s")
 
+def run_vllm(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
+    """
+    Makes a request to a remote vLLM server via an ngrok tunnel.
+    vLLM exposes an OpenAI-compatible /v1/chat/completions endpoint.
+    """
+    headers = {
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": config.VLLM_MODEL,
+        "messages": [
+            {"role": "system", "content": system_p},
+            {"role": "user", "content": user_p}
+        ],
+        "max_tokens": config.GENERATION_PARAMS.get("max_tokens", 8192),
+        "temperature": config.GENERATION_PARAMS.get("temperature", 0.1),
+        "top_p": config.GENERATION_PARAMS.get("top_p", 0.9),
+        "stream": False
+    }
+
+    url = config.VLLM_URL.rstrip("/") + "/v1/chat/completions"
+    response = requests.post(url, headers=headers, json=payload, timeout=120)
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
+
 def run_groq(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
     Makes a request to Groq's OpenAI-compatible API.
@@ -236,6 +262,8 @@ def generate_llm_response(model_name: str, system_p: str, user_p: str, schema: T
         return run_gemini(system_p, user_p, schema)
     elif name == "groq":
         return run_groq(system_p, user_p, schema)
+    elif name == "vllm":
+        return run_vllm(system_p, user_p, schema)
     elif name == "ollama":
         return run_ollama(system_p, user_p, schema)
     else:
