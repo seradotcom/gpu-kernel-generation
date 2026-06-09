@@ -206,7 +206,7 @@ def main():
         }
     }
 
-    # Kernel 5: Scale and Add (A * scale + B = C, tests arith.constant)
+    # Kernel 5: Scale and Add (A * scale + B = C, tests arith.constant + tt.splat)
     kernels["scale_add"] = {
         "reasoning": "A * 2.0 + B = C",
         "code": {
@@ -221,7 +221,8 @@ def main():
                 {"opcode": "tt.load", "operands": ["%A_ptr", "%off"], "result": "%a", "out_type": "tensor<256xf32>"},
                 {"opcode": "tt.load", "operands": ["%B_ptr", "%off"], "result": "%b", "out_type": "tensor<256xf32>"},
                 {"opcode": "arith.constant", "operands": [], "attributes": {"value": 2.0}, "result": "%scale", "out_type": "f32"},
-                {"opcode": "arith.mulf", "operands": ["%a", "%scale"], "result": "%scaled", "out_type": "tensor<256xf32>"},
+                {"opcode": "tt.splat", "operands": ["%scale"], "result": "%scale_t", "out_type": "tensor<256xf32>"},
+                {"opcode": "arith.mulf", "operands": ["%a", "%scale_t"], "result": "%scaled", "out_type": "tensor<256xf32>"},
                 {"opcode": "arith.addf", "operands": ["%scaled", "%b"], "result": "%c", "out_type": "tensor<256xf32>"},
                 {"opcode": "tt.store", "operands": ["%C_ptr", "%off", "%c"], "result": "none"}
             ],
@@ -241,8 +242,10 @@ def main():
             "operations": [
                 {"opcode": "tt.make_range", "operands": [], "attributes": {"start": 0, "end": 256}, "result": "%off", "out_type": "tensor<256xi32>"},
                 {"opcode": "tt.load", "operands": ["%A_ptr", "%off"], "result": "%a", "out_type": "tensor<256xf32>"},
+                {"opcode": "arith.constant", "operands": [], "attributes": {"value": 0.0}, "result": "%zero", "out_type": "f32"},
+                {"opcode": "tt.splat", "operands": ["%zero"], "result": "%zero_t", "out_type": "tensor<256xf32>"},
                 {"opcode": "scf.for", "lower_bound": 0, "upper_bound": 4, "step": 1, "loop_var": "%i",
-                 "iter_args": {"%acc": 0.0}, "results": ["%final_acc"],
+                 "iter_args": {"%acc": "%zero_t"}, "results": ["%final_acc"],
                  "body": [
                      {"opcode": "arith.addf", "operands": ["%acc", "%a"], "result": "%new_acc", "out_type": "tensor<256xf32>"},
                      {"opcode": "scf.yield", "operands": ["%new_acc"]}
@@ -266,11 +269,72 @@ def main():
             "operations": [
                 {"opcode": "tt.make_range", "operands": [], "attributes": {"start": 0, "end": 256}, "result": "%off", "out_type": "tensor<256xi32>"},
                 {"opcode": "arith.constant", "operands": [], "attributes": {"value": 1024}, "result": "%limit", "out_type": "i32"},
-                {"opcode": "arith.cmpi", "operands": ["%off", "%limit"], "result": "%mask", "out_type": "tensor<256xi1>", "attributes": {"predicate": 4}},
+                {"opcode": "tt.splat", "operands": ["%limit"], "result": "%limit_t", "out_type": "tensor<256xi32>"},
+                {"opcode": "arith.cmpi", "operands": ["%off", "%limit_t"], "result": "%mask", "out_type": "tensor<256xi1>", "attributes": {"predicate": 4}},
                 {"opcode": "tt.load", "operands": ["%A_ptr", "%off", "%mask"], "result": "%a", "out_type": "tensor<256xf32>"},
                 {"opcode": "tt.load", "operands": ["%B_ptr", "%off", "%mask"], "result": "%b", "out_type": "tensor<256xf32>"},
                 {"opcode": "arith.addf", "operands": ["%a", "%b"], "result": "%c", "out_type": "tensor<256xf32>"},
                 {"opcode": "tt.store", "operands": ["%C_ptr", "%off", "%c", "%mask"], "result": "none"}
+            ],
+            "returns": []
+        }
+    }
+
+    # Kernel 8: Element-wise Exp (math.exp)
+    kernels["element_exp"] = {
+        "reasoning": "exp(A) = B",
+        "code": {
+            "function_name": "element_exp_kernel",
+            "arguments": [
+                {"name": "%A_ptr", "type": "!tt.ptr<f32>"},
+                {"name": "%B_ptr", "type": "!tt.ptr<f32>"}
+            ],
+            "operations": [
+                {"opcode": "tt.make_range", "operands": [], "attributes": {"start": 0, "end": 256}, "result": "%off", "out_type": "tensor<256xi32>"},
+                {"opcode": "tt.load", "operands": ["%A_ptr", "%off"], "result": "%a", "out_type": "tensor<256xf32>"},
+                {"opcode": "math.exp", "operands": ["%a"], "result": "%b", "out_type": "tensor<256xf32>"},
+                {"opcode": "tt.store", "operands": ["%B_ptr", "%off", "%b"], "result": "none"}
+            ],
+            "returns": []
+        }
+    }
+
+    # Kernel 9: Conditional Select (arith.select + arith.cmpf)
+    kernels["conditional_select"] = {
+        "reasoning": "C = A > 0.0 ? A : 0.0",
+        "code": {
+            "function_name": "conditional_select_kernel",
+            "arguments": [
+                {"name": "%A_ptr", "type": "!tt.ptr<f32>"},
+                {"name": "%C_ptr", "type": "!tt.ptr<f32>"}
+            ],
+            "operations": [
+                {"opcode": "tt.make_range", "operands": [], "attributes": {"start": 0, "end": 256}, "result": "%off", "out_type": "tensor<256xi32>"},
+                {"opcode": "tt.load", "operands": ["%A_ptr", "%off"], "result": "%a", "out_type": "tensor<256xf32>"},
+                {"opcode": "arith.constant", "operands": [], "attributes": {"value": 0.0}, "result": "%zero", "out_type": "f32"},
+                {"opcode": "tt.splat", "operands": ["%zero"], "result": "%zero_t", "out_type": "tensor<256xf32>"},
+                {"opcode": "arith.cmpf", "operands": ["%a", "%zero_t"], "result": "%mask", "out_type": "tensor<256xi1>", "attributes": {"predicate": 1}},
+                {"opcode": "arith.select", "operands": ["%mask", "%a", "%zero_t"], "result": "%c", "out_type": "tensor<256xf32>"},
+                {"opcode": "tt.store", "operands": ["%C_ptr", "%off", "%c"], "result": "none"}
+            ],
+            "returns": []
+        }
+    }
+
+    # Kernel 10: Tensor Sum Reduction (tt.reduce)
+    kernels["sum_reduction"] = {
+        "reasoning": "Sum elements of A into scalar B",
+        "code": {
+            "function_name": "sum_reduction_kernel",
+            "arguments": [
+                {"name": "%A_ptr", "type": "!tt.ptr<f32>"},
+                {"name": "%B_ptr", "type": "!tt.ptr<f32>"}
+            ],
+            "operations": [
+                {"opcode": "tt.make_range", "operands": [], "attributes": {"start": 0, "end": 256}, "result": "%off", "out_type": "tensor<256xi32>"},
+                {"opcode": "tt.load", "operands": ["%A_ptr", "%off"], "result": "%a", "out_type": "tensor<256xf32>"},
+                {"opcode": "tt.reduce", "operands": ["%a"], "result": "%sum", "out_type": "f32", "attributes": {"axis": 0}, "region_combiner": "arith.addf"},
+                {"opcode": "tt.store", "operands": ["%B_ptr", "%off", "%sum"], "result": "none"}
             ],
             "returns": []
         }
