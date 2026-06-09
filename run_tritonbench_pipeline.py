@@ -139,21 +139,44 @@ def run_tritonbench_pipeline():
         test_path = bench_data["test_path"]
 
         # =====================================================================
-        # PHASE 1: Minimal JSON prompt for Groq (schema stripped to avoid 413)
+        # PHASE 1: MLIR Generation using raw TritonBench instruction
+        # The raw instruction already contains explicit operation hints (tl.load,
+        # tl.store, BLOCK_SIZE, etc.). We map those to MLIR operations.
         # =====================================================================
         print("\n[Phase 1/3] MLIR Generation and Verify")
+        raw_instruction = bench_data["instruction"]
+        abstracted_prompt = bench_data["abstracted_prompt"]  # kept for retry fallback
+
         system_prompt_json = (
-            "You are a GPU compiler expert. Generate a kernel as a JSON object with this exact top-level structure:\n"
+            "You are a GPU compiler expert. I will give you a kernel specification written in Triton Python style. "
+            "Translate it into MLIR JSON.\n\n"
+            "TRITON PYTHON → MLIR MAPPING (use these exact opcodes):\n"
+            "- tl.load(ptr + offsets, mask=...) → tt.load(%ptr, %mask) with out_type tensor<...xf32>\n"
+            "- tl.store(ptr + offsets, value, mask=...) → tt.store(%ptr, %value) [result: 'none']\n"
+            "- tl.program_id(axis=0) → tt.get_program_id with attributes={\"axis\": 0}, out_type=i32\n"
+            "- tl.arange(0, N) → tt.make_range(start=0, end=N), out_type=tensor<Nxi32>\n"
+            "- tl.splat(x) → tt.splat(x), MUST include explicit out_type\n"
+            "- pointer + offset → tt.addptr(%ptr, %offsets), out_type must match pointer shape\n"
+            "- arithmetic (+, -, *, /, max) → arith.addf, arith.subf, arith.mulf, arith.divf, arith.maximumf\n"
+            "- for loops within a block → scf.for with iter_args, results, and scf.yield as LAST op\n"
+            "- tl.sum over a dimension → tt.reduce with region_combiner='arith.addf' and attributes={\"axis\": N}\n"
+            "- tl.exp → math.exp, tl.log → math.log\n"
+            "- tl.cmpf (>, <, ==) → arith.cmpf with attributes={\"predicate\": N}\n"
+            "- boolean mask creation → arith.cmpf (predicate 2 for SLT) then tl.where → arith.select or scf.if\n\n"
+            "JSON STRUCTURE:\n"
             '{"reasoning": "...", "code": {"function_name": "...", "arguments": [...], "operations": [...], "returns": []}}\n\n'
-            "Rules:\n"
-            "- arguments: list of {name: string, type: string} (e.g., '!tt.ptr<f32>', 'tensor<256xf32>')\n"
-            "- operations: list of {opcode: string, operands: [...], result: string, out_type: string (optional), attributes: dict (optional)}\n"
-            "- Supported opcodes include: arith.addf, arith.cmpf, arith.constant, tt.load, tt.store, tt.splat, tt.make_range, tt.addptr, scf.for, scf.yield, scf.if, math.exp, tt.reduce\n"
-            "- Use 'result': 'none' for ops with no output (e.g., tt.store, scf.yield).\n"
-            "- Define every register before use. Use exact same type strings for operands.\n"
-            "- The kernel must return an empty list: \"returns\": []\n"
-            "- Output ONLY the JSON object. No markdown, no extra text.\n\n"
-            "Task:\n" + abstracted_prompt
+            "RULES:\n"
+            "1. arguments: list of {name: string, type: string} (e.g., '!tt.ptr<f32>', 'tensor<256xf32>')\n"
+            "2. operations: list of {opcode, operands, result, out_type (optional), attributes (optional)}\n"
+            "3. Use 'result': 'none' for ops with no output (tt.store, scf.yield).\n"
+            "4. Define every register before use. Types must match exactly.\n"
+            "5. SPMD: Use tt.get_program_id for block ID. Do NOT iterate the grid with scf.for.\n"
+            "6. scf.for: iter_args count MUST EQUAL results count MUST EQUAL scf.yield operands count.\n"
+            "7. tt.splat, tt.make_range, tt.addptr, tt.load MUST have explicit out_type.\n"
+            "8. Constants: arith.constant with attributes={\"value\": X}. Floats are f32.\n"
+            "9. Kernel returns empty list: \"returns\": [].\n"
+            "10. Output ONLY the JSON object. No markdown.\n\n"
+            "Task:\n" + raw_instruction
         )
 
         mlir_feedback = None
@@ -166,14 +189,14 @@ def run_tritonbench_pipeline():
         max_json_attempts = 2
         for json_attempt in range(max_json_attempts):
             print(f"  MLIR attempt {json_attempt + 1}/{max_json_attempts}")
-            current_user_prompt = abstracted_prompt if json_attempt == 0 else (
-                abstracted_prompt + f"\n\nPrevious attempt failed with: {error_str[:500]}. Fix and regenerate valid JSON."
+            current_user_prompt = raw_instruction if json_attempt == 0 else (
+                raw_instruction + f"\n\nPrevious attempt failed with: {error_str[:500]}. Fix and regenerate valid JSON."
             )
 
             try:
                 print("    -> Calling LLM for JSON MLIR generation...")
                 json_raw = generate_llm_response(
-                    "vllm", system_prompt_json, current_user_prompt, schema=MlirResponse
+                    "vllm", system_prompt_json, current_user_prompt, schema=None
                 )
                 print(f"    -> LLM responded ({len(json_raw)} chars)")
 

@@ -108,43 +108,22 @@ BENCHMARK_SUBSET = {
     "dequantize_rowwise": {
         "matcher": "row-wise dequantization",
         "test_file": "dequantize_rowwise.py",
-        "abstracted_prompt": (
-            "Generate a GPU kernel that performs row-wise dequantization on a 2D input tensor. "
-            "Each row is processed individually by multiplying each element with a stored maximum value "
-            "and a constant inverse of 127. The result is stored in an output tensor."
-        ),
     },
     "cosine_similarity": {
         "matcher": "cosine similarity",
         "test_file": "cosine_compute.py",
-        "abstracted_prompt": (
-            "Generate a GPU kernel that computes the cosine similarity between two vectors. "
-            "Calculate the dot product, L2 norms, and divide to get cosine similarity."
-        ),
     },
     "cross_entropy": {
         "matcher": "cross entropy",
         "test_file": "cross_entropy1.py",
-        "abstracted_prompt": (
-            "Generate a GPU kernel that computes cross-entropy loss between logits and target labels. "
-            "Apply log-softmax to logits, then gather the negative log-likelihood for the correct class."
-        ),
     },
     "batched_vecmat": {
         "matcher": "batched vector-matrix",
         "test_file": "batched_vecmat_mult.py",
-        "abstracted_prompt": (
-            "Generate a GPU kernel for batched vector-matrix multiplication. "
-            "Each batch element multiplies a vector with a matrix, producing an output vector."
-        ),
     },
     "add_example": {
         "matcher": "element-wise addition",
         "test_file": "add_example.py",
-        "abstracted_prompt": (
-            "Generate a GPU kernel that performs element-wise addition of two float32 vectors (A + B = C). "
-            "The kernel should take three pointer arguments. Use pointer arithmetic with a block size of 256."
-        ),
     },
 }
 
@@ -176,12 +155,16 @@ def load_benchmark_subset() -> dict:
             print(f"[Warning] Test file not found: {test_path}")
             continue
 
-        abstracted = cfg.get("abstracted_prompt") or _abstract_prompt(entry["instruction"])
+        # Use the raw TritonBench instruction for Phase 1 (it already contains
+        # explicit operation hints like tl.load, tl.store, BLOCK_SIZE, etc.).
+        # Keep the old abstracted version as fallback for compatibility.
+        raw_instruction = entry["instruction"]
+        abstracted = _abstract_prompt(raw_instruction)
 
         results[name] = {
             "name": name,
-            "instruction": entry["instruction"],
-            "abstracted_prompt": abstracted,
+            "instruction": raw_instruction,       # Primary: explicit TritonBench prompt
+            "abstracted_prompt": abstracted,      # Fallback: jargon-stripped version
             "test_path": test_path,
             "reference_code": entry.get("output", ""),
         }
