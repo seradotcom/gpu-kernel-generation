@@ -15,6 +15,7 @@ Or in a notebook:
     %run run_tritonbench_pipeline.py
 """
 
+import ast
 import json
 import os
 import re
@@ -29,15 +30,52 @@ from core.tritonbench_loader import (
 
 
 def _extract_python(raw: str) -> str:
-    """Extract Python code from markdown or raw string."""
+    """
+    Extract valid Python code from the LLM response.
+    Handles markdown blocks, narrative text mixed in, and attempts
+    to find the largest syntactically valid Python block.
+    """
     raw = raw.strip()
-    match = re.search(r"```python\s*(.*?)\s*```", raw, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    match = re.search(r"```\s*(.*?)\s*```", raw, re.DOTALL)
-    if match:
-        return match.group(1).strip()
+
+    # 1. Try markdown code blocks first
+    for pattern in [r"```python\s*(.*?)\s*```", r"```\s*(.*?)\s*```"]:
+        match = re.search(pattern, raw, re.DOTALL)
+        if match:
+            candidate = match.group(1).strip()
+            if _is_valid_python(candidate):
+                return candidate
+
+    # 2. No markdown block found or it's invalid — try the whole text
+    if _is_valid_python(raw):
+        return raw
+
+    # 3. Try to find a valid Python block by stripping trailing narrative lines
+    lines = raw.splitlines()
+    # Find the first line that looks like Python (import, @, def, class)
+    start_idx = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith(("import ", "from ", "@", "def ", "class ")):
+            start_idx = i
+            break
+
+    # Try progressively removing lines from the bottom until we find valid Python
+    for end_idx in range(len(lines), start_idx, -1):
+        candidate = "\n".join(lines[start_idx:end_idx]).strip()
+        if _is_valid_python(candidate):
+            return candidate
+
+    # 4. Fallback: just return the raw text and let the caller deal with it
     return raw.strip()
+
+
+def _is_valid_python(code: str) -> bool:
+    """Check if a string is syntactically valid Python."""
+    try:
+        ast.parse(code)
+        return True
+    except SyntaxError:
+        return False
 
 
 def run_tritonbench_pipeline():
@@ -97,6 +135,16 @@ def run_tritonbench_pipeline():
                 with open(artifact_path, "w") as f:
                     f.write(generated_kernel)
                 print(f"    -> Saved to {artifact_path}")
+
+                # Validate Python syntax before running THUNLP evaluation
+                if not _is_valid_python(generated_kernel):
+                    error_history = (
+                        "The generated code is not valid Python syntax. "
+                        "Please output ONLY executable Python code with no explanations or markdown. "
+                        "Start with imports and end with the launcher function."
+                    )
+                    print(f"    -> FAILED: Extracted code is not valid Python syntax")
+                    continue
 
                 # Evaluate using THUNLP native test harness
                 print("    -> Running THUNLP native evaluation...")
