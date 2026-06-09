@@ -106,7 +106,7 @@ WANDB_ENTITY = None  # Automatic if configured in the environment
 
 # --- GROQ CONFIGURATION ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-MODEL_GROQ = "llama-3.1-70b-versatile"  # Fast, free tier, excellent for code
+MODEL_GROQ = "llama-3.1-8b-instant"      # Cheaper/faster, good for code
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 
 # --- REMOTE MODEL CONFIGURATION ---
