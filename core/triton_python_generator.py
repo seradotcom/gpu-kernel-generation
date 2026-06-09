@@ -250,9 +250,15 @@ class TritonPythonGenerator:
                     ptr_expr = symbols.get(ptr_reg, self._sanitize_name(ptr_reg))
                 py_name = self._sanitize_name(result)
                 symbols[result] = py_name
-                if len(operands) >= 2:
-                    mask_expr = symbols.get(operands[1], self._sanitize_name(operands[1]))
-                    return f"    {py_name} = tl.load({ptr_expr}, mask={mask_expr})"
+                if len(operands) >= 3:
+                    # ptr + offset + mask
+                    offset_expr = symbols.get(operands[1], self._sanitize_name(operands[1]))
+                    mask_expr = symbols.get(operands[2], self._sanitize_name(operands[2]))
+                    return f"    {py_name} = tl.load({ptr_expr} + {offset_expr}, mask={mask_expr})"
+                elif len(operands) >= 2:
+                    # ptr + offset
+                    offset_expr = symbols.get(operands[1], self._sanitize_name(operands[1]))
+                    return f"    {py_name} = tl.load({ptr_expr} + {offset_expr})"
                 return f"    {py_name} = tl.load({ptr_expr})"
             return "    # ERROR: tt.load needs a pointer operand"
 
@@ -265,9 +271,15 @@ class TritonPythonGenerator:
                 if ptr_expr is None:
                     ptr_expr = symbols.get(ptr_reg, self._sanitize_name(ptr_reg))
                 val_expr = symbols.get(val_reg, self._sanitize_name(val_reg))
-                if len(operands) >= 3:
-                    mask_expr = symbols.get(operands[2], self._sanitize_name(operands[2]))
-                    return f"    tl.store({ptr_expr}, {val_expr}, mask={mask_expr})"
+                if len(operands) >= 4:
+                    # ptr + offset + val + mask
+                    offset_expr = symbols.get(operands[2], self._sanitize_name(operands[2]))
+                    mask_expr = symbols.get(operands[3], self._sanitize_name(operands[3]))
+                    return f"    tl.store({ptr_expr} + {offset_expr}, {val_expr}, mask={mask_expr})"
+                elif len(operands) >= 3:
+                    # ptr + offset + val
+                    offset_expr = symbols.get(operands[2], self._sanitize_name(operands[2]))
+                    return f"    tl.store({ptr_expr} + {offset_expr}, {val_expr})"
                 return f"    tl.store({ptr_expr}, {val_expr})"
             return "    # ERROR: tt.store needs ptr and value operands"
 
