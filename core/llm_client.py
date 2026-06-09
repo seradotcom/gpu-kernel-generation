@@ -183,29 +183,57 @@ def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
 
 def run_vllm(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
-    Makes a request to a remote vLLM server via an ngrok tunnel.
-    vLLM exposes an OpenAI-compatible /v1/chat/completions endpoint.
+    Makes a request to a custom FastAPI vLLM server via an ngrok tunnel.
+    The server uses AsyncLLMEngine directly and exposes:
+      POST /generate  -> returns {job_id: str}
+      GET  /status/{job_id} -> returns {status: "pending|done|error", response: str, error: str}
+    NOT the OpenAI-compatible /v1/chat/completions endpoint.
     """
-    headers = {
-        "Content-Type": "application/json"
-    }
+    # ChatML format for Qwen 3.5 (matches the remote server prompt style)
+    prompt = f"<|im_start|>system\n{system_p}<|im_end|>\n<|im_start|>user\n{user_p}<|im_end|>\n<|im_start|>assistant\n"
 
     payload = {
-        "model": config.VLLM_MODEL,
-        "messages": [
-            {"role": "system", "content": system_p},
-            {"role": "user", "content": user_p}
-        ],
+        "prompt": prompt,
         "max_tokens": config.GENERATION_PARAMS.get("max_tokens", 8192),
-        "temperature": config.GENERATION_PARAMS.get("temperature", 0.1),
-        "top_p": config.GENERATION_PARAMS.get("top_p", 0.9),
-        "stream": False
+        "temperature": config.GENERATION_PARAMS.get("temperature", 0.6),
+        "repetition_penalty": config.GENERATION_PARAMS.get("repetition_penalty", 1.15)
     }
+    if schema:
+        payload["schema_dict"] = schema.model_json_schema()
 
-    url = config.VLLM_URL.rstrip("/") + "/v1/chat/completions"
-    response = requests.post(url, headers=headers, json=payload, timeout=120)
+    url = config.VLLM_URL.rstrip('/')
+
+    # 1. Dispatch the job (returns immediately)
+    response = requests.post(f"{url}/generate", json=payload, timeout=30)
     response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+    job_id = response.json()["job_id"]
+    print(f"[vLLM] Job dispatched: {job_id}. Waiting for result...")
+
+    # 2. Poll until completion
+    poll_interval = 8  # seconds between checks
+    max_wait = 600     # 10 minutes maximum
+    elapsed = 0
+
+    while elapsed < max_wait:
+        time.sleep(poll_interval)
+        elapsed += poll_interval
+
+        status_resp = requests.get(f"{url}/status/{job_id}", timeout=15)
+        status_resp.raise_for_status()
+        data = status_resp.json()
+
+        if data["status"] == "done":
+            res_text = data["response"]
+            # Strip prompt wrapper if present in the response
+            if res_text.startswith(prompt):
+                res_text = res_text[len(prompt):].strip()
+            return res_text
+        elif data["status"] == "error":
+            raise RuntimeError(f"vLLM server error: {data['error']}")
+        else:
+            print(f"[vLLM] Pending... ({elapsed}s)")
+
+    raise TimeoutError(f"Job {job_id} did not complete within {max_wait}s")
 
 def run_groq(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """

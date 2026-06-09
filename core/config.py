@@ -110,8 +110,10 @@ MODEL_GROQ = "llama-3.1-8b-instant"      # Cheaper/faster, good for code
 GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
 
 # --- VLLM (Remote / Ngrok) CONFIGURATION ---
-VLLM_URL = os.getenv("VLLM_URL", "https://efficient-lethargy-haggler.ngrok-free.dev")
-VLLM_MODEL = os.getenv("VLLM_MODEL", "Qwen/Qwen2.5-Coder-7B-Instruct")
+# URL points to the custom FastAPI vLLM server (AsyncLLMEngine + /generate endpoint)
+# Not the OpenAI-compatible /v1/chat/completions server.
+VLLM_URL = os.getenv("VLLM_URL", "https://unsubtly-dash-economy.ngrok-free.dev")
+VLLM_MODEL = os.getenv("VLLM_MODEL", "QuantTrio/Qwen3.5-9B-AWQ")
 
 # --- REMOTE MODEL CONFIGURATION ---
 REMOTE_PROMPT_TEMPLATE = "chatml" # Use "chatml" for Qwen, "gemma" for Gemma
