@@ -1,6 +1,7 @@
 import os
 import sys
 import tarfile
+import glob
 from dotenv import load_dotenv
 
 # Load variables from .env file if it exists
@@ -49,21 +50,28 @@ if MLIR_BINDINGS_PATH is None:
             print(f"[Info] Using MLIR bindings from sys.path: {p}")
             break
 
-# 4. Common cloud / mounted-drive fallbacks
+# 4. Common cloud / mounted-drive fallbacks (dynamic search using glob)
 if MLIR_BINDINGS_PATH is None:
-    FALLBACK_PATHS = [
-        "/content/drive/MyDrive/llvm-install/python_packages/mlir_core",  # Google Colab
-        "/kaggle/input/llvm-install/python_packages/mlir_core",            # Kaggle Dataset
-    ]
-    for p in FALLBACK_PATHS:
-        if os.path.exists(p):
+    # Google Colab — search under mounted Drive for any mlir_core directory
+    DRIVE_BASE = "/content/drive/MyDrive/llvm-install"
+    if os.path.exists(DRIVE_BASE):
+        mlir_core_paths = glob.glob(f"{DRIVE_BASE}/**/mlir_core", recursive=True)
+        if mlir_core_paths:
+            p = mlir_core_paths[0]
             sys.path.append(p)
             MLIR_BINDINGS_PATH = p
-            print(f"[Info] Using MLIR bindings from fallback path: {p}")
-            break
+            print(f"[Info] Using MLIR bindings from Colab Drive (dynamic search): {p}")
+
+    # Kaggle — static fallback path
+    if MLIR_BINDINGS_PATH is None:
+        KAGGLE_PATH = "/kaggle/input/llvm-install/python_packages/mlir_core"
+        if os.path.exists(KAGGLE_PATH):
+            sys.path.append(KAGGLE_PATH)
+            MLIR_BINDINGS_PATH = KAGGLE_PATH
+            print(f"[Info] Using MLIR bindings from Kaggle fallback: {KAGGLE_PATH}")
 
 if MLIR_BINDINGS_PATH is None:
-    print(f"[Warning] No MLIR bindings found. Tried tarball ({TARBALL_PATH}), local build ({LOCAL_MLIR_PATH}), sys.path, and fallback paths.")
+    print(f"[Warning] No MLIR bindings found. Tried tarball ({TARBALL_PATH}), local build ({LOCAL_MLIR_PATH}), sys.path, and cloud fallbacks.")
 
 # --- API KEYS & ADC SETUP ---
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "")

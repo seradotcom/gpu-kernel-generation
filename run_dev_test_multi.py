@@ -16,6 +16,8 @@ import json
 import os
 import traceback
 
+import core.config  # noqa: F401 - Sets up MLIR bindings in sys.path
+
 from core.schemas import MlirResponse
 from core.semantic_validator import SemanticValidator
 from core.mlir_translator import MLIRTranslator
