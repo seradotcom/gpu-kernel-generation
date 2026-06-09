@@ -104,6 +104,11 @@ GENERATION_PARAMS = {
 WANDB_PROJECT_NAME = "llm-mlir-compiler"
 WANDB_ENTITY = None  # Automatic if configured in the environment
 
+# --- GROQ CONFIGURATION ---
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+MODEL_GROQ = "llama-3.1-70b-versatile"  # Fast, free tier, excellent for code
+GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
+
 # --- REMOTE MODEL CONFIGURATION ---
 REMOTE_PROMPT_TEMPLATE = "chatml" # Use "chatml" for Qwen, "gemma" for Gemma
 

@@ -181,6 +181,33 @@ def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
 
     raise TimeoutError(f"Job {job_id} did not complete within {max_wait}s")
 
+def run_groq(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
+    """
+    Makes a request to Groq's OpenAI-compatible API.
+    Groq free tier does not support response_format/json_schema,
+    so we rely on prompt-level JSON enforcement + Pydantic validation afterward.
+    """
+    headers = {
+        "Authorization": f"Bearer {config.GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": config.MODEL_GROQ,
+        "messages": [
+            {"role": "system", "content": system_p},
+            {"role": "user", "content": user_p}
+        ],
+        "max_tokens": config.GENERATION_PARAMS["max_tokens"],
+        "temperature": config.GENERATION_PARAMS["temperature"],
+        "top_p": config.GENERATION_PARAMS.get("top_p", 0.9),
+        "stream": False
+    }
+
+    response = requests.post(config.GROQ_ENDPOINT, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
+
 def generate_llm_response(model_name: str, system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
     Agnostic router with support for structured decoding.
@@ -188,7 +215,7 @@ def generate_llm_response(model_name: str, system_p: str, user_p: str, schema: T
     Allows swapping the underlying LLM without altering the pipeline.
     
     Args:
-        model_name (str): 'kimi', 'gemini' or 'ollama'.
+        model_name (str): 'kimi', 'gemini', 'groq', or 'ollama'.
         system_p (str): System prompt.
         user_p (str): User prompt.
         schema (Type[BaseModel], optional): Pydantic model to enforce output structure.
@@ -207,6 +234,8 @@ def generate_llm_response(model_name: str, system_p: str, user_p: str, schema: T
         return run_kimi(system_p, user_p, schema)
     elif name == "gemini":
         return run_gemini(system_p, user_p, schema)
+    elif name == "groq":
+        return run_groq(system_p, user_p, schema)
     elif name == "ollama":
         return run_ollama(system_p, user_p, schema)
     else:
