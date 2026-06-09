@@ -67,6 +67,8 @@ class MlirOpcode(str, Enum):
     MATH_COS = "math.cos"
     MATH_SIN = "math.sin"
     MATH_ABS = "math.absf"
+    MATH_FLOOR = "math.floor"
+    MATH_CEIL = "math.ceil"
 
     # Tensor Dialect
     # Removed: tensor.empty, tensor.extract, tensor.insert
@@ -112,7 +114,7 @@ class InputArgument(BaseModel):
     type: MLIRType = Field(..., description="Exact MLIR type. Choose from the available enum.")
 
 class UnaryOperation(BaseModel):
-    opcode: Literal["math.exp", "math.log", "math.sqrt", "math.rsqrt", "math.erf", "math.cos", "math.sin", "math.absf", "arith.extf", "arith.truncf", "arith.sitofp", "arith.fptosi", "arith.extsi", "arith.extui", "arith.trunci", "tt.ptr_to_int", "tt.int_to_ptr"] = Field(..., description="Ops with exactly 1 operand")
+    opcode: Literal["math.exp", "math.log", "math.sqrt", "math.rsqrt", "math.erf", "math.cos", "math.sin", "math.absf", "math.floor", "math.ceil", "arith.extf", "arith.truncf", "arith.sitofp", "arith.fptosi", "arith.extsi", "arith.extui", "arith.trunci", "tt.ptr_to_int", "tt.int_to_ptr"] = Field(..., description="Ops with exactly 1 operand")
     operands: List[Union[str, float, int]] = Field(..., min_length=1, max_length=1, description="Input registers or literal numbers")
     result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
     out_type: Optional[MLIRType] = Field(None, description="Specify ONLY for explicit casting or when type cannot be inferred.")
@@ -182,5 +184,5 @@ class MlirResponse(BaseModel):
     """
     Final contract for the LLM response (Structured Output).
     """
-    reasoning: str = Field(..., description="Keep this extremely brief (max 3-4 sentences). State your plan and register mapping concisely.")
+    reasoning: str = Field(..., description="Use this field to think step-by-step (Chain of Thought). Detail your register allocation, loop invariants, and type coercions. A thorough breakdown prevents logical errors in the JSON.")
     code: MLIRFunctionBody = Field(..., description="The program compiled to JSON")

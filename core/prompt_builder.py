@@ -29,6 +29,7 @@ class PromptBuilder:
             "17. HARDWARE BLOCK SIZES: GPUs operate on strict powers of 2. Pick a power of 2 from the allowed schema (e.g., 128, 256). Pad using boolean masks if bounds are arbitrary.\n"
             "18. CONCISENESS AND NO UNROLLING: DO NOT unroll loops manually. Use 'scf.for'. DO NOT hallucinate or generate repetitive/redundant constants (e.g., %c_result_splat_out1 ... %c_result_splat_out88). Be extremely concise to avoid exceeding token limits.\n"
             "19. JSON VALIDITY: Your JSON MUST be complete and properly closed before the end of the response. DO NOT generate more operations than necessary.\n"
+            "20. POINTER OFFSETS: 'tt.addptr' operand #1 (offsets) MUST be integers ('i32' or 'tensor<...xi32>'). DO NOT use 'f32' or floats! Also, you MUST use 'tt.splat' on a scalar pointer before 'tt.addptr' so both operands have the exact same shape.\n"
         )
         
         self.few_shot_examples = (

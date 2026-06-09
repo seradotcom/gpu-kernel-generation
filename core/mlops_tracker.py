@@ -9,15 +9,17 @@ class MLOpsTracker:
     Handles the abstraction of initialization and logging of metrics and artifacts.
     """
     
-    def __init__(self, job_type: str = "compilation-test"):
+    def __init__(self, job_type: str = "compilation-test", project_name: str = None):
         """
         Initializes a new Run in W&B.
         
         Args:
             job_type (str): Label to categorize the execution in the dashboard.
+            project_name (str, optional): Project name override.
         """
+        proj = project_name if project_name else config.WANDB_PROJECT_NAME
         self.run = wandb.init(
-            project=config.WANDB_PROJECT_NAME,
+            project=proj,
             entity=config.WANDB_ENTITY,
             job_type=job_type,
             config={
@@ -90,3 +92,13 @@ class MLOpsTracker:
         """
         if self.run:
             self.run.finish()
+
+    def save_artifact(self, file_path: str, artifact_name: str, artifact_type: str = "ptx-binary"):
+        """
+        Saves a local file as an artifact in W&B.
+        """
+        if not self.run:
+            return
+        artifact = wandb.Artifact(artifact_name, type=artifact_type)
+        artifact.add_file(file_path)
+        self.run.log_artifact(artifact)
