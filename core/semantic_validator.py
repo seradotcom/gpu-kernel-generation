@@ -5,6 +5,12 @@ class SemanticValidator:
     @staticmethod
     def validate(response: MlirResponse) -> List[str]:
         errors = []
+        # Validate function arguments
+        for arg in response.code.arguments:
+            arg_type_str = SemanticValidator._normalize_type(arg.type)
+            if "tensor" in arg_type_str:
+                errors.append(f"[SEMANTIC ERROR] Function arguments CANNOT be tensors! Triton kernel signatures only take scalars (e.g. 'i32') and memory pointers (e.g. '!tt.ptr<f32>'). You passed '{arg_type_str}' for '{arg.name}'.")
+        
         # Initialize scope with function arguments
         initial_scope = {arg.name: {"type": arg.type, "opcode": "argument"} for arg in response.code.arguments}
         SemanticValidator._walk_operations(response.code.operations, errors, initial_scope)
@@ -23,8 +29,10 @@ class SemanticValidator:
         return str(t)
 
     @staticmethod
-    def _walk_operations(ops: List[Any], errors: List[str], current_scope: dict):
-        for op in ops:
+    def _walk_operations(ops: List[Any], errors: List[str], current_scope: dict, expected_yield_types: List[str] = None):
+        i = 0
+        while i < len(ops):
+            op = ops[i]
             opcode = getattr(op, "opcode", None)
             if hasattr(opcode, "value"):
                 opcode = opcode.value
@@ -50,10 +58,77 @@ class SemanticValidator:
                         resolved_types.append("unknown")
 
             # --- 2. BINARY OPERATION TYPE VALIDATION ---
-            if opcode in ("arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "arith.cmpf"):
+            if opcode in ("arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "arith.cmpf", "arith.addi", "arith.subi", "arith.muli", "arith.divsi", "arith.divui", "arith.cmpi", "arith.remui", "arith.remsi"):
                 if len(resolved_types) == 2 and "unknown" not in resolved_types:
                     t1, t2 = resolved_types[0], resolved_types[1]
+                    
+                    if opcode.endswith("f") and "f" not in t1 and "f" not in t2:
+                        errors.append(f"[SEMANTIC ERROR] '{opcode}' requires floating-point operands, but both are integers ('{t1}', '{t2}'). If you want integer math, use '{opcode[:-1]}i'.")
+
                     if t1 != t2:
+                        # Auto-inject index_cast if index vs integer
+                        if (t1 == "index" and "i" in t2) or ("i" in t1 and t2 == "index"):
+                            cast_idx = 0 if t1 == "index" else 1
+                            idx_op_name = op.operands[cast_idx]
+                            new_reg = f"%cst_cast_{i}" if isinstance(idx_op_name, (int, float)) or (isinstance(idx_op_name, str) and not idx_op_name.startswith("%")) else f"{idx_op_name}_c_{i}"
+                            from core.schemas import GenericOperation
+                            cast_op = GenericOperation(
+                                opcode="arith.index_cast",
+                                operands=[idx_op_name],
+                                result=new_reg,
+                                out_type="i32"
+                            )
+                            ops.insert(i, cast_op)
+                            op.operands[cast_idx] = new_reg
+                            continue
+                            
+                        # Auto-inject sitofp if integer vs float in float ops
+                        if opcode.endswith("f") and (("i" in t1 and "f" in t2) or ("f" in t1 and "i" in t2)):
+                            cast_idx = 0 if "i" in t1 else 1
+                            int_op_name = op.operands[cast_idx]
+                            new_reg = f"%cst_s2f_{i}" if isinstance(int_op_name, (int, float)) or (isinstance(int_op_name, str) and not int_op_name.startswith("%")) else f"{int_op_name}_f_{i}"
+                            
+                            int_type = t1 if cast_idx == 0 else t2
+                            import re
+                            new_out_type = re.sub(r'i\d+', 'f32', int_type)
+                            
+                            from core.schemas import GenericOperation
+                            cast_op = GenericOperation(
+                                opcode="arith.sitofp",
+                                operands=[int_op_name],
+                                result=new_reg,
+                                out_type=new_out_type
+                            )
+                            ops.insert(i, cast_op)
+                            op.operands[cast_idx] = new_reg
+                            continue
+
+                        # Auto-inject tt.splat if scalar vs tensor
+                        if "tensor" in t1 and "tensor" not in t2:
+                            scalar_idx, tensor_type = 1, t1
+                        elif "tensor" in t2 and "tensor" not in t1:
+                            scalar_idx, tensor_type = 0, t2
+                        else:
+                            scalar_idx = -1
+                            
+                        if scalar_idx != -1:
+                            scalar_op_name = op.operands[scalar_idx]
+                            new_reg = f"%cst_splt_{i}" if isinstance(scalar_op_name, (int, float)) or (isinstance(scalar_op_name, str) and not scalar_op_name.startswith("%")) else f"{scalar_op_name}_s_{i}"
+                            from core.schemas import GenericOperation, MlirOpcode
+                            splat_op = GenericOperation(
+                                opcode=MlirOpcode.TT_SPLAT,
+                                operands=[scalar_op_name],
+                                result=new_reg,
+                                out_type=tensor_type
+                            )
+                            ops.insert(i, splat_op)
+                            op.operands[scalar_idx] = new_reg
+                            
+                            if hasattr(op, "out_type") and op.out_type and "tensor" not in op.out_type:
+                                op.out_type = tensor_type
+                                
+                            continue # Reprocess the newly inserted splat_op
+
                         errors.append(f"[SEMANTIC ERROR] '{opcode}' requires operands of the EXACT SAME type/shape. Got '{t1}' and '{t2}'. Use tt.splat to broadcast scalars to tensors if needed.")
 
             # --- 3. OP-SPECIFIC VALIDATION ---
@@ -82,6 +157,7 @@ class SemanticValidator:
                 
                 new_scope = current_scope.copy()
                 new_scope[op.loop_var] = {"type": "index", "opcode": "loop_var"}  # Register the loop iterator
+                iter_types = []
                 for arg_name, arg_val in op.iter_args.items():
                     init_type = "unknown"
                     if isinstance(arg_val, str) and arg_val.startswith("%"):
@@ -92,11 +168,13 @@ class SemanticValidator:
                     elif isinstance(arg_val, int):
                         init_type = "i32"
                     new_scope[arg_name] = {"type": init_type, "opcode": "iter_arg"}
+                    iter_types.append(SemanticValidator._normalize_type(init_type))
                 
-                SemanticValidator._walk_operations(op.body, errors, new_scope)
+                SemanticValidator._walk_operations(op.body, errors, new_scope, expected_yield_types=iter_types)
                 
-                for res in op.results:
-                    current_scope[res] = {"type": "unknown", "opcode": "scf.for_result"} # Register global results
+                for res, itype in zip(op.results, iter_types):
+                    current_scope[res] = {"type": itype, "opcode": "scf.for_result"} # Register global results
+                    
                     
             elif isinstance(op, ScfIf):
                 # Validate condition
@@ -130,7 +208,10 @@ class SemanticValidator:
                     current_scope[res] = {"type": "unknown", "opcode": "scf.if_result"}
                     
             elif opcode == "scf.yield":
-                pass
+                if expected_yield_types is not None:
+                    for idx, (y_t, e_t) in enumerate(zip(resolved_types, expected_yield_types)):
+                        if y_t != e_t and "unknown" not in (y_t, e_t):
+                            errors.append(f"[SEMANTIC ERROR] 'scf.yield' operand #{idx} type ('{y_t}') does not match the expected type ('{e_t}'). If you want to accumulate a tensor in a loop, you MUST initialize the iter_arg with a tensor (e.g. using tt.splat before the loop) instead of a scalar.")
                 
             else:
                 # --- 4. POINTER AND TENSOR VALIDATION ---
@@ -141,10 +222,25 @@ class SemanticValidator:
                         creator_op = ptr_info.get("opcode")
                         ptr_type = SemanticValidator._normalize_type(ptr_info.get("type", ""))
                         
-                        if creator_op == "argument" and "ptr" not in ptr_type:
+                        if "ptr" not in ptr_type:
+                            errors.append(f"[SEMANTIC ERROR] '{opcode}' operand #0 MUST be a memory pointer (e.g. '!tt.ptr<f32>' or 'tensor<256x!tt.ptr<f32>>'). Got '{ptr_type}'.")
+                        elif creator_op == "argument" and "ptr" not in ptr_type:
                             pass 
                         elif creator_op in ("math.exp", "math.log", "arith.addf", "arith.mulf", "arith.maximumf", "arith.minimumf", "tt.load", "tt.reduce", "tt.dot", "arith.constant"):
                             errors.append(f"[SEMANTIC ERROR] '{opcode}' requires memory pointers. '{target_ptr}' was generated by '{creator_op}', which outputs data/math values, not pointers.")
+                            
+                if opcode == "tt.store":
+                    if len(resolved_types) >= 2:
+                        ptr_type = resolved_types[0]
+                        val_type = resolved_types[1]
+                        if "tensor" in val_type and "tensor" not in ptr_type:
+                            errors.append(f"[SEMANTIC ERROR] 'tt.store' value is a tensor ('{val_type}') but the pointer is a scalar ('{ptr_type}'). You MUST broadcast the pointer to a tensor of the same shape using 'tt.splat' and 'tt.addptr' BEFORE storing.")
+                        elif "tensor" in ptr_type and "tensor" not in val_type:
+                            errors.append(f"[SEMANTIC ERROR] 'tt.store' pointer is a tensor ('{ptr_type}') but the value is a scalar ('{val_type}'). Use 'tt.splat' on the value.")
+                            
+                if opcode == "arith.sitofp":
+                    if resolved_types and "f" in resolved_types[0]:
+                        errors.append(f"[SEMANTIC ERROR] 'arith.sitofp' requires an integer operand (e.g. 'i32' or 'tensor<256xi32>'), but got '{resolved_types[0]}'.")
                             
                 if opcode == "tt.addptr":
                     if len(resolved_types) >= 2:
@@ -161,13 +257,16 @@ class SemanticValidator:
                     if combiner and combiner not in ("arith.addf", "arith.maximumf", "arith.minimumf", "arith.mulf"):
                         errors.append(f"[SEMANTIC ERROR] 'tt.reduce' region_combiner '{combiner}' is invalid. Reductions MUST use a valid binary combiner like 'arith.addf' or 'arith.maximumf'. You cannot use unary ops like 'math.exp'.")
 
+                    # Auto-inject axis=0 if missing to prevent LLM loops
+                    if not getattr(op, "attributes", None):
+                        op.attributes = {"axis": 0}
+                    elif "axis" not in op.attributes:
+                        op.attributes["axis"] = 0
+
                     if target_tensor in current_scope:
                         ptr_info = current_scope[target_tensor]
                         tensor_type_str = SemanticValidator._normalize_type(ptr_info.get("type", "unknown"))
-                        if "x" in tensor_type_str and "tensor" in tensor_type_str:
-                            attrs = getattr(op, "attributes", {}) or {}
-                            if "axis" not in attrs:
-                                errors.append(f"[SEMANTIC ERROR] 'tt.reduce' on tensor '{tensor_type_str}' requires an 'axis' attribute in 'attributes' (e.g., {{\"axis\": 0}}).")
+                        # Removed the axis error since it's auto-injected
                                 
                 if opcode == "arith.cmpf":
                     attrs = getattr(op, "attributes", {}) or {}
@@ -202,56 +301,86 @@ class SemanticValidator:
 
                 # Infer output type for propagation
                 out_type = getattr(op, "out_type", None)
-                if not out_type:
-                    if opcode == "tt.splat":
-                        # Auto-infer shape 256 for validation
-                        out_type = f"tensor<256x{resolved_types[0]}>" if resolved_types else "unknown"
-                    elif opcode == "tt.addptr":
-                        if len(resolved_types) >= 2:
-                            ptr_type = resolved_types[0]
-                            offset_type = resolved_types[1]
-                            if "tensor" in offset_type and "tensor" not in ptr_type:
-                                out_type = f"tensor<256x{ptr_type}>" # fallback but we raised error above
-                            elif "tensor" in ptr_type:
-                                out_type = ptr_type
-                            else:
-                                out_type = resolved_types[0]
+                
+                if opcode == "tt.splat":
+                    if resolved_types and "tensor" in resolved_types[0]:
+                        errors.append(f"[SEMANTIC ERROR] 'tt.splat' can only be applied to a scalar. You passed a tensor ('{resolved_types[0]}').")
+
+                inferred_type = "unknown"
+                if opcode == "tt.splat":
+                    inferred_type = resolved_types[0] if resolved_types and "tensor" in resolved_types[0] else (f"tensor<256x{resolved_types[0]}>" if resolved_types else "unknown")
+                elif opcode == "tt.addptr":
+                    if len(resolved_types) >= 2:
+                        ptr_type = resolved_types[0]
+                        offset_type = resolved_types[1]
+                        if "tensor" in offset_type and "tensor" not in ptr_type:
+                            inferred_type = f"tensor<256x{ptr_type}>"
+                        elif "tensor" in ptr_type:
+                            inferred_type = ptr_type
                         else:
-                            out_type = resolved_types[0] if resolved_types else "unknown"
-                    elif opcode == "tt.load":
-                        if resolved_types:
-                            t = resolved_types[0]
-                            if t.startswith("tensor<") and "!tt.ptr<" in t:
-                                # "tensor<256x!tt.ptr<f32>>" -> "tensor<256xf32>"
-                                out_type = t.replace("!tt.ptr<", "").replace(">", "", 1)
-                            elif "!tt.ptr<" in t:
-                                out_type = t.replace("!tt.ptr<", "").replace(">", "", 1)
-                            else:
-                                out_type = "f32" # fallback
-                        else:
-                            out_type = "unknown"
-                    elif opcode in ("arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "math.exp", "math.log", "math.sqrt", "math.floor", "math.ceil", "math.cos", "math.sin", "math.absf"):
-                        out_type = resolved_types[0] if resolved_types else "unknown"
-                    elif opcode == "arith.cmpf":
-                        out_type = "i1"
-                    elif opcode == "tt.make_range":
-                        start = 0
-                        end = 0
-                        attrs = getattr(op, "attributes", {}) or {}
-                        if "start" in attrs: start = attrs["start"]
-                        if "end" in attrs: end = attrs["end"]
-                        out_type = f"tensor<{abs(end-start)}xi32>"
-                    elif opcode == "tt.get_program_id":
-                        out_type = "i32"
-                    elif opcode == "arith.constant":
-                        attrs = getattr(op, "attributes", {}) or {}
-                        val = attrs.get("value", 0)
-                        if isinstance(val, float): out_type = "f32"
-                        else: out_type = "i32"
+                            inferred_type = ptr_type
                     else:
-                        out_type = "unknown"
-                else:
+                        inferred_type = resolved_types[0] if resolved_types else "unknown"
+                elif opcode == "tt.load":
+                    if resolved_types:
+                        t = resolved_types[0]
+                        if t.startswith("tensor<") and "!tt.ptr<" in t:
+                            inferred_type = t.replace("!tt.ptr<", "").replace(">", "", 1)
+                        elif "!tt.ptr<" in t:
+                            inferred_type = t.replace("!tt.ptr<", "").replace(">", "", 1)
+                        else:
+                            inferred_type = "f32"
+                elif opcode == "tt.reduce":
+                    if resolved_types:
+                        t = resolved_types[0]
+                        import re
+                        match = re.search(r"tensor<\d+x(.+)>", t)
+                        inferred_type = match.group(1) if match else t
+                elif opcode in ("arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "math.exp", "math.log", "math.sqrt", "math.floor", "math.ceil", "math.cos", "math.sin", "math.absf", "arith.addi", "arith.subi", "arith.muli", "arith.divsi", "arith.divui", "arith.remui", "arith.remsi"):
+                    inferred_type = resolved_types[0] if resolved_types else "unknown"
+                elif opcode == "arith.select":
+                    inferred_type = resolved_types[1] if len(resolved_types) > 1 else "unknown"
+                elif opcode in ("arith.cmpf", "arith.cmpi"):
+                    if resolved_types and "tensor" in resolved_types[0]:
+                        import re
+                        match = re.search(r"tensor<(\d+)x.+>", resolved_types[0])
+                        inferred_type = f"tensor<{match.group(1)}xi1>" if match else "i1"
+                    else:
+                        inferred_type = "i1"
+                elif opcode == "tt.make_range":
+                    start = 0
+                    end = 0
+                    attrs = getattr(op, "attributes", {}) or {}
+                    if "start" in attrs: start = attrs["start"]
+                    if "end" in attrs: end = attrs["end"]
+                    inferred_type = f"tensor<{abs(end-start)}xi32>"
+                elif opcode == "tt.get_program_id":
+                    inferred_type = "i32"
+                elif opcode == "arith.constant":
+                    attrs = getattr(op, "attributes", {}) or {}
+                    val = attrs.get("value", 0)
+                    if isinstance(val, str):
+                        try:
+                            val = float(val) if '.' in val or 'e' in val.lower() else int(val)
+                        except ValueError:
+                            pass
+                    if isinstance(val, float): inferred_type = "f32"
+                    elif isinstance(val, int): inferred_type = "i32"
+                    elif isinstance(val, bool): inferred_type = "i1"
+
+                # Keep LLM's out_type for casts, since we can't infer the exact target
+                elif opcode in ("arith.extf", "arith.truncf", "arith.sitofp", "arith.fptosi", "arith.extsi", "arith.extui", "arith.trunci", "tt.ptr_to_int", "tt.int_to_ptr"):
+                    inferred_type = SemanticValidator._normalize_type(out_type) if out_type else "unknown"
+                    
+                # Now reconcile inferred_type with LLM's out_type
+                if out_type:
                     out_type = SemanticValidator._normalize_type(out_type)
+                    if inferred_type != "unknown" and out_type != inferred_type:
+                        op.out_type = inferred_type
+                        out_type = inferred_type
+                else:
+                    out_type = inferred_type
+                    op.out_type = out_type
 
                 # Register the result in current scope
                 result = getattr(op, "result", None)
@@ -262,3 +391,5 @@ class SemanticValidator:
                     if result in current_scope:
                         errors.append(f"[SEMANTIC ERROR] Register '{result}' is assigned multiple times (shadowing).")
                     current_scope[result] = {"type": out_type, "opcode": opcode}
+                    
+            i += 1

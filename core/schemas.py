@@ -54,6 +54,7 @@ class MlirOpcode(str, Enum):
     ARITH_EXTSI = "arith.extsi"
     ARITH_EXTUI = "arith.extui"
     ARITH_TRUNCI = "arith.trunci"
+    ARITH_INDEXCAST = "arith.index_cast"
     MATH_RSQRT = "math.rsqrt"
     MATH_ERF = "math.erf"
     TT_MAKE_BLOCK_PTR = "tt.make_block_ptr"
@@ -135,7 +136,15 @@ class GenericOperation(BaseModel):
     attributes: Optional[Dict[str, Union[int, float, str, bool, List[int], List[float]]]] = Field(None, description="Attributes like predicate=2 for cmpi, or value=256 for constant")
     region_combiner: Optional[str] = Field(None)
 
-AnyOperation = Union[UnaryOperation, BinaryOperation, GenericOperation]
+class ReduceOperation(BaseModel):
+    opcode: Literal["tt.reduce"] = Field("tt.reduce", description="Must be 'tt.reduce'")
+    operands: List[Union[str, float, int]] = Field(..., min_length=1, max_length=1, description="Input tensor to reduce")
+    result: str = Field(..., pattern=r"^(?:%[a-zA-Z0-9_]{1,30}|none)$", description="Output register")
+    out_type: Optional[MLIRType] = Field(None, description="Specify ONLY if cannot be inferred.")
+    attributes: Dict[str, int] = Field(..., description="MUST contain 'axis': int")
+    region_combiner: str = Field(..., description="MUST be a valid binary op like 'arith.addf', 'arith.maximumf', 'arith.minimumf'")
+
+AnyOperation = Union[UnaryOperation, BinaryOperation, ReduceOperation, GenericOperation]
 
 class ScfYield(BaseModel):
     """

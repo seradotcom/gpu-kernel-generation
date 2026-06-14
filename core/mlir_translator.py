@@ -105,24 +105,25 @@ class MLIRTranslator:
             # Fallback to native MLIR parsing if it's a valid general string
             return ir.Type.parse(type_str)
 
-    def _infer_type(self, op: Any, resolved_operands: list = None) -> 'ir.Type':
+    def _infer_type(self, op: Any, resolved_operands: list = None):
         """
-        Infers the return type. If there's an explicit cast, it uses it; otherwise it inherits from the operand.
-        
-        Args:
-            op (Any): The Operation object.
-            resolved_operands (list): List of ir.Value operands resolved from the environment.
-
-        Returns:
-            Type: The inferred MLIR ir.Type.
+        Infers the output type of an operation, strictly overriding LLM hallucinated out_types for ops that must match ptr types.
         """
-        if getattr(op, "out_type", None):
-            return self._parse_type(op.out_type)
-            
         from core.schemas import MlirOpcode
         opcode = getattr(op, "opcode", None)
+        strict_inference_ops = ["tt.load", "tt.addptr", "tt.splat", "tt.make_range", "tt.get_program_id", MlirOpcode.TT_LOAD, MlirOpcode.TT_ADD_PTR, MlirOpcode.TT_SPLAT, MlirOpcode.TT_MAKE_RANGE, MlirOpcode.TT_GET_PROGRAM_ID]
         
-        if opcode == MlirOpcode.ARITH_CMPF:
+        # If the LLM provided an out_type, use it UNLESS it's a strict inference op where we know better.
+        if getattr(op, "out_type", None) and opcode not in strict_inference_ops:
+            return self._parse_type(op.out_type)
+            
+        if getattr(opcode, "value", opcode) in ("arith.cmpf", "arith.cmpi"):
+            if resolved_operands:
+                try:
+                    shape = ir.ShapedType(resolved_operands[0].type).shape
+                    return ir.RankedTensorType.get(shape, ir.IntegerType.get_signless(1))
+                except Exception:
+                    pass
             return ir.IntegerType.get_signless(1)
             
         if opcode == MlirOpcode.ARITH_SELECT:
@@ -204,8 +205,8 @@ class MLIRTranslator:
         """
         with self.context, Location.unknown():
             for op_obj in operations:
-                from core.schemas import UnaryOperation, BinaryOperation, GenericOperation
-                if isinstance(op_obj, (UnaryOperation, BinaryOperation, GenericOperation)):
+                from core.schemas import UnaryOperation, BinaryOperation, GenericOperation, ReduceOperation
+                if isinstance(op_obj, (UnaryOperation, BinaryOperation, GenericOperation, ReduceOperation)):
                     operands = []
                     for name in op_obj.operands:
                         if name is None or name == "none":
@@ -238,6 +239,10 @@ class MLIRTranslator:
                                 f"(ej: 'arith.addf' para suma, 'arith.maximumf' para max). "
                                 f"Sin este campo el op es inválido semánticamente."
                             )
+                        if not getattr(op_obj, "attributes", None):
+                            op_obj.attributes = {"axis": 0}
+                        elif "axis" not in op_obj.attributes:
+                            op_obj.attributes["axis"] = 0
 
                     # Graceful fallback for tt.rand hallucination
                     if op_obj.opcode == MlirOpcode.TT_RAND or getattr(op_obj, "opcode", None) == "tt.rand":
@@ -254,6 +259,9 @@ class MLIRTranslator:
                                 f"arith.constant en '{op_obj.result}' requiere 'attributes.value'. "
                                 f"El LLM debe especificar el valor numérico."
                             )
+                        if op_obj.out_type and "tensor" in op_obj.out_type:
+                            raise RuntimeError(f"arith.constant cannot directly output a tensor type like '{op_obj.out_type}'. You MUST generate a scalar constant first (e.g., 'f32' or 'i32') and then use 'tt.splat' to broadcast it to a tensor.")
+                        
                         val_type = self._parse_type(op_obj.out_type) if op_obj.out_type else ir.F32Type.get()
                         raw_val = op_obj.attributes["value"]
                         if isinstance(val_type, ir.FloatType) or (hasattr(ir, 'F32Type') and isinstance(val_type, ir.F32Type)):
@@ -433,15 +441,23 @@ class MLIRTranslator:
                     
                     # We default to f32 if no explicit types are provided
                     result_types = [ir.F32Type.get() for _ in op_obj.results]
-                    if_op = scf.IfOp(cond_val, results_=result_types, hasElse=has_else)
                     
-                    with InsertionPoint(if_op.then_block):
+                    if_op = ir.Operation.create(
+                        name="scf.if",
+                        results=result_types,
+                        operands=[cond_val],
+                        regions=2 if has_else else 1
+                    )
+
+                    then_block = ir.Block.create_at_start(if_op.regions[0], [])
+                    with InsertionPoint(then_block):
                         self.value_env.push()
                         self._process_operations(op_obj.then_body)
                         self.value_env.pop()
-                        
+
                     if has_else:
-                        with InsertionPoint(if_op.else_block):
+                        else_block = ir.Block.create_at_start(if_op.regions[1], [])
+                        with InsertionPoint(else_block):
                             self.value_env.push()
                             self._process_operations(op_obj.else_body)
                             self.value_env.pop()
