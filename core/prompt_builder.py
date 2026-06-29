@@ -30,7 +30,7 @@ class PromptBuilder:
             "18. CONCISENESS AND NO UNROLLING: DO NOT unroll loops manually. Use 'scf.for'. DO NOT hallucinate or generate repetitive/redundant constants (e.g., %c_result_splat_out1 ... %c_result_splat_out88). Be extremely concise to avoid exceeding token limits.\n"
             "19. JSON VALIDITY: Your JSON MUST be complete and properly closed before the end of the response. DO NOT generate more operations than necessary.\n"
             "20. POINTER OFFSETS: 'tt.addptr' operand #1 (offsets) MUST be integers ('i32' or 'tensor<...xi32>'). DO NOT use 'f32' or floats! Also, you MUST use 'tt.splat' on a scalar pointer before 'tt.addptr' so both operands have the exact same shape.\n"
-            "21. REASONING FIELD: Keep your 'reasoning' string purely as natural language text. DO NOT write raw JSON examples (like `{\"axis\": 0}`) inside the reasoning string, as it breaks the JSON parser. Just explain the logic."
+            "21. REASONING FIELD: Keep your 'reasoning' string purely as natural language text. DO NOT write raw JSON examples (like `{\"axis\": 0}`) inside the reasoning string. KEEP IT UNDER 5 SENTENCES. DO NOT repeat yourself or create exhaustive lists of corrections. Be extremely brief."
         )
         
         self.few_shot_examples = (

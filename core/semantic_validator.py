@@ -376,6 +376,8 @@ class SemanticValidator:
                 if out_type:
                     out_type = SemanticValidator._normalize_type(out_type)
                     if inferred_type != "unknown" and out_type != inferred_type:
+                        if opcode in ("arith.addf", "arith.subf", "arith.mulf", "arith.divf", "arith.maximumf", "arith.minimumf", "math.exp", "math.log", "arith.addi", "arith.subi", "arith.muli"):
+                            errors.append(f"[SEMANTIC ERROR] '{opcode}' requires the EXACT SAME type for all operands and results. Operands are '{inferred_type}' but you returned '{out_type}'. Use tt.splat to broadcast operands first if you want a larger tensor.")
                         op.out_type = inferred_type
                         out_type = inferred_type
                 else:

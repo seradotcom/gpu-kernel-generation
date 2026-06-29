@@ -1,0 +1,135 @@
+{
+  
+  "vec_rmsnormt1p5_52_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 1.5. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_meanscaled4p0_53_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute mean of 256 elements then multiply the scalar by 4.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt4p0_54_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 4.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_maxscaled10p0_55_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute max of 256 elements then multiply the scalar by 10.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_softmaxt10p0_56_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute softmax over 256 elements then scale the result by 10.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_l2normscaled0p1_57_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute l2norm of 256 elements then multiply the scalar by 0.1. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_rmsnormt0p1_58_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 0.1. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_varscaled0p75_59_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute var of 256 elements then multiply the scalar by 0.75. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt0p75_60_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 0.75. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_sumscaled0p5_61_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute sum of 256 elements then multiply the scalar by 0.5. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_softmaxt0p5_62_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute softmax over 256 elements then scale the result by 0.5. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_meanscaled2p0_63_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute mean of 256 elements then multiply the scalar by 2.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_rmsnormt2p0_64_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 2.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_maxscaled3p0_65_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute max of 256 elements then multiply the scalar by 3.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt3p0_66_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 3.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_l2normscaled5p0_67_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute l2norm of 256 elements then multiply the scalar by 5.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_softmaxt5p0_68_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute softmax over 256 elements then scale the result by 5.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_varscaled0p25_69_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute var of 256 elements then multiply the scalar by 0.25. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_rmsnormt0p25_70_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 0.25. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_sumscaled1p5_71_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute sum of 256 elements then multiply the scalar by 1.5. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt1p5_72_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 1.5. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_meanscaled4p0_73_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute mean of 256 elements then multiply the scalar by 4.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_softmaxt4p0_74_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute softmax over 256 elements then scale the result by 4.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_maxscaled10p0_75_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute max of 256 elements then multiply the scalar by 10.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_rmsnormt10p0_76_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 10.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_l2normscaled0p1_77_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute l2norm of 256 elements then multiply the scalar by 0.1. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt0p1_78_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 0.1. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_varscaled0p75_79_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute var of 256 elements then multiply the scalar by 0.75. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_softmaxt0p75_80_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute softmax over 256 elements then scale the result by 0.75. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_sumscaled0p5_81_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute sum of 256 elements then multiply the scalar by 0.5. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_rmsnormt0p5_82_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute rmsnorm over 256 elements then scale the result by 0.5. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_meanscaled2p0_83_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute mean of 256 elements then multiply the scalar by 2.0. Args: input A, scalar output C. Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  },
+  "vec_layernormt2p0_84_hard_kernel": {
+    "difficulty": "hard",
+    "prompt": "Compute layernorm over 256 elements then scale the result by 2.0. Args: input A, output C (vector). Output C is a scalar pointer where noted. Single block of exactly 256 elements (tensor<256xf32>)."
+  }
+}

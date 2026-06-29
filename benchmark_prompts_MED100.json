@@ -1,0 +1,402 @@
+{
+  "vec_relu_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply max(A,0) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoid_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply 1/(1+exp(-A)) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_silu_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A*sigmoid(A) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_gelu_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh-approx GELU of A element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanh_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh(A) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_elu_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply ELU(A) alpha=1 element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplus_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply log(1+exp(A)) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_mish_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A*tanh(softplus(A)) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_hardswish_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A*relu6(A+3)/6 element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_hardsigmoid_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply clamp((A+3)/6,0,1) element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_leakyrelu_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A if A>0 else 0.01A element-wise. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_madd_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A*B + C element-wise. Args in order: input A, input B, input C, output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_submul_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply (A-B)*C element-wise. Args in order: input A, input B, input C, output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_lerp_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply A + (B-A)*C element-wise. Args in order: input A, input B, input C, output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_addmul_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply (A+B)*C element-wise. Args in order: input A, input B, input C, output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p5_1_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p5_2_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p5_3_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p5_4_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p5_5_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale2p0_6_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale2p0_7_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale2p0_8_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale2p0_9_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale2p0_10_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale3p0_11_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale3p0_12_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale3p0_13_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale3p0_14_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale3p0_15_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale5p0_16_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale5p0_17_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale5p0_18_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale5p0_19_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale5p0_20_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p25_21_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p25_22_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p25_23_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p25_24_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p25_25_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale1p5_26_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale1p5_27_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale1p5_28_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale1p5_29_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale1p5_30_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale4p0_31_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale4p0_32_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale4p0_33_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale4p0_34_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale4p0_35_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale10p0_36_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 10.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale10p0_37_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 10.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale10p0_38_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 10.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale10p0_39_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 10.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale10p0_40_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 10.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p1_41_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.1. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p1_42_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.1. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p1_43_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.1. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p1_44_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.1. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p1_45_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.1. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p75_46_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.75. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p75_47_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.75. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p75_48_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.75. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p75_49_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.75. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p75_50_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.75. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p5_51_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p5_52_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p5_53_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p5_54_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p5_55_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale2p0_56_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale2p0_57_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale2p0_58_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale2p0_59_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale2p0_60_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 2.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale3p0_61_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale3p0_62_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale3p0_63_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale3p0_64_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale3p0_65_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 3.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale5p0_66_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale5p0_67_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale5p0_68_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale5p0_69_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale5p0_70_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 5.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale0p25_71_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale0p25_72_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale0p25_73_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale0p25_74_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale0p25_75_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 0.25. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale1p5_76_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale1p5_77_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale1p5_78_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale1p5_79_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale1p5_80_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 1.5. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_reluscale4p0_81_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply relu to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_sigmoidscale4p0_82_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply sigmoid to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_tanhscale4p0_83_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply tanh to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_siluscale4p0_84_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply silu to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  },
+  "vec_softplusscale4p0_85_medium_kernel": {
+    "difficulty": "medium",
+    "prompt": "Apply softplus to A then multiply by 4.0. Args in order: input A, output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Use arith and math dialects."
+  }
+}

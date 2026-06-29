@@ -102,7 +102,36 @@ Each run logs metrics to your W&B dashboard, including prompt latency, schema va
 
 ---
 
-## 📂 5. Project Structure
+## 📊 5. Entry Points & Scripts Guide
+
+This repository contains multiple execution paths depending on whether you are running our custom internal benchmarks, the official TritonBench evaluation, or ablation studies. 
+
+### A. Core Pipeline & Manual Testing
+* **`main.py`**
+  The simplest entry point. It runs a single end-to-end prompt through the LLM -> AST -> MLIR translation cycle. Use this to verify that your environment (MLIR bindings, W&B, Remote Server) is working correctly.
+* **`run_benchmarks.py`**
+  The script used to run our **Custom Manual Benchmarks**. It processes our internal datasets (`benchmark_prompts_EASY/MED/HARD.json`), compiles the instructions through our full semantic pipeline into PTX, and evaluates the mathematical correctness against PyTorch references locally.
+
+### B. Official TritonBench Evaluation
+To evaluate our pipeline against the industry-standard TritonBench-T track, we decouple the generation from the evaluation.
+* **`1_generate_ptx.py`**
+  Consumes the official TritonBench prompts and runs our semantic compiler pipeline (LLM -> MLIR -> PTX) to generate the raw assembly, saving it to disk.
+* **`2_build_eval_wrappers.py`**
+  Packages the generated `.ptx` files into `CuPy` Python wrappers (`predictions.jsonl`) so they can be injected into the TritonBench official evaluator.
+*(For detailed instructions on running these, see [`TRITONBENCH_EVALUATION_GUIDE.md`](./TRITONBENCH_EVALUATION_GUIDE.md))*
+
+### C. Baselines & Ablation Studies (Proving the Architecture)
+These files bypass our MLIR compiler and ask the LLM to generate raw code directly. They are used to measure the failure rate of standard LLM generation and prove the necessity of our AST/MLIR architecture.
+* **`baseline_ablation.py`**
+  Runs the LLM directly on our custom manual benchmarks (EASY/MED/HARD) to generate raw Triton code, evaluating how often it hallucinates or produces syntax errors.
+* **`resources/tests_raw_llm.ipynb`**
+  A Jupyter Notebook that runs a zero-shot raw LLM baseline directly on the official TritonBench dataset.
+* **`resources/tests_ptx.ipynb`**
+  An interactive notebook for debugging and inspecting the PTX compilation process with TritonBench.
+
+---
+
+## 📂 6. Project Structure
 
 ```
 llm-mlir-compiler/
@@ -116,19 +145,16 @@ llm-mlir-compiler/
 ├── main.py                 # Entry point and orchestration loop
 ├── requirements.txt        # Python dependencies
 ├── INSTALL_MLIR.md         # MLIR/LLVM setup guide
+├── TRITONBENCH_EVALUATION_GUIDE.md  # Official TritonBench-T execution guide
 └── .env                    # Environment variables (git-ignored)
 ```
 
 ---
 
-## 🛠️ 6. Extending the Project
-
-Currently in develop.
-
----
-
 ## 📚 7. References
 
+- [TritonBench: Evaluating Large Language Models for Generating Triton Operators](https://arxiv.org/abs/2502.14752) — Official Paper
+- [TritonBench Official Repository](https://github.com/thunlp/TritonBench/) — thunlp/TritonBench
 - [MLIR Documentation](https://mlir.llvm.org/docs/) — Multi-Level Intermediate Representation
 - [Triton MLIR Dialects](https://triton-lang.org/main/dialects/dialects.html)
 - [XGrammar — HuggingFace](https://huggingface.co/docs/text-generation-inference/conceptual/guidance)

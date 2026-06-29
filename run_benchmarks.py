@@ -214,6 +214,10 @@ def run_benchmarks():
     print("\n=== Benchmark Summary ===")
     for k, v in results.items():
         print(f"{k.ljust(15)}: {v['status']} (Attempts: {v.get('attempts', 'N/A')})")
+        
+    with open("benchmark_run_results.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=4)
+    print("\n[✔] Detailed statistical results saved to benchmark_run_results.json")
 
 if __name__ == "__main__":
     run_benchmarks()

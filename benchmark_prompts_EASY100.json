@@ -1,0 +1,402 @@
+{
+  "vec_addc6p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 6.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc7p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 7.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc8p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 8.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc9p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 9.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc11p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 11.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc12p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 12.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc15p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 15.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc20p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 20.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc50p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 50.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addc100p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Add the scalar 100.0 to every element of A into C (arith.addf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc6p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 6.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc7p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 7.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc8p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 8.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc9p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 9.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc11p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 11.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc12p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 12.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc15p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 15.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc20p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 20.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc50p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 50.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_subc100p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Subtract the scalar 100.0 from every element of A into C (arith.subf, A minus splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc6p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 6.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc7p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 7.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc8p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 8.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc9p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 9.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc11p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 11.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc12p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 12.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc15p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 15.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc20p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 20.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc25p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 25.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_mulc50p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Multiply every element of A by the scalar 50.0 into C (arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc6p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 6.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc7p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 7.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc8p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 8.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc9p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 9.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc10p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 10.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc12p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 12.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc16p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 16.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc20p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 20.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc50p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 50.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_divc100p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Divide every element of A by the scalar 100.0 into C (arith.divf, A divided by splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m2p0_c1p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 1.0 element-wise into C: multiply A by the scalar 2.0 (arith.mulf with a splat), then add the scalar 1.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m2p0_c3p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 3.0 element-wise into C: multiply A by the scalar 2.0 (arith.mulf with a splat), then add the scalar 3.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m3p0_c1p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 1.0 element-wise into C: multiply A by the scalar 3.0 (arith.mulf with a splat), then add the scalar 1.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m3p0_c2p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 2.0 element-wise into C: multiply A by the scalar 3.0 (arith.mulf with a splat), then add the scalar 2.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m5p0_c1p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*5.0 + 1.0 element-wise into C: multiply A by the scalar 5.0 (arith.mulf with a splat), then add the scalar 1.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m0p5_c1p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*0.5 + 1.0 element-wise into C: multiply A by the scalar 0.5 (arith.mulf with a splat), then add the scalar 1.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m2p0_c0p5_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 0.5 element-wise into C: multiply A by the scalar 2.0 (arith.mulf with a splat), then add the scalar 0.5 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m4p0_c2p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*4.0 + 2.0 element-wise into C: multiply A by the scalar 4.0 (arith.mulf with a splat), then add the scalar 2.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m10p0_c1p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*10.0 + 1.0 element-wise into C: multiply A by the scalar 10.0 (arith.mulf with a splat), then add the scalar 1.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_affine_m3p0_c5p0_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 5.0 element-wise into C: multiply A by the scalar 3.0 (arith.mulf with a splat), then add the scalar 5.0 (arith.addf with another splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_cube_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*A*A element-wise into C (two arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_quad_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A^4 element-wise into C (load A, square it, then square again with arith.mulf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_halfsq_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute (A*A)*0.5 element-wise into C (arith.mulf A by itself, then arith.mulf by a 0.5 splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_recip2_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute 2.0/A element-wise into C (2.0 splat divided by A with arith.divf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_reciphalf_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute 0.5/A element-wise into C (0.5 splat divided by A with arith.divf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_negabs_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute -(|A|) element-wise into C (math.absf then arith.negf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_clamp01_kernel": {
+    "difficulty": "easy",
+    "prompt": "Clamp A to the range [0,1] element-wise into C: arith.maximumf with a 0.0 splat, then arith.minimumf with a 1.0 splat. Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_clampm11_kernel": {
+    "difficulty": "easy",
+    "prompt": "Clamp A to the range [-1,1] element-wise into C: arith.maximumf with a -1.0 splat, then arith.minimumf with a 1.0 splat. Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_relu6_kernel": {
+    "difficulty": "easy",
+    "prompt": "ReLU6 of A into C: arith.maximumf with 0.0 splat, then arith.minimumf with 6.0 splat. Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_maxm1_kernel": {
+    "difficulty": "easy",
+    "prompt": "Element-wise MAXIMUM of A with the scalar -1.0 into C (arith.maximumf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_minm1_kernel": {
+    "difficulty": "easy",
+    "prompt": "Element-wise MINIMUM of A with the scalar -1.0 into C (arith.minimumf). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_addsubc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A + B - C into D (arith.addf then arith.subf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_subaddc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A - B + C into D (arith.subf then arith.addf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_subsubc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A - B - C into D (two arith.subf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_mean3_kernel": {
+    "difficulty": "easy",
+    "prompt": "(A + B + C) * (1/3) into D (two arith.addf then arith.mulf by a 0.3333333 splat). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_maxab_c_kernel": {
+    "difficulty": "easy",
+    "prompt": "MAXIMUM(A,B) + C into D (arith.maximumf then arith.addf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_minab_c_kernel": {
+    "difficulty": "easy",
+    "prompt": "MINIMUM(A,B) * C into D (arith.minimumf then arith.mulf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_a_bplusc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A * (B + C) into D (arith.addf then arith.mulf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_a_bminusc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A * (B - C) into D (arith.subf then arith.mulf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_abplusac_kernel": {
+    "difficulty": "easy",
+    "prompt": "A*B + A*C into D (two arith.mulf then arith.addf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_abminusbc_kernel": {
+    "difficulty": "easy",
+    "prompt": "A*B - B*C into D (two arith.mulf then arith.subf). Args in order: input A, input B, input C, then output D. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking."
+  },
+  "vec_aff2_m7p0_c2p0_1_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*7.0 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m8p0_c1p0_2_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*8.0 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m9p0_c3p0_3_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*9.0 + 3.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m6p0_c4p0_4_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*6.0 + 4.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m11p0_c1p0_5_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*11.0 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m12p0_c2p0_6_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*12.0 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m2p0_c7p0_7_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 7.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m3p0_c8p0_8_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 8.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m5p0_c9p0_9_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*5.0 + 9.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m4p0_c6p0_10_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*4.0 + 6.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m2p0_c9p0_11_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 9.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m3p0_c11p0_12_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 11.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m0p25_c1p0_13_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*0.25 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m0p75_c2p0_14_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*0.75 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m1p5_c3p0_15_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*1.5 + 3.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m2p5_c1p0_16_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.5 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m3p5_c2p0_17_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.5 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m6p0_c0p5_18_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*6.0 + 0.5 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m7p0_c0p25_19_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*7.0 + 0.25 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m8p0_c0p75_20_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*8.0 + 0.75 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m7p0_c2p0_21_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*7.0 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m8p0_c1p0_22_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*8.0 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m9p0_c3p0_23_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*9.0 + 3.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m6p0_c4p0_24_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*6.0 + 4.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m11p0_c1p0_25_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*11.0 + 1.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m12p0_c2p0_26_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*12.0 + 2.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m2p0_c7p0_27_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*2.0 + 7.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m3p0_c8p0_28_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*3.0 + 8.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  },
+  "vec_aff2_m5p0_c9p0_29_kernel": {
+    "difficulty": "easy",
+    "prompt": "Compute A*5.0 + 9.0 element-wise into C (arith.mulf with splat, then arith.addf with splat). Args: input A, then output C. Single block of exactly 256 elements (tensor<256xf32>). No program_id, no masking. Create the scalar with arith.constant, broadcast with tt.splat to tensor<256xf32>, then apply the op."
+  }
+}
