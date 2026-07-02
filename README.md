@@ -2,7 +2,7 @@
 
 > A hybrid pipeline for generating semantically correct Triton/MLIR GPU kernels using Large Language Models and Constrained Decoding.
 
-Traditional LLM pipelines for GPU kernel generation tend to fail silently — producing code that looks valid but contains syntax errors or hallucinated operations. This project takes a different approach through a **Semantically Constrained Generation** architecture. Rather than generating raw Triton or Python code directly, the pipeline drives an LLM (Gemma-4) to output a strict JSON Abstract Syntax Tree (AST). That AST is then translated locally into MLIR (Multi-Level Intermediate Representation) dialects, where static mathematical and semantic validation occurs before any compilation step.
+Traditional LLM pipelines for GPU kernel generation tend to fail silently — producing code that looks valid but contains syntax errors or hallucinated operations. This project takes a different approach through a **Semantically Constrained Generation** architecture. Rather than generating raw Triton or Python code directly, the pipeline drives an LLM (Qwen3.5-9B-AWQ) to output a strict JSON Abstract Syntax Tree (AST). That AST is then translated locally into MLIR (Multi-Level Intermediate Representation) dialects, where static mathematical and semantic validation occurs before any compilation step.
 
 ---
 
@@ -11,7 +11,7 @@ Traditional LLM pipelines for GPU kernel generation tend to fail silently — pr
 The pipeline runs across a decoupled local/cloud environment with three main components:
 
 1. **Local Orchestrator (Python)** — Handles prompt formulation, JSON schema enforcement via Pydantic, AST-to-MLIR translation, and MLOps metric tracking.
-2. **Remote Inference Engine (Kaggle/Colab)** — Hosts the `gemma-4-e4b-it` model behind a FastAPI endpoint exposed through an Ngrok tunnel.
+2. **Remote Inference Engine (L4 GPU)** — Serves the `QuantTrio/Qwen3.5-9B-AWQ` model (4-bit AWQ) with **vLLM** on a single NVIDIA L4, behind a FastAPI endpoint exposed through an Ngrok tunnel.
 3. **Constrained Decoding (XGrammar)** — The orchestrator sends a Pydantic JSON Schema to the remote endpoint, which compiles it with `xgrammar` to constrain the model's output logits, preventing malformed JSON or illegal MLIR operations at the generation level.
 
 ---
@@ -56,13 +56,13 @@ The local orchestrator depends on native LLVM/MLIR bindings for semantic validat
 
 ---
 
-## ☁️ 2. Remote Model Configuration (Kaggle)
+## ☁️ 2. Remote Model Configuration (vLLM on L4)
 
-The LLM runs remotely on Kaggle and connects back to the local orchestrator via API.
+The LLM runs remotely (single NVIDIA L4 GPU) and connects back to the local orchestrator via API.
 
-1. Open Kaggle and import the notebook included in the repository (`.ipynb`).
-2. Turn on internet and enable GPU acceleration (T4 x2 or P100) in the session settings.
-3. Run all cells to initialize FastAPI, download the model weights, and start the Ngrok tunnel.
+1. Open the official serving notebook `resources/tests_ptx.ipynb` (end-to-end pipeline) or `resources/tests_raw_llm.ipynb` (zero-shot baseline).
+2. Provision a single **NVIDIA L4** GPU and enable internet access.
+3. Run all cells to load `QuantTrio/Qwen3.5-9B-AWQ` with vLLM, initialize FastAPI, and start the Ngrok tunnel.
 4. Copy the generated **Ngrok Public URL** from the cell output — it will follow the pattern `https://<random-id>.ngrok-free.dev`.
 
 ---
@@ -72,9 +72,9 @@ The LLM runs remotely on Kaggle and connects back to the local orchestrator via 
 Create a `.env` file in the project root and fill in the values below:
 
 ```env
-# Remote model endpoint (paste the Ngrok URL from Kaggle here)
+# Remote model endpoint (paste the Ngrok URL from the L4 serving notebook here)
 USE_REMOTE_MODEL=1        # Set to 1 for remote inference, 0 for local Ollama
-GEMMA_API_URL="https://your-ngrok-url.ngrok-free.dev"
+LLM_API_URL="https://your-ngrok-url.ngrok-free.dev"
 
 # MLOps tracking (Weights & Biases)
 WANDB_API_KEY=your_wandb_api_key_here
@@ -88,7 +88,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 ## 🚀 4. Running the Pipeline
 
-Once MLIR is configured, the virtual environment is active, and the Kaggle server is running:
+Once MLIR is configured, the virtual environment is active, and the remote L4 server is running:
 
 ```bash
 # Optional: authenticate with Weights & Biases for live MLOps tracking

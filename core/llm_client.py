@@ -128,14 +128,14 @@ def run_ollama(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> st
 
 def run_remote(system_p: str, user_p: str, schema: Type[BaseModel] = None) -> str:
     """
-    Makes a request to the remote Kaggle endpoint.
+    Makes a request to the remote vLLM endpoint (Qwen3.5-9B-AWQ).
     """
     # Use ChatML format for Qwen 3.5
     template = getattr(config, "REMOTE_PROMPT_TEMPLATE", "chatml")
     if template == "chatml":
         prompt = f"<|im_start|>system\n{system_p}<|im_end|>\n<|im_start|>user\n{user_p}<|im_end|>\n<|im_start|>assistant\n"
     else:
-        # Fallback to Gemma
+        # Fallback: legacy Gemma-style prompt template (kept for backward-compat)
         prompt = f"<bos><start_of_turn>user\n{system_p}\n\n{user_p}<end_of_turn>\n<start_of_turn>model\n"
         
     payload = {

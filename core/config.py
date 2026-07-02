@@ -77,12 +77,16 @@ GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 # --- MODEL CONFIGURATION ---
 MODEL_KIMI = "meta/llama-3.1-405b-instruct" # Proxy model in Nvidia API
 MODEL_GEMINI = "gemini-2.0-flash-lite-001"  # Cheapest Gemini model, highest quota
-MODEL_OLLAMA = "gemma4:e2b"                 # Local Ollama model
+MODEL_OLLAMA = "qwen3.5:9b"                 # Local Ollama fallback (dev only; not used for the reported remote run)
 
 OLLAMA_ENDPOINT = "http://localhost:11434/api/chat"
 
+# Served model for the reported experiments: Qwen3.5-9B-AWQ (4-bit AWQ) via vLLM on an L4 GPU.
+REMOTE_MODEL_ID = "QuantTrio/Qwen3.5-9B-AWQ"
+
 USE_REMOTE_MODEL = os.getenv("USE_REMOTE_MODEL", "0") == "1"
-REMOTE_MODEL_URL = os.getenv("GEMMA_API_URL", "https://unsubtly-dash-economy.ngrok-free.dev")
+# Accepts LLM_API_URL (new) and falls back to the legacy GEMMA_API_URL name for backward-compat.
+REMOTE_MODEL_URL = os.getenv("LLM_API_URL", os.getenv("GEMMA_API_URL", "https://your-ngrok-url.ngrok-free.dev"))
 
 # Strict parameters for code generation
 GENERATION_PARAMS = {
@@ -97,5 +101,5 @@ WANDB_PROJECT_NAME = "llm-mlir-compiler"
 WANDB_ENTITY = None  # Automatic if configured in the environment
 
 # --- REMOTE MODEL CONFIGURATION ---
-REMOTE_PROMPT_TEMPLATE = "chatml" # Use "chatml" for Qwen, "gemma" for Gemma
+REMOTE_PROMPT_TEMPLATE = "chatml" # "chatml" for Qwen (default). Legacy "gemma" template kept for backward-compat.
 
